@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from dto.joueur import Joueur
 from service.joueur_service import JoueurService
 
 app = FastAPI()
@@ -9,13 +8,12 @@ app = FastAPI()
 joueur_service = JoueurService()
 
 
-# List all pokemons
+# Lister tous les joueurs
 # GET http://localhost/joueur
 @app.get("/joueur/")
 async def lister_tous_joueurs():
     liste_joueurs = joueur_service.lister_tous()
 
-    # Convert all pokemons using the model
     liste_model = []
     for joueur in liste_joueurs:
         liste_model.append(joueur)
@@ -24,6 +22,7 @@ async def lister_tous_joueurs():
 
 
 # Trouver un joueur à partir de son id
+# GET http://localhost/joueur/3
 @app.get("/joueur/{id_joueur}")
 async def joueur_par_nom(id_joueur: int):
     return joueur_service.trouver_par_id(id_joueur)

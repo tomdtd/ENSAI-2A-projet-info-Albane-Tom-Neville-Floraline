@@ -11,10 +11,11 @@ class JoueurService:
     def creer(self, pseudo, mdp, age, mail, fan_pokemon) -> Joueur:
         """Création d'un joueur"""
 
-        nouveau_joueur = Joueur(pseudo, mdp, age, mail, fan_pokemon)
-        JoueurDao().creer(nouveau_joueur)
+        nouveau_joueur = Joueur(
+            pseudo=pseudo, mdp=mdp, age=age, mail=mail, fan_pokemon=fan_pokemon
+        )
 
-        return nouveau_joueur
+        return nouveau_joueur if JoueurDao().creer(nouveau_joueur) else None
 
     @log
     def lister_tous(self) -> list[Joueur]:
@@ -65,3 +66,10 @@ class JoueurService:
             print(f"Joueur {joueur.pseudo} connecté")
         print("*" * 100)
         return joueur
+
+    @log
+    def pseudo_deja_utulise(self, pseudo) -> bool:
+        """Vérifie si le pseudo est déjà utilisé
+        Retourne True si le pseudo existe déjà en BDD"""
+        joueurs = JoueurDao().lister_tous()
+        return pseudo in [j.pseudo for j in joueurs]

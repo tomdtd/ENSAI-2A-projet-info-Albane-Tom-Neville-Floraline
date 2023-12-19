@@ -2,5 +2,6 @@ inquirerPy
 fastapi
 psycopg2-binary
 python-dotenv
+regex
 requests
 tabulate

@@ -124,7 +124,6 @@ class JoueurDao(metaclass=Singleton):
                 joueur = Joueur(
                     id_joueur=row["id_joueur"],
                     pseudo=row["pseudo"],
-                    mdp=row["mdp"],
                     age=row["age"],
                     mail=row["mail"],
                     fan_pokemon=row["fan_pokemon"],

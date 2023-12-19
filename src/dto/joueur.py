@@ -18,7 +18,7 @@ class Joueur:
         indique si le joueur est un fan de Pokemon
     """
 
-    def __init__(self, pseudo, age, mail, mdp=None, id_joueur=None, fan_pokemon=False):
+    def __init__(self, pseudo, age, mail, mdp=None, fan_pokemon=False, id_joueur=None):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
