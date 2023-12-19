@@ -28,7 +28,7 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO projet.joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES "
+                        "INSERT INTO joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES "
                         "(%(pseudo)s, %(mdp)s, %(age)s, %(mail)s, %(fan_pokemon)s)             "
                         "  RETURNING id_joueur;                                                ",
                         {
@@ -69,7 +69,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM projet.joueur               "
+                        "  FROM joueur               "
                         " WHERE id_joueur = %(id_joueur)s;  ",
                         {"id_joueur": id_joueur},
                     )
@@ -109,7 +109,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                   "
-                        "   FROM projet.joueur      "
+                        "   FROM joueur      "
                         "  WHERE pseudo != 'admin'  "
                     )
                     res = cursor.fetchall()
@@ -152,7 +152,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     # Supprimer le compte d'un joueur
                     cursor.execute(
-                        "DELETE FROM projet.joueur           "
+                        "DELETE FROM joueur           "
                         " WHERE id_joueur=%(id_joueur)s      ",
                         {"id_joueur": joueur.id_joueur},
                     )
@@ -185,7 +185,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM projet.joueur               "
+                        "  FROM joueur               "
                         " WHERE pseudo = %(pseudo)s         "
                         "   AND mdp = %(mdp)s;              ",
                         {"pseudo": pseudo, "mdp": mdp},

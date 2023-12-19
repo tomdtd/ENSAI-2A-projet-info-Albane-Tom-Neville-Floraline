@@ -1,12 +1,15 @@
-from unittest import TestCase, TextTestRunner, TestLoader
+import os
+
+from unittest import mock, TestCase, TextTestRunner, TestLoader
 
 from dao.joueur_dao import JoueurDao
 
 
+@mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"})
 class TestJoueurDao(TestCase):
     def test_trouver_par_id_existant(self):
         # GIVEN
-        id_joueur = 5
+        id_joueur = 998
 
         # WHEN
         joueur = JoueurDao().trouver_par_id(id_joueur)
@@ -26,5 +29,5 @@ class TestJoueurDao(TestCase):
 
 
 if __name__ == "__main__":
-    # Run the tests
+    # Lancement des tests
     result = TextTestRunner().run(TestLoader().loadTestsFromTestCase(TestJoueurDao))
