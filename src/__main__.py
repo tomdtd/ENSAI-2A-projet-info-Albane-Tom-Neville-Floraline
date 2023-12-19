@@ -1,6 +1,10 @@
 import dotenv
+import os
+import yaml
+import logging
+import logging.config
 
-from view.accueil_vue import AccueilVue
+from view.accueil.accueil_vue import AccueilVue
 
 
 """
@@ -9,6 +13,14 @@ Classe de lancement de l'application
 if __name__ == "__main__":
     # On charge les variables d'envionnement
     dotenv.load_dotenv(override=True)
+
+    # On charge le fichier de config des logs
+    with open(os.path.dirname(__file__) + "/../logging_config.yml", "r") as stream:
+        config = yaml.load(stream, Loader=yaml.FullLoader)
+    logging.config.dictConfig(config)
+    logging.info("-" * 50)
+    logging.info("Lancement de l'application                        ")
+    logging.info("-" * 50)
 
     vue_courante = AccueilVue("Bienvenue")
     nb_erreurs = 0
@@ -33,3 +45,5 @@ if __name__ == "__main__":
     # Lorsque l on quitte l application
     print("----------------------------------")
     print("Au revoir")
+
+    logging.info("Fin de l'application")

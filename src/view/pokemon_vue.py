@@ -1,12 +1,14 @@
-from InquirerPy import prompt
+from InquirerPy import inquirer
 
 from view.vue_abstraite import VueAbstraite
 from client.pokemon_client import PokemonClient
 
 
 class PokemonVue(VueAbstraite):
-    def __init__(self, message="") -> None:
-        super().__init__(message)
+    """Vue qui affiche :
+    - la liste des types de pokemons dans un premier temps
+    - la liste des pokemons du type choisi dans un seconde temps
+    """
 
     def choisir_menu(self):
         pokemon_client = PokemonClient()
@@ -14,24 +16,17 @@ class PokemonVue(VueAbstraite):
         pokemon_types = pokemon_client.get_pokemon_types()
         pokemon_types.append("Retour au Menu Joueur")
 
-        self.questions = [
-            {
-                "type": "list",
-                "name": "choix",
-                "message": "Choisissez un type de Pokemon",
-                "choices": pokemon_types,
-            }
-        ]
+        choix = inquirer.select(
+            message="Choisissez un type de Pokemon : ",
+            choices=pokemon_types,
+        ).execute()
 
-        reponse = prompt(self.questions)
-
-        if reponse["choix"] == "Retour au Menu Joueur":
+        if choix == "Retour au Menu Joueur":
             from view.menu_joueur_vue import MenuJoueurVue
 
             return MenuJoueurVue()
-
         else:
             from view.menu_joueur_vue import MenuJoueurVue
 
-            pokemons = pokemon_client.get_all_pokemon_by_types(reponse["choix"])
+            pokemons = pokemon_client.get_all_pokemon_by_types(choix)
             return MenuJoueurVue(pokemons)

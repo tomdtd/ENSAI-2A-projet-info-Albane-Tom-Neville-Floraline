@@ -1,6 +1,8 @@
 class Joueur:
     """
-    Attributes
+    Classe représentant un Joueur
+
+    Attributs
     ----------
     id_joueur : int
         identifiant
@@ -17,7 +19,7 @@ class Joueur:
     """
 
     def __init__(self, pseudo, age, mail, mdp=None, id_joueur=None, fan_pokemon=False):
-        """Constructeur de l'objet"""
+        """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
         self.mdp = mdp
@@ -26,8 +28,8 @@ class Joueur:
         self.fan_pokemon = fan_pokemon
 
     def __str__(self):
-        """Permet d'afficher les informations du joueurs"""
-        return f"Joueur : {self.pseudo}, {self.age} ans"
+        """Permet d'afficher les informations du joueur"""
+        return f"Joueur({self.pseudo}, {self.age} ans)"
 
     def as_list(self) -> list[str]:
         """Retourne les attributs du joueur dans une liste"""

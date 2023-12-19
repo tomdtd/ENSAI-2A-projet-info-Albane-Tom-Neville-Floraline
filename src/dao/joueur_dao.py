@@ -1,10 +1,13 @@
-from dao.db_connection import DBConnection
 from utils.singleton import Singleton
+from utils.log_decorator import log
 
-from business_object.joueur import Joueur
+from dao.db_connection import DBConnection
+
+from dto.joueur import Joueur
 
 
 class JoueurDao(metaclass=Singleton):
+    @log
     def creer(self, joueur) -> bool:
         """Creation d'un joueur dans la base de données
 
@@ -47,6 +50,7 @@ class JoueurDao(metaclass=Singleton):
 
         return created
 
+    @log
     def trouver_par_id(self, id_joueur) -> Joueur:
         """trouver un joueur grace à son id
 
@@ -86,6 +90,7 @@ class JoueurDao(metaclass=Singleton):
 
         return joueur
 
+    @log
     def lister_tous(self) -> list[Joueur]:
         """lister tous les joueurs
 
@@ -129,6 +134,7 @@ class JoueurDao(metaclass=Singleton):
 
         return liste_joueurs
 
+    @log
     def supprimer(self, joueur) -> bool:
         """Suppression d'un joueur dans la base de données
 
@@ -158,6 +164,7 @@ class JoueurDao(metaclass=Singleton):
 
         return res > 0
 
+    @log
     def se_connecter(self, pseudo, mdp) -> Joueur:
         """se connecter grâce à son pseudo et son mot de passe
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from business_object.joueur import Joueur
+from dto.joueur import Joueur
 from service.joueur_service import JoueurService
 
 app = FastAPI()

@@ -1,9 +1,12 @@
+import logging
+
 from abc import ABC, abstractmethod
 
 
 class VueAbstraite(ABC):
     def __init__(self, message=""):
         self.message = message
+        logging.info(type(self).__name__)
 
     def nettoyer_console(self):
         for i in range(30):

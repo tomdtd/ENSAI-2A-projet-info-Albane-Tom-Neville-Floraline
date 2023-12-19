@@ -1,9 +1,9 @@
-# ENSAI-projet-info-2A-template
+# ENSAI-2A-projet-info-template
 
 Template du projet informatique de 2e année de l'ENSAI.
 Cette application très simple comporte quelques éléments qui peuvent aider pour le projet info 2A :
 
-* programmation en couche (DAO, service, business_object)
+* programmation en couche (DAO, service, dto)
 * connexion à une base de données
 * interface dans le terminal (couche view) avec inquirerPy
 * Appel d'un Webservice
@@ -22,6 +22,18 @@ git clone git@github.com:ludo2ne/ENSAI-2A-projet-info-template.git
 
 * File > Open Folder > ENSAI-2A-projet-info-template
 * :warning: Si le dossier parent dans l'explorer VScode n'est pas `ENSAI-2A-projet-info-template`, l'application ne fonctionnera pas
+
+#### Paramètres VScode
+
+Ce répo contient un fichier `.vscode/settings.xml` qui définit des paramètres pour ce projet s'il est ouvert dans VSCode. Par exemple :
+
+* **Black formatter** permet de mettre en forme automatiquement un fichier python
+  * `editor.formatOnSave` : à chaque savegarde de fichier, le code est automatiquement mis en forme
+* **Flake** est un Linter
+  * il vérifie que le code est propre et affiche un message si ce n'est pas le cas
+  * il est possible de modifier le paramètrage de Flake : `"flake8.args": ["--max-line-length=120"]`
+* **Path** : indique les dossiers dans lesquels sont les modules python 
+  * `"PYTHONPATH": "${workspaceFolder}/src"` : src est le dossier racine des imports
 
 ## :arrow_forward: Installer les packages nécessaires
 
@@ -68,7 +80,7 @@ PASSWORD=idxxxx
     JSON body :
       {
         "pseudo": "patapouf",
-      	 "mdp": "9999",
+      	"mdp": "9999",
         "age": "95",
         "mail": "patapouf@mail.fr",
         "fan_pokemon": true
