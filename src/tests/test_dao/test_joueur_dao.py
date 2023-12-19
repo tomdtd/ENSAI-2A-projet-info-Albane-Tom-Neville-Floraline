@@ -3,7 +3,7 @@ from unittest import TestCase, TextTestRunner, TestLoader
 from dao.joueur_dao import JoueurDao
 
 
-class TestAttackDao(TestCase):
+class TestJoueurDao(TestCase):
     def test_trouver_par_id_existant(self):
         # GIVEN
         id_joueur = 5
@@ -27,4 +27,4 @@ class TestAttackDao(TestCase):
 
 if __name__ == "__main__":
     # Run the tests
-    result = TextTestRunner().run(TestLoader().loadTestsFromTestCase(TestAttackDao))
+    result = TextTestRunner().run(TestLoader().loadTestsFromTestCase(TestJoueurDao))
