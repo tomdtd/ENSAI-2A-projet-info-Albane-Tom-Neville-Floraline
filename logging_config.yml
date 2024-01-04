@@ -15,5 +15,5 @@ loggers:
     handlers: [file]
     propagate: no
 root:
-  level: DEBUG
+  level: INFO
   handlers: [file]

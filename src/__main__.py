@@ -1,5 +1,4 @@
 import dotenv
-import os
 import yaml
 import logging
 import logging.config
@@ -15,9 +14,10 @@ if __name__ == "__main__":
     dotenv.load_dotenv(override=True)
 
     # On charge le fichier de config des logs
-    with open(os.path.dirname(__file__) + "/../logging_config.yml", "r") as stream:
-        config = yaml.load(stream, Loader=yaml.FullLoader)
+    stream = open("logging_config.yml", encoding="utf-8")
+    config = yaml.load(stream, Loader=yaml.FullLoader)
     logging.config.dictConfig(config)
+
     logging.info("-" * 50)
     logging.info("Lancement de l'application                        ")
     logging.info("-" * 50)

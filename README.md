@@ -54,6 +54,7 @@ PORT=5432
 DATABASE=idxxxx
 USER=idxxxx
 PASSWORD=idxxxx
+SCHEMA=projet
 ```
 
 ## :arrow_forward: Lancer les tests unitaires

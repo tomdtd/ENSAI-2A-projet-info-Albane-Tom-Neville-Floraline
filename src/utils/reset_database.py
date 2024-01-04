@@ -1,6 +1,8 @@
 from utils.singleton import Singleton
 from dao.db_connection import DBConnection
 
+from service.joueur_service import JoueurService
+
 
 class ResetDatabase(metaclass=Singleton):
     """
@@ -24,6 +26,10 @@ class ResetDatabase(metaclass=Singleton):
         except Exception as e:
             print(e)
             raise
+
+        joueur_service = JoueurService()
+        for j in joueur_service.lister_tous():
+            joueur_service.modifier(j)
 
         return True
 

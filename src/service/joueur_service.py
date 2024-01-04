@@ -1,6 +1,7 @@
 from tabulate import tabulate
 
 from utils.log_decorator import log
+from utils.securite import hash_password
 
 from dto.joueur import Joueur
 from dao.joueur_dao import JoueurDao
@@ -12,7 +13,11 @@ class JoueurService:
         """Création d'un joueur"""
 
         nouveau_joueur = Joueur(
-            pseudo=pseudo, mdp=mdp, age=age, mail=mail, fan_pokemon=fan_pokemon
+            pseudo=pseudo,
+            mdp=hash_password(mdp, pseudo),
+            age=age,
+            mail=mail,
+            fan_pokemon=fan_pokemon,
         )
 
         return nouveau_joueur if JoueurDao().creer(nouveau_joueur) else None
@@ -28,6 +33,12 @@ class JoueurService:
         return JoueurDao().trouver_par_id(id_joueur)
 
     @log
+    def modifier(self, joueur) -> Joueur:
+        """Modification d'un joueur"""
+        joueur.mdp = hash_password(joueur.mdp, joueur.pseudo)
+        return joueur if JoueurDao().modifier(joueur) else None
+
+    @log
     def supprimer(self, joueur) -> bool:
         """Supprimer le compte d'un joueur"""
         return JoueurDao().supprimer(joueur)
@@ -40,6 +51,11 @@ class JoueurService:
         entetes = ["pseudo", "age", "mail", "est fan de Pokemon"]
 
         joueurs = JoueurDao().lister_tous()
+
+        for j in joueurs:
+            if j.pseudo == "admin":
+                joueurs.remove(j)
+
         joueurs_as_list = [j.as_list() for j in joueurs]
 
         str_joueurs = "-" * 100
@@ -59,7 +75,8 @@ class JoueurService:
     @log
     def se_connecter(self, pseudo, mdp) -> Joueur:
         """Se connecter à partir de pseudo et mdp"""
-        joueur = JoueurDao().se_connecter(pseudo, mdp)
+
+        joueur = JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
         if not joueur:
             print(f"Connexion {pseudo} refusée")
         else:
@@ -68,7 +85,7 @@ class JoueurService:
         return joueur
 
     @log
-    def pseudo_deja_utulise(self, pseudo) -> bool:
+    def pseudo_deja_utilise(self, pseudo) -> bool:
         """Vérifie si le pseudo est déjà utilisé
         Retourne True si le pseudo existe déjà en BDD"""
         joueurs = JoueurDao().lister_tous()

@@ -15,7 +15,7 @@ class InscriptionVue(VueAbstraite):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
 
-        if JoueurService().pseudo_deja_utulise(pseudo):
+        if JoueurService().pseudo_deja_utilise(pseudo):
             from view.accueil.accueil_vue import AccueilVue
 
             return AccueilVue(f"Le pseudo {pseudo} est déjà utilisé.")

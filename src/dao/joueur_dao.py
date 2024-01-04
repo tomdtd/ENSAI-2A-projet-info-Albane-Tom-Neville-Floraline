@@ -28,7 +28,7 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES "
+                        "INSERT INTO joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES        "
                         "(%(pseudo)s, %(mdp)s, %(age)s, %(mail)s, %(fan_pokemon)s)             "
                         "  RETURNING id_joueur;                                                ",
                         {
@@ -69,7 +69,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM joueur               "
+                        "  FROM joueur                      "
                         " WHERE id_joueur = %(id_joueur)s;  ",
                         {"id_joueur": id_joueur},
                     )
@@ -108,9 +108,8 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT *                   "
-                        "   FROM joueur      "
-                        "  WHERE pseudo != 'admin'  "
+                        "SELECT *                              "
+                        "  FROM joueur;                        "
                     )
                     res = cursor.fetchall()
         except Exception as e:
@@ -124,6 +123,7 @@ class JoueurDao(metaclass=Singleton):
                 joueur = Joueur(
                     id_joueur=row["id_joueur"],
                     pseudo=row["pseudo"],
+                    mdp=row["mdp"],
                     age=row["age"],
                     mail=row["mail"],
                     fan_pokemon=row["fan_pokemon"],
@@ -132,6 +132,49 @@ class JoueurDao(metaclass=Singleton):
                 liste_joueurs.append(joueur)
 
         return liste_joueurs
+
+    @log
+    def modifier(self, joueur) -> bool:
+        """Modification d'un joueur dans la base de données
+
+        Parameters
+        ----------
+        joueur : Joueur
+
+        Returns
+        -------
+        created : bool
+            True si la modification est un succès
+            False sinon
+        """
+
+        res = None
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE joueur                                      "
+                        "   SET pseudo      = %(pseudo)s,                   "
+                        "       mdp         = %(mdp)s,                      "
+                        "       age         = %(age)s,                      "
+                        "       mail        = %(mail)s,                     "
+                        "       fan_pokemon = %(fan_pokemon)s               "
+                        " WHERE id_joueur = %(id_joueur)s;                  ",
+                        {
+                            "pseudo": joueur.pseudo,
+                            "mdp": joueur.mdp,
+                            "age": joueur.age,
+                            "mail": joueur.mail,
+                            "fan_pokemon": joueur.fan_pokemon,
+                            "id_joueur": joueur.id_joueur,
+                        },
+                    )
+                    res = cursor.rowcount
+        except Exception as e:
+            print(e)
+
+        return True if res == 1 else False
 
     @log
     def supprimer(self, joueur) -> bool:
@@ -152,7 +195,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     # Supprimer le compte d'un joueur
                     cursor.execute(
-                        "DELETE FROM joueur           "
+                        "DELETE FROM joueur                  "
                         " WHERE id_joueur=%(id_joueur)s      ",
                         {"id_joueur": joueur.id_joueur},
                     )
@@ -185,7 +228,7 @@ class JoueurDao(metaclass=Singleton):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         "SELECT *                           "
-                        "  FROM joueur               "
+                        "  FROM joueur                      "
                         " WHERE pseudo = %(pseudo)s         "
                         "   AND mdp = %(mdp)s;              ",
                         {"pseudo": pseudo, "mdp": mdp},
