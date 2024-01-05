@@ -1,7 +1,3 @@
-DROP SCHEMA IF EXISTS projet CASCADE;
-CREATE SCHEMA projet;
-
-
 -----------------------------------------------------
 -- Joueur
 -----------------------------------------------------

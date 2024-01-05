@@ -1,3 +1,6 @@
+import os
+import dotenv
+
 from utils.singleton import Singleton
 from dao.db_connection import DBConnection
 
@@ -12,6 +15,13 @@ class ResetDatabase(metaclass=Singleton):
     def lancer(self):
         print("Réinitialisation de la base de données")
 
+        dotenv.load_dotenv()
+
+        schema = os.environ["SCHEMA"]
+        create_schema = (
+            f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"
+        )
+
         init_db = open("data/init_db.sql", encoding="utf-8")
         init_db_as_string = init_db.read()
 
@@ -21,6 +31,7 @@ class ResetDatabase(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
+                    cursor.execute(create_schema)
                     cursor.execute(init_db_as_string)
                     cursor.execute(pop_db_as_string)
         except Exception as e:
