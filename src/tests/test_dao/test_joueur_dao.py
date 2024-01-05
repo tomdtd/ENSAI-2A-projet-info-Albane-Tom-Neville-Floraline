@@ -2,11 +2,16 @@ import os
 
 from unittest import mock, TestCase, TextTestRunner, TestLoader
 
+from utils.reset_database_test import ResetDatabaseTest
 from dao.joueur_dao import JoueurDao
 
 
 @mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"})
 class TestJoueurDao(TestCase):
+    def setUpClass():
+        """Méthode déclenchée avant tous les tests de la classe"""
+        ResetDatabaseTest().lancer()
+
     def test_trouver_par_id_existant(self):
         # GIVEN
         id_joueur = 998

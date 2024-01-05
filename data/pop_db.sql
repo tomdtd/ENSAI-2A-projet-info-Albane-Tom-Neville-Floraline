@@ -1,4 +1,4 @@
-INSERT INTO projet.joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES
+INSERT INTO joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES
 ('admin',      '0000',     null,    'admin@projet.fr',      null),
 ('a',             'a',     20,      'a@ensai.fr',           true),
 ('maurice',    '1234',     20,      'maurice@ensai.fr',     true),
