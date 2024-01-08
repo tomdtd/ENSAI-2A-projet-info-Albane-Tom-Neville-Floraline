@@ -3,12 +3,20 @@ import os
 from unittest import mock, TestCase, TextTestRunner, TestLoader
 
 from utils.reset_database_test import ResetDatabaseTest
+from utils.securite import hash_password
+
 from dao.joueur_dao import JoueurDao
+
 from dto.joueur import Joueur
 
 
 @mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"})
 class TestJoueurDao(TestCase):
+    """Tests des méthodes de la classe JoueurDao
+    Pour éviter de polluer la base de données, les tests sont effectués
+    sur un schéma prévu à cet effet
+    """
+
     def setUpClass():
         """Méthode déclenchée avant tous les tests de la classe"""
         ResetDatabaseTest().lancer()
@@ -94,6 +102,38 @@ class TestJoueurDao(TestCase):
 
         # THEN
         self.assertTrue(suppression_ok)
+
+    def test_supprimer_ko(self):
+        # GIVEN
+        joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@z.fr")
+
+        # WHEN
+        suppression_ok = JoueurDao().supprimer(joueur)
+
+        # THEN
+        self.assertFalse(suppression_ok)
+
+    def test_se_connecter_ok(self):
+        # GIVEN
+        pseudo = "batricia"
+        mdp = "9876"
+
+        # WHEN
+        joueur = JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
+
+        # THEN
+        self.assertIsInstance(joueur, Joueur)
+
+    def test_se_connecter_ko(self):
+        # GIVEN
+        pseudo = "toto"
+        mdp = "poiuytreza"
+
+        # WHEN
+        joueur = JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
+
+        # THEN
+        self.assertIsNone(joueur)
 
 
 if __name__ == "__main__":

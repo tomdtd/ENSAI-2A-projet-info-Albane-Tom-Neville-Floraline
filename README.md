@@ -63,7 +63,7 @@ SCHEMA=projet
 * Couverture de tests avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
   * `coverage run -m unittest discover`
   * `coverage html`
-  * Ouvrir le fichier htmlcov/index.html
+  * Ouvrir le fichier coverage_report/index.html
 
 ## :arrow_forward: Lancer le programme
 
