@@ -9,7 +9,7 @@ class VueAbstraite(ABC):
         logging.info(type(self).__name__)
 
     def nettoyer_console(self):
-        for i in range(30):
+        for _ in range(30):
             print("")
 
     def afficher(self) -> None:

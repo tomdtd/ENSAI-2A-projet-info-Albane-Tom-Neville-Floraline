@@ -2,7 +2,7 @@ import os
 
 from unittest import mock, TestCase, TextTestRunner, TestLoader
 
-from utils.reset_database_test import ResetDatabaseTest
+from utils.reset_database import ResetDatabase
 from utils.securite import hash_password
 
 from dao.joueur_dao import JoueurDao
@@ -19,7 +19,7 @@ class TestJoueurDao(TestCase):
 
     def setUpClass():
         """Méthode déclenchée avant tous les tests de la classe"""
-        ResetDatabaseTest().lancer()
+        ResetDatabase().lancer(test_dao=True)
 
     def test_trouver_par_id_existant(self):
         # GIVEN
