@@ -45,7 +45,7 @@ class JoueurDao(metaclass=Singleton):
 
         created = False
         if res:
-            joueur.id = res["id_joueur"]
+            joueur.id_joueur = res["id_joueur"]
             created = True
 
         return created

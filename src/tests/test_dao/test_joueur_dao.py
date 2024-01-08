@@ -4,6 +4,7 @@ from unittest import mock, TestCase, TextTestRunner, TestLoader
 
 from utils.reset_database_test import ResetDatabaseTest
 from dao.joueur_dao import JoueurDao
+from dto.joueur import Joueur
 
 
 @mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"})
@@ -31,6 +32,68 @@ class TestJoueurDao(TestCase):
 
         # THEN
         self.assertIsNone(joueur)
+
+    def test_lister_tous(self):
+        # GIVEN
+
+        # WHEN
+        joueurs = JoueurDao().lister_tous()
+
+        # THEN
+        self.assertIsInstance(joueurs, list)
+        self.assertGreaterEqual(len(joueurs), 2)
+
+    def test_creer_ok(self):
+        # GIVEN
+        joueur = Joueur(pseudo="gg", age=44, mail="test@test.io")
+
+        # WHEN
+        creation_ok = JoueurDao().creer(joueur)
+
+        # THEN
+        self.assertTrue(creation_ok)
+        self.assertIsNotNone(joueur.id_joueur)
+
+    def test_creer_ko(self):
+        # GIVEN
+        joueur = Joueur(pseudo="gg", age="chaine de caractere", mail=12)
+
+        # WHEN
+        creation_ok = JoueurDao().creer(joueur)
+
+        # THEN
+        self.assertFalse(creation_ok)
+
+    def test_modifier_ok(self):
+        # GIVEN
+        new_mail = "maurice@mail.com"
+        joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mail=new_mail)
+
+        # WHEN
+        modification_ok = JoueurDao().modifier(joueur)
+
+        # THEN
+        self.assertTrue(modification_ok)
+
+    def test_modifier_ko(self):
+        # GIVEN
+        joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@mail.com")
+
+        # WHEN
+        modification_ok = JoueurDao().modifier(joueur)
+
+        # THEN
+        self.assertFalse(modification_ok)
+
+    def test_supprimer_ok(self):
+        # GIVEN
+        joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mail="miguel@projet.fr")
+
+        # WHEN
+        suppression_ok = JoueurDao().supprimer(joueur)
+
+        # THEN
+        self.assertTrue(suppression_ok)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,6 @@
+[run]
+include =
+    src/service/*
+    src/dao/*
+omit = 
+    */__init__.py
