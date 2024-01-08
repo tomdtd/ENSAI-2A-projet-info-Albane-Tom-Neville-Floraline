@@ -1,6 +1,8 @@
 from InquirerPy import inquirer
 
 from view.vue_abstraite import VueAbstraite
+from view.session import Session
+
 from service.joueur_service import JoueurService
 
 
@@ -15,7 +17,7 @@ class MenuJoueurVue(VueAbstraite):
     Returns
     ------
     view
-        retourne la prochaine vue, celle qui est choisi par l'utilisateur de l'application
+        retourne la prochaine vue, celle qui est choisie par l'utilisateur
     """
 
     def choisir_menu(self):
@@ -32,15 +34,20 @@ class MenuJoueurVue(VueAbstraite):
             choices=[
                 "Afficher les joueurs de la base de données",
                 "Afficher des pokemons (par appel à un Webservice)",
+                "Infos de session",
                 "Se déconnecter",
             ],
         ).execute()
 
         match choix:
             case "Se déconnecter":
+                Session().deconnexion()
                 from view.accueil.accueil_vue import AccueilVue
 
                 return AccueilVue()
+
+            case "Infos de session":
+                return MenuJoueurVue(Session().afficher())
 
             case "Afficher les joueurs de la base de données":
                 joueurs_str = JoueurService().afficher_tous()

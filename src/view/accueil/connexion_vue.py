@@ -1,6 +1,8 @@
 from InquirerPy import inquirer
 
 from view.vue_abstraite import VueAbstraite
+from view.session import Session
+
 from service.joueur_service import JoueurService
 
 
@@ -16,6 +18,8 @@ class ConnexionVue(VueAbstraite):
         # Si le joueur a été trouvé à partir des ses identifiants de connexion
         if joueur:
             message = f"Vous êtes connecté sous le pseudo {joueur.pseudo}"
+            Session().connexion(joueur)
+
             from view.menu_joueur_vue import MenuJoueurVue
 
             return MenuJoueurVue(message)
