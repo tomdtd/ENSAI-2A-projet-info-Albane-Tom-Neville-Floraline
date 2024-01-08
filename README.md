@@ -12,18 +12,21 @@ Cette application très simple comporte quelques éléments qui peuvent aider po
 ## :arrow_forward: Cloner le dépôt
 
 ```bash
+# En https :
 git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git
 
-# ou si vous avez une clé ssh :
+# ou en ssh :
 git clone git@github.com:ludo2ne/ENSAI-2A-projet-info-template.git
 ```
+
+---
 
 ## :arrow_forward: Ouvrir le code avec Visual Studio Code
 
 * File > Open Folder > ENSAI-2A-projet-info-template
 * :warning: Si le dossier parent dans l'explorer VScode n'est pas `ENSAI-2A-projet-info-template`, l'application ne fonctionnera pas
 
-#### Paramètres VScode
+### Paramètres VScode
 
 Ce répo contient un fichier `.vscode/settings.xml` qui définit des paramètres pour ce projet s'il est ouvert dans VSCode. Par exemple :
 
@@ -35,12 +38,16 @@ Ce répo contient un fichier `.vscode/settings.xml` qui définit des paramètres
 * **Path** : indique les dossiers dans lesquels sont les modules python 
   * `"PYTHONPATH": "${workspaceFolder}/src"` : src est le dossier racine des imports
 
+---
+
 ## :arrow_forward: Installer les packages nécessaires
 
 ```bash
 pip install -r requirements.txt
 pip list
 ```
+
+---
 
 ## :arrow_forward: Variables d'environnement
 
@@ -57,22 +64,36 @@ PASSWORD=idxxxx
 SCHEMA=projet
 ```
 
+---
+
 ## :arrow_forward: Lancer les tests unitaires
 
 * `python -m unittest`
 * Couverture de tests avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
+  * le fichier `.coveragerc` permet de modifier le paramétrage
   * `coverage run -m unittest discover`
   * `coverage html`
   * Ouvrir le fichier coverage_report/index.html
 
+Les tests unitaires de la DAO utilisent les données du fichier `data/pop_db_test.sql`.
+Ces données sont chargées dans un schéma à part (projet_test_dao) pour ne pas polluer les autres données.
+
+---
+
 ## :arrow_forward: Lancer le programme
+
+Cette application propose une interface graphique très basique pour naviguer entre différents menus.
 
 * `python src/__main__.py`
 * au premier lancement, choisissez **Ré-initialiser la base de données**
   * cela appelle le programme `src/utils/reset_database.py`
   * qui lui même va exécuter les scripts SQL du dossier `data`
-  
+
+---
+
 ## :arrow_forward: Lancer le webservice
+
+Cette application permet également de créer un webservice.
 
 * `python src/app.py`
 * Exemples de endpoints :
@@ -91,3 +112,13 @@ SCHEMA=projet
         "fan_pokemon": true
       }
     ```
+
+---
+
+## :arrow_forward: Les logs
+
+* le fichier `logging_config.yml` permet de définir les paramètres de logs
+* un décorateur a été créé dans `src/utils/log_decorator.py`
+  * appliqué à une méthode, il permettra d'afficher dans les logs :
+    * les paramétres d'entrée
+    * la sortie

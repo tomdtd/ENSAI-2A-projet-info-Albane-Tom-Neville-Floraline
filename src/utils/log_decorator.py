@@ -21,6 +21,12 @@ class LogIndetation:
 
 
 def log(func):
+    """Création d'un décorateur nommé log
+    Lorsque ce décorateur est appliqué à une méthode, cela affichera dans les logs :
+    * l'appel de cette méthode avec les valeurs de paramètres
+    * la sortie retournée par cette méthode
+    """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         logger = logging.getLogger(__name__)
