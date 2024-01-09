@@ -1,14 +1,17 @@
+import os
 import logging
 import yaml
 
+from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from service.joueur_service import JoueurService
 
-app = FastAPI()
+app = FastAPI(title="Mon webservice")
 
 # On charge le fichier de config des logs
+os.makedirs("logs", exist_ok=True)
 stream = open("logging_config.yml", encoding="utf-8")
 config = yaml.load(stream, Loader=yaml.FullLoader)
 logging.config.dictConfig(config)
@@ -21,7 +24,7 @@ joueur_service = JoueurService()
 
 # Lister tous les joueurs
 # GET http://localhost/joueur
-@app.get("/joueur/")
+@app.get("/joueur/", tags=["Joueurs"])
 async def lister_tous_joueurs():
     logging.info("Lister tous les joueurs")
     liste_joueurs = joueur_service.lister_tous()
@@ -35,7 +38,7 @@ async def lister_tous_joueurs():
 
 # Trouver un joueur à partir de son id
 # GET http://localhost/joueur/3
-@app.get("/joueur/{id_joueur}")
+@app.get("/joueur/{id_joueur}", tags=["Joueurs"])
 async def joueur_par_id(id_joueur: int):
     logging.info("Trouver un joueur à partir de son id")
     return joueur_service.trouver_par_id(id_joueur)
@@ -52,7 +55,7 @@ class JoueurModel(BaseModel):
 
 
 # Créer un joueur
-@app.post("/joueur/")
+@app.post("/joueur/", tags=["Joueurs"])
 async def creer_joueur(j: JoueurModel):
     logging.info("Créer un joueur")
     if joueur_service.pseudo_deja_utilise(j.pseudo):
@@ -68,7 +71,7 @@ async def creer_joueur(j: JoueurModel):
 
 
 # Modifier un joueur
-@app.put("/joueur/{id_joueur}")
+@app.put("/joueur/{id_joueur}", tags=["Joueurs"])
 def modifier_joueur(id_joueur: int, j: JoueurModel):
     logging.info("Modifier un joueur")
     joueur = joueur_service.trouver_par_id(id_joueur)
@@ -90,7 +93,7 @@ def modifier_joueur(id_joueur: int, j: JoueurModel):
 
 
 # Supprimer un joueur
-@app.delete("/joueur/{id_joueur}")
+@app.delete("/joueur/{id_joueur}", tags=["Joueurs"])
 def supprimer_joueur(id_joueur: int):
     logging.info("Supprimer un joueur")
     joueur = joueur_service.trouver_par_id(id_joueur)
@@ -103,7 +106,7 @@ def supprimer_joueur(id_joueur: int):
 
 # Afficher Hello
 @app.get("/hello/{name}")
-async def get_hello_name(name: str):
+async def hello_name(name: str):
     logging.info("Afficher Hello")
     return f"message : Hello {name}"
 

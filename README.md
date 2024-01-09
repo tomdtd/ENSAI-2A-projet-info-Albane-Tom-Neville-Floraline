@@ -112,7 +112,7 @@ Cette application permet également de créer un webservice.
         "fan_pokemon": true
       }
     ```
-
+  * `DELETE http://localhost/joueur/5`
 ---
 
 ## :arrow_forward: Les logs
@@ -122,3 +122,4 @@ Cette application permet également de créer un webservice.
   * appliqué à une méthode, il permettra d'afficher dans les logs :
     * les paramétres d'entrée
     * la sortie
+* les fichiers de logs sont dans le dossier `logs`
