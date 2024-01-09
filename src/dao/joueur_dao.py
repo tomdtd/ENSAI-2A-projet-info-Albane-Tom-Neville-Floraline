@@ -1,3 +1,5 @@
+import logging
+
 from utils.singleton import Singleton
 from utils.log_decorator import log
 
@@ -41,7 +43,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.fetchone()
         except Exception as e:
-            print(e)
+            logging.info(e)
 
         created = False
         if res:
@@ -75,7 +77,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.fetchone()
         except Exception as e:
-            print(e)
+            logging.info(e)
             raise
 
         joueur = None
@@ -113,7 +115,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.fetchall()
         except Exception as e:
-            print(e)
+            logging.info(e)
             raise
 
         liste_joueurs = []
@@ -172,7 +174,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.rowcount
         except Exception as e:
-            print(e)
+            logging.info(e)
 
         return True if res == 1 else False
 
@@ -201,7 +203,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.rowcount
         except Exception as e:
-            print(e)
+            logging.info(e)
             raise
 
         return res > 0
@@ -235,7 +237,7 @@ class JoueurDao(metaclass=Singleton):
                     )
                     res = cursor.fetchone()
         except Exception as e:
-            print(e)
+            logging.info(e)
 
         joueur = None
 

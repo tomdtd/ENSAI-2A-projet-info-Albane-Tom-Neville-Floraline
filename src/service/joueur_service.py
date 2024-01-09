@@ -10,7 +10,7 @@ from dao.joueur_dao import JoueurDao
 class JoueurService:
     @log
     def creer(self, pseudo, mdp, age, mail, fan_pokemon) -> Joueur:
-        """Création d'un joueur"""
+        """Création d'un joueur à partir de ses attributs"""
 
         nouveau_joueur = Joueur(
             pseudo=pseudo,
@@ -23,9 +23,16 @@ class JoueurService:
         return nouveau_joueur if JoueurDao().creer(nouveau_joueur) else None
 
     @log
-    def lister_tous(self) -> list[Joueur]:
-        """Lister tous les joueurs"""
-        return JoueurDao().lister_tous()
+    def lister_tous(self, inclure_mdp=False) -> list[Joueur]:
+        """Lister tous les joueurs
+        Si inclure_mdp=True, les mots de passe seront inclus
+        Par défaut, tous les mdp des joueurs sont à None
+        """
+        joueurs = JoueurDao().lister_tous()
+        if not inclure_mdp:
+            for j in joueurs:
+                j.mdp = None
+        return joueurs
 
     @log
     def trouver_par_id(self, id_joueur) -> Joueur:
@@ -35,6 +42,7 @@ class JoueurService:
     @log
     def modifier(self, joueur) -> Joueur:
         """Modification d'un joueur"""
+
         joueur.mdp = hash_password(joueur.mdp, joueur.pseudo)
         return joueur if JoueurDao().modifier(joueur) else None
 
@@ -75,14 +83,7 @@ class JoueurService:
     @log
     def se_connecter(self, pseudo, mdp) -> Joueur:
         """Se connecter à partir de pseudo et mdp"""
-
-        joueur = JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
-        if not joueur:
-            print(f"Connexion {pseudo} refusée")
-        else:
-            print(f"Joueur {joueur.pseudo} connecté")
-        print("*" * 100)
-        return joueur
+        return JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
 
     @log
     def pseudo_deja_utilise(self, pseudo) -> bool:

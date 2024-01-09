@@ -32,7 +32,7 @@ class InscriptionVue(VueAbstraite):
 
         age = inquirer.number(
             message="Entrez votre age : ",
-            min_allowed=1,
+            min_allowed=0,
             max_allowed=120,
             validate=EmptyInputValidator(),
         ).execute()

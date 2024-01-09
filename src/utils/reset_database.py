@@ -1,8 +1,10 @@
 import os
 import dotenv
+import logging
 
 from unittest import mock
 
+from utils.log_decorator import log
 from utils.singleton import Singleton
 from dao.db_connection import DBConnection
 
@@ -14,9 +16,8 @@ class ResetDatabase(metaclass=Singleton):
     Reinitialisation de la base de données
     """
 
+    @log
     def lancer(self, test_dao=False):
-        print("Réinitialisation de la base de données")
-
         if test_dao:
             mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}).start()
             pop_data_path = "data/pop_db_test.sql"
@@ -26,7 +27,6 @@ class ResetDatabase(metaclass=Singleton):
         dotenv.load_dotenv()
 
         schema = os.environ["SCHEMA"]
-        print(schema)
 
         create_schema = (
             f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"
@@ -47,11 +47,12 @@ class ResetDatabase(metaclass=Singleton):
                     cursor.execute(init_db_as_string)
                     cursor.execute(pop_db_as_string)
         except Exception as e:
-            print(e)
+            logging.info(e)
             raise
 
+        # Appliquer le hashage des mots de passe à chaque joueur
         joueur_service = JoueurService()
-        for j in joueur_service.lister_tous():
+        for j in joueur_service.lister_tous(inclure_mdp=True):
             joueur_service.modifier(j)
 
         return True

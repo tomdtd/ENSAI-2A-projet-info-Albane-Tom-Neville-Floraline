@@ -106,7 +106,7 @@ Cette application permet également de créer un webservice.
     JSON body :
       {
         "pseudo": "patapouf",
-      	"mdp": "9999",
+        "mdp": "9999",
         "age": "95",
         "mail": "patapouf@mail.fr",
         "fan_pokemon": true
