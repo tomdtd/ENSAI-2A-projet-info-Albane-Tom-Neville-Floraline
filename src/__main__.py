@@ -15,8 +15,7 @@ if __name__ == "__main__":
     dotenv.load_dotenv(override=True)
 
     # On charge le fichier de config des logs
-    os.makedirs("logs", exist_ok=True)
-
+    os.makedirs("logs", exist_ok=True)  # Création du dossier logs si non existant
     stream = open("logging_config.yml", encoding="utf-8")
     config = yaml.load(stream, Loader=yaml.FullLoader)
     logging.config.dictConfig(config)

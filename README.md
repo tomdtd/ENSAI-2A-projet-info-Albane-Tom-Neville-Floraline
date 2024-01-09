@@ -51,7 +51,7 @@ pip list
 
 ## :arrow_forward: Variables d'environnement
 
-Modifier à la racine du projet le fichier `.env` qui contient :
+:construction: À la racine du projet le fichier , créer un fichier nommé `.env` qui contient les variables d'environnement :
 
 ```
 HOST_WEBSERVICE=https://pokeapi.co/api/v2
@@ -122,4 +122,4 @@ Cette application permet également de créer un webservice.
   * appliqué à une méthode, il permettra d'afficher dans les logs :
     * les paramétres d'entrée
     * la sortie
-* les fichiers de logs sont dans le dossier `logs`
+* les logs sont consultables dans le dossier `logs`
