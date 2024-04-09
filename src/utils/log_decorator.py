@@ -41,6 +41,8 @@ def log(func):
                 str(arg) if not isinstance(arg, numbers.Number) else arg
                 for arg in args[1:]
             ]
+            +
+            list(kwargs.values())
         )
 
         logger.info(f"{indentation}{class_name}.{method_name}{args_list} - DEBUT")
@@ -55,6 +57,9 @@ def log(func):
         elif isinstance(result, dict):
             result_str = [(str(k), str(v)) for k, v in result.items()][:3]
             result_str += " ... (" + str(len(result)) + " elements)"
+        elif isinstance(result, str) and len(result) > 50:
+            result_str = result[:50]
+            result_str += " ... (" + str(len(result)) + " caracteres)"
         else:
             result_str = str(result)
 
