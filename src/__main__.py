@@ -13,9 +13,14 @@ Classe de lancement de l'application
 if __name__ == "__main__":
     # On charge les variables d'envionnement
     dotenv.load_dotenv(override=True)
+    
+    # print current working directory
+    # print(os.getcwd())
+    # os.chdir('ENSAI-2A-projet-info-template')
 
     # On charge le fichier de config des logs
     os.makedirs("logs", exist_ok=True)  # Création du dossier logs si non existant
+
     stream = open("logging_config.yml", encoding="utf-8")
     config = yaml.load(stream, Loader=yaml.FullLoader)
     logging.config.dictConfig(config)
