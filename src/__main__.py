@@ -13,7 +13,7 @@ Classe de lancement de l'application
 if __name__ == "__main__":
     # On charge les variables d'envionnement
     dotenv.load_dotenv(override=True)
-    
+
     # print current working directory
     # print(os.getcwd())
     # os.chdir('ENSAI-2A-projet-info-template')
