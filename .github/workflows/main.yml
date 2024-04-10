@@ -24,9 +24,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pylint
         pip install -r requirements.txt
-    - name: Test Service class with unittest
+    - name: Unit Tests with pytest
       run: |
-        python -m unittest -k test_service
+        pytest -v
     - name: Analysing the code with pylint
       run: |
         pylint --disable=C0114,C0415,W0718 $(git ls-files '*.py') --fail-under=7.5
