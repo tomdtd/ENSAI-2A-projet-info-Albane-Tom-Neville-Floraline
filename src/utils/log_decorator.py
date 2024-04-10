@@ -11,14 +11,17 @@ class LogIndetation:
 
     @classmethod
     def increase_indentation(cls):
+        """Ajouter une indentation"""
         cls.current_indentation += 1
 
     @classmethod
     def decrease_indentation(cls):
+        """Retirer une indentation"""
         cls.current_indentation -= 1
 
     @classmethod
     def get_indentation(cls):
+        """Obtenir l'indentation"""
         return "    " * cls.current_indentation
 
 
@@ -40,10 +43,7 @@ def log(func):
         class_name = args[0].__class__.__name__ if args else ""
         method_name = func.__name__
         args_list = list(
-            [
-                str(arg) if not isinstance(arg, numbers.Number) else arg
-                for arg in args[1:]
-            ]
+            [str(arg) if not isinstance(arg, numbers.Number) else arg for arg in args[1:]]
             + list(kwargs.values())
         )
 

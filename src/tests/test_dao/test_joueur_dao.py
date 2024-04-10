@@ -13,12 +13,13 @@ from dto.joueur import Joueur
 
 @pytest.fixture(scope="session")
 def setup_test_environment():
+    """Initialisation des données de test"""
     with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
         ResetDatabase().lancer(test_dao=True)
         yield
 
 
-def test_trouver_par_id_existant(setup_test_environment):
+def test_trouver_par_id_existant():
     """Recherche par id d'un joueur existant"""
 
     # GIVEN
@@ -31,7 +32,7 @@ def test_trouver_par_id_existant(setup_test_environment):
     assert joueur is not None
 
 
-def test_trouver_par_id_non_existant(setup_test_environment):
+def test_trouver_par_id_non_existant():
     """Recherche par id d'un joueur n'existant pas"""
 
     # GIVEN
@@ -44,7 +45,7 @@ def test_trouver_par_id_non_existant(setup_test_environment):
     assert joueur is None
 
 
-def test_lister_tous(setup_test_environment):
+def test_lister_tous():
     """Vérifie que la méthode renvoie une liste de Joueur
     de taille supérieure ou égale à 2
     """
@@ -61,7 +62,7 @@ def test_lister_tous(setup_test_environment):
     assert len(joueurs) >= 2
 
 
-def test_creer_ok(setup_test_environment):
+def test_creer_ok():
     """Création de Joueur réussie"""
 
     # GIVEN
@@ -75,7 +76,7 @@ def test_creer_ok(setup_test_environment):
     assert joueur.id_joueur
 
 
-def test_creer_ko(setup_test_environment):
+def test_creer_ko():
     """Création de Joueur échouée (age et mail incorrects)"""
 
     # GIVEN
@@ -88,7 +89,7 @@ def test_creer_ko(setup_test_environment):
     assert not creation_ok
 
 
-def test_modifier_ok(setup_test_environment):
+def test_modifier_ok():
     """Modification de Joueur réussie"""
 
     # GIVEN
@@ -102,7 +103,7 @@ def test_modifier_ok(setup_test_environment):
     assert modification_ok
 
 
-def test_modifier_ko(setup_test_environment):
+def test_modifier_ko():
     """Modification de Joueur échouée (id inconnu)"""
 
     # GIVEN
@@ -115,7 +116,7 @@ def test_modifier_ko(setup_test_environment):
     assert not modification_ok
 
 
-def test_supprimer_ok(setup_test_environment):
+def test_supprimer_ok():
     """Suppression de Joueur réussie"""
 
     # GIVEN
@@ -128,7 +129,7 @@ def test_supprimer_ok(setup_test_environment):
     assert suppression_ok
 
 
-def test_supprimer_ko(setup_test_environment):
+def test_supprimer_ko():
     """Suppression de Joueur échouée (id inconnu)"""
 
     # GIVEN
@@ -141,7 +142,7 @@ def test_supprimer_ko(setup_test_environment):
     assert not suppression_ok
 
 
-def test_se_connecter_ok(setup_test_environment):
+def test_se_connecter_ok():
     """Connexion de Joueur réussie"""
 
     # GIVEN
@@ -155,7 +156,7 @@ def test_se_connecter_ok(setup_test_environment):
     assert isinstance(joueur, Joueur)
 
 
-def test_se_connecter_ko(setup_test_environment):
+def test_se_connecter_ko():
     """Connexion de Joueur échouée (pseudo ou mdp incorrect)"""
 
     # GIVEN

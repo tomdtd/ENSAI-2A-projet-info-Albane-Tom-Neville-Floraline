@@ -10,11 +10,18 @@ class Session(metaclass=Singleton):
     Sans cela, il faudrait transmettre ce joueur entre les différentes vues.
     """
 
+    def __init__(self):
+        """Création de la session"""
+        self.joueur = None
+        self.debut_connexion = None
+
     def connexion(self, joueur):
+        """Enregistement des données en session"""
         self.joueur = joueur
         self.debut_connexion = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     def deconnexion(self):
+        """Suppression des données de la session"""
         self.joueur = None
         self.debut_connexion = None
 

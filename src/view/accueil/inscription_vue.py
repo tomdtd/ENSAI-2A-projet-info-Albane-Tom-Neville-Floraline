@@ -62,10 +62,11 @@ class InscriptionVue(VueAbstraite):
 
 
 class MailValidator(Validator):
-    """la classe MailValidator verifie si la chaine de caractere qu'on entre correspond au format de l'email"""
+    """la classe MailValidator verifie si la chaine de caractères
+    que l'on entre correspond au format de l'email"""
 
     def validate(self, document) -> None:
-        ok = regex.match("^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", document.text)
+        ok = regex.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", document.text)
         if not ok:
             raise ValidationError(
                 message="Please enter a valid mail", cursor_position=len(document.text)

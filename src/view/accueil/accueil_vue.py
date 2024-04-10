@@ -50,5 +50,7 @@ class AccueilVue(VueAbstraite):
 
             case "Ré-initialiser la base de données":
                 succes = ResetDatabase().lancer()
-                message = f"Ré-initilisation de la base de données - {'SUCCES' if succes else 'ECHEC'}"
+                message = (
+                    f"Ré-initilisation de la base de données - {'SUCCES' if succes else 'ECHEC'}"
+                )
                 return AccueilVue(message)
