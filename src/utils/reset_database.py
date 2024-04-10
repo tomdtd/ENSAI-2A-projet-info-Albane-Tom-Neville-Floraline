@@ -1,6 +1,6 @@
 import os
-import dotenv
 import logging
+import dotenv
 
 from unittest import mock
 

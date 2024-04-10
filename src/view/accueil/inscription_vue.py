@@ -37,9 +37,7 @@ class InscriptionVue(VueAbstraite):
             validate=EmptyInputValidator(),
         ).execute()
 
-        mail = inquirer.text(
-            message="Entrez votre mail : ", validate=MailValidator()
-        ).execute()
+        mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
 
         fan_pokemon = inquirer.confirm(
             message="Etes-vous fan de pokemons : ",
@@ -52,7 +50,9 @@ class InscriptionVue(VueAbstraite):
 
         # Si le joueur a été créé
         if joueur:
-            message = f"Votre compte {joueur.pseudo} a été créé. Vous pouvez maintenant vous connecter."
+            message = (
+                f"Votre compte {joueur.pseudo} a été créé. Vous pouvez maintenant vous connecter."
+            )
         else:
             message = "Erreur de connexion (pseudo ou mot de passe invalide)"
 

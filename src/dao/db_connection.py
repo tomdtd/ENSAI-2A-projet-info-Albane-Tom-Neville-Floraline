@@ -13,9 +13,9 @@ class DBConnection(metaclass=Singleton):
     """
 
     def __init__(self):
+        """Ouverture de la connexion"""
         dotenv.load_dotenv()
 
-        # Ouvrir la connexion
         self.__connection = psycopg2.connect(
             host=os.environ["HOST"],
             port=os.environ["PORT"],

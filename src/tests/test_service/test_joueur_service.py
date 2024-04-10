@@ -15,6 +15,8 @@ liste_joueurs = [
 
 
 def test_creer_ok():
+    """ "Création de Joueur réussie"""
+
     # GIVEN
     pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
     JoueurDao().creer = MagicMock(return_value=True)
@@ -27,6 +29,9 @@ def test_creer_ok():
 
 
 def test_creer_echec():
+    """Création de Joueur échouée
+    (car la méthode JoueurDao().creer retourne False)"""
+
     # GIVEN
     pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
     JoueurDao().creer = MagicMock(return_value=False)
@@ -39,6 +44,8 @@ def test_creer_echec():
 
 
 def test_lister_tous_inclure_mdp_true():
+    """Lister les Joueurs en incluant les mots de passe"""
+
     # GIVEN
     JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
 
@@ -52,6 +59,8 @@ def test_lister_tous_inclure_mdp_true():
 
 
 def test_lister_tous_inclure_mdp_false():
+    """Lister les Joueurs en excluant les mots de passe"""
+
     # GIVEN
     JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
 
@@ -65,6 +74,8 @@ def test_lister_tous_inclure_mdp_false():
 
 
 def test_pseudo_deja_utilise_oui():
+    """Le pseudo est déjà utilisé dans liste_joueurs"""
+
     # GIVEN
     pseudo = "lea"
 
@@ -77,6 +88,8 @@ def test_pseudo_deja_utilise_oui():
 
 
 def test_pseudo_deja_utilise_non():
+    """Le pseudo n'est pas utilisé dans liste_joueurs"""
+
     # GIVEN
     pseudo = "chaton"
 

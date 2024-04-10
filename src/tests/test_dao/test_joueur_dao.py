@@ -19,6 +19,8 @@ def setup_test_environment():
 
 
 def test_trouver_par_id_existant(setup_test_environment):
+    """Recherche par id d'un joueur existant"""
+
     # GIVEN
     id_joueur = 998
 
@@ -30,6 +32,8 @@ def test_trouver_par_id_existant(setup_test_environment):
 
 
 def test_trouver_par_id_non_existant(setup_test_environment):
+    """Recherche par id d'un joueur n'existant pas"""
+
     # GIVEN
     id_joueur = 9999999999999
 
@@ -41,6 +45,10 @@ def test_trouver_par_id_non_existant(setup_test_environment):
 
 
 def test_lister_tous(setup_test_environment):
+    """Vérifie que la méthode renvoie une liste de Joueur
+    de taille supérieure ou égale à 2
+    """
+
     # GIVEN
 
     # WHEN
@@ -48,10 +56,14 @@ def test_lister_tous(setup_test_environment):
 
     # THEN
     assert isinstance(joueurs, list)
+    for j in joueurs:
+        assert isinstance(j, Joueur)
     assert len(joueurs) >= 2
 
 
 def test_creer_ok(setup_test_environment):
+    """Création de Joueur réussie"""
+
     # GIVEN
     joueur = Joueur(pseudo="gg", age=44, mail="test@test.io")
 
@@ -64,6 +76,8 @@ def test_creer_ok(setup_test_environment):
 
 
 def test_creer_ko(setup_test_environment):
+    """Création de Joueur échouée (age et mail incorrects)"""
+
     # GIVEN
     joueur = Joueur(pseudo="gg", age="chaine de caractere", mail=12)
 
@@ -75,6 +89,8 @@ def test_creer_ko(setup_test_environment):
 
 
 def test_modifier_ok(setup_test_environment):
+    """Modification de Joueur réussie"""
+
     # GIVEN
     new_mail = "maurice@mail.com"
     joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mail=new_mail)
@@ -87,6 +103,8 @@ def test_modifier_ok(setup_test_environment):
 
 
 def test_modifier_ko(setup_test_environment):
+    """Modification de Joueur échouée (id inconnu)"""
+
     # GIVEN
     joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@mail.com")
 
@@ -98,6 +116,8 @@ def test_modifier_ko(setup_test_environment):
 
 
 def test_supprimer_ok(setup_test_environment):
+    """Suppression de Joueur réussie"""
+
     # GIVEN
     joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mail="miguel@projet.fr")
 
@@ -109,6 +129,8 @@ def test_supprimer_ok(setup_test_environment):
 
 
 def test_supprimer_ko(setup_test_environment):
+    """Suppression de Joueur échouée (id inconnu)"""
+
     # GIVEN
     joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@z.fr")
 
@@ -120,6 +142,8 @@ def test_supprimer_ko(setup_test_environment):
 
 
 def test_se_connecter_ok(setup_test_environment):
+    """Connexion de Joueur réussie"""
+
     # GIVEN
     pseudo = "batricia"
     mdp = "9876"
@@ -132,6 +156,8 @@ def test_se_connecter_ok(setup_test_environment):
 
 
 def test_se_connecter_ko(setup_test_environment):
+    """Connexion de Joueur échouée (pseudo ou mdp incorrect)"""
+
     # GIVEN
     pseudo = "toto"
     mdp = "poiuytreza"

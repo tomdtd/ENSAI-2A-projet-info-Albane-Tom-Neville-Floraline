@@ -1,15 +1,12 @@
 import os
-import dotenv
-import yaml
 import logging
 import logging.config
+import dotenv
+import yaml
 
 from view.accueil.accueil_vue import AccueilVue
 
 
-"""
-Classe de lancement de l'application
-"""
 if __name__ == "__main__":
     # On charge les variables d'envionnement
     dotenv.load_dotenv(override=True)

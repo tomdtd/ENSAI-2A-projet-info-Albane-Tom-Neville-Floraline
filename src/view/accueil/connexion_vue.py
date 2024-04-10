@@ -7,6 +7,8 @@ from service.joueur_service import JoueurService
 
 
 class ConnexionVue(VueAbstraite):
+    """Vue de Connexion (saisie de pseudo et mdp)"""
+
     def choisir_menu(self):
         # Demande à l'utilisateur de saisir pseudo et mot de passe
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
@@ -24,8 +26,7 @@ class ConnexionVue(VueAbstraite):
 
             return MenuJoueurVue(message)
 
-        else:
-            message = "Erreur de connexion (pseudo ou mot de passe invalide)"
-            from view.accueil.accueil_vue import AccueilVue
+        message = "Erreur de connexion (pseudo ou mot de passe invalide)"
+        from view.accueil.accueil_vue import AccueilVue
 
-            return AccueilVue(message)
+        return AccueilVue(message)

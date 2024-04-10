@@ -8,7 +8,7 @@ class PokemonClient:
     """Make call to the pokemon endpoint"""
 
     def __init__(self) -> None:
-        self.__HOST = os.environ["HOST_WEBSERVICE"]
+        self.__host = os.environ["HOST_WEBSERVICE"]
 
     def get_pokemon_types(self) -> List[str]:
         """
@@ -16,7 +16,7 @@ class PokemonClient:
         """
 
         # Appel du Web service
-        req = requests.get(f"{self.__HOST}/type")
+        req = requests.get(f"{self.__host}/type")
 
         # Création d'une liste puis parcours du json pour ajouter tous
         # les types de Pokemons à la liste
@@ -33,7 +33,7 @@ class PokemonClient:
         Renvoie la liste des Pokemons du type indiqué en paramètre
         """
         # Appel du Web service
-        req = requests.get(f"{self.__HOST}/type/{pokemon_type}")
+        req = requests.get(f"{self.__host}/type/{pokemon_type}")
 
         # Création d'une liste puis parcours du json pour ajouter tous
         # les Pokemons à la liste
