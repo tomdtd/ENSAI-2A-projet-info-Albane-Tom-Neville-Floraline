@@ -16,6 +16,10 @@ Cette application très simple comporte quelques éléments qui peuvent aider po
 - [ ] Clic droit > `Git Bash here`
 - [ ] Clonez ce dépôt : `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
 
+
+
+
+
 ---
 
 ## :arrow_forward: Ouvrir le dépôt avec VS Code
@@ -37,6 +41,22 @@ Pour information, ce dépôt contient un fichier `.vscode/settings.xml` qui déf
 - **Path** : indique les dossiers dans lesquels sont les modules python 
   - `"PYTHONPATH": "${workspaceFolder}/src"` : src est le dossier racine des imports
 
+
+### Fichiers de configuration
+
+Ce dépôt contient de nombreux fichiers de configuration pour paramètrer les différents outils utilisés.
+
+Normalement dans le cadre de votre projet, vous n'aurez pas besoin de modifier ces fichiers, exceptés `.env` et `requirements.txt`. Vous trouverez des explications plus détaillées par la suite.
+
+| Fichier                      | Description                                                         |
+|------------------------------|---------------------------------------------------------------------|
+| `.env`                       | Définir les variables d'environnement                               |
+| `.vscode/settings.json`      | Configuration spécifique à Visual Studio Code                       |
+| `.github/workflows/main.yml` | Définition des workflows GitHub Actions                            |
+| `logging_config.yml`         | Configuration du système de journalisation (logging)                |
+| `.gitignore`                 | Liste des fichiers et répertoires à ignorer lors des opérations Git |
+| `.coveragerc`                | Configuration de l'outil de couverture de code (coverage)           |
+| `requirements.txt`           | Liste des dépendances Python requises pour le projet                |
 
 ---
 
