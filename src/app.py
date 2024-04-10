@@ -2,7 +2,6 @@ import os
 import logging
 import yaml
 
-from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
@@ -116,3 +115,5 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=80)
+
+    logging.info("Arret du Webservice")
