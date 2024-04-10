@@ -1,8 +1,7 @@
-import os
 import logging
-import logging.config
 import dotenv
-import yaml
+
+from utils.log_init import initialiser_logs
 
 from view.accueil.accueil_vue import AccueilVue
 
@@ -11,20 +10,7 @@ if __name__ == "__main__":
     # On charge les variables d'envionnement
     dotenv.load_dotenv(override=True)
 
-    # print current working directory
-    # print(os.getcwd())
-    # os.chdir('ENSAI-2A-projet-info-template')
-
-    # On charge le fichier de config des logs
-    os.makedirs("logs", exist_ok=True)  # Création du dossier logs si non existant
-
-    stream = open("logging_config.yml", encoding="utf-8")
-    config = yaml.load(stream, Loader=yaml.FullLoader)
-    logging.config.dictConfig(config)
-
-    logging.info("-" * 50)
-    logging.info("Lancement de l'application                        ")
-    logging.info("-" * 50)
+    initialiser_logs("Application")
 
     vue_courante = AccueilVue("Bienvenue")
     nb_erreurs = 0
@@ -42,9 +28,7 @@ if __name__ == "__main__":
         except Exception as e:
             logging.info(e)
             nb_erreurs += 1
-            vue_courante = AccueilVue(
-                "Une erreur est survenue, retour au menu principal"
-            )
+            vue_courante = AccueilVue("Une erreur est survenue, retour au menu principal")
 
     # Lorsque l on quitte l application
     print("----------------------------------")

@@ -7,4 +7,5 @@ python-dotenv
 regex
 requests
 tabulate
+uvicorn
 PyYAML

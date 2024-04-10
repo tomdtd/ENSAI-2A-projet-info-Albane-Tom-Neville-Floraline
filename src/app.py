@@ -1,22 +1,16 @@
-import os
 import logging
-import yaml
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+from utils.log_init import initialiser_logs
 
 from service.joueur_service import JoueurService
 
 app = FastAPI(title="Mon webservice")
 
-# On charge le fichier de config des logs
-os.makedirs("logs", exist_ok=True)
-stream = open("logging_config.yml", encoding="utf-8")
-config = yaml.load(stream, Loader=yaml.FullLoader)
-logging.config.dictConfig(config)
-logging.info("-" * 50)
-logging.info("Lancement du Webservice                        ")
-logging.info("-" * 50)
+
+initialiser_logs("Webservice")
 
 joueur_service = JoueurService()
 
@@ -65,9 +59,7 @@ async def creer_joueur(j: JoueurModel):
 
     joueur = joueur_service.creer(j.pseudo, j.mdp, j.age, j.mail, j.fan_pokemon)
     if not joueur:
-        raise HTTPException(
-            status_code=404, detail="Erreur lors de la création du joueur"
-        )
+        raise HTTPException(status_code=404, detail="Erreur lors de la création du joueur")
 
     return joueur
 
@@ -87,9 +79,7 @@ def modifier_joueur(id_joueur: int, j: JoueurModel):
     joueur.fan_pokemon = j.fan_pokemon
     joueur = joueur_service.modifier(joueur)
     if not joueur:
-        raise HTTPException(
-            status_code=404, detail="Erreur lors de la modification du joueur"
-        )
+        raise HTTPException(status_code=404, detail="Erreur lors de la modification du joueur")
 
     return f"Joueur {j.pseudo} modifié"
 
