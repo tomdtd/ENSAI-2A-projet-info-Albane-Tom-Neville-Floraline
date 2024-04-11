@@ -247,7 +247,7 @@ Positionnez-vous dans le bon dossier :
 
 Vous avez lancé 2 services, maintenant il va falloir les relier.
 
-Vous allez utiliser pour cela un fichier `.env` comme décrit dans la section [Variables d'environnement](## :arrow_forward: Variables d'environnement) plus haut. Dans votre VScode :
+Vous allez utiliser pour cela un fichier `.env` comme décrit dans la section [Variables d'environnement](##:arrow_forward:-Variables-d'environnement) plus haut. Dans votre VScode :
 
 - [ ] Créez à la racine de `ENSAI-2A-projet-info-template` un fichier `.env`
 - [ ] Collez le modèle (voir section *Variables d'environnement*)
