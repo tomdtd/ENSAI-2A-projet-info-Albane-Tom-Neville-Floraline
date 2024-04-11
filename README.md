@@ -254,13 +254,17 @@ Vous allez utiliser pour cela un fichier `.env` comme décrit dans la section [V
 - [ ] Renseignez les champs `HOSTNAME`, `DATABASE`, `USERNAME` et `PASSWORD` avec ceux de votre service *PostgreSQL*
 - [ ] Enregistrez ce fichier
 
+### Installez les packages
+
+- [ ] Ouvrez un terminal (CTRL + ù)
+- [ ] Positionnez-vous dans le dépôt : `cd $ROOT_PROJECT_DIRECTORY/ENSAI-2A-projet-info-template`
+- [ ] `pip install -r requirements.txt`
+
+
 ### Lancez l'application
 
 Vous pouvez maintenant lancer l'application, le webservice ou les tests unitaires
 
-- [ ] Ouvrez un terminal (CTRL + ù)
-- [ ] Positionnez-vous dans le dépôt : `cd $ROOT_PROJECT_DIRECTORY/ENSAI-2A-projet-info-template`
-- [ ] Lancez au choix
-  - `python src/__main__.py`
-  - `python src/app.py`
-  - `pytest -v`
+- `python src/__main__.py` (puis commencez par ré-initialiser la bdd)
+- `python src/app.py` (à tester)
+- `pytest -v`
