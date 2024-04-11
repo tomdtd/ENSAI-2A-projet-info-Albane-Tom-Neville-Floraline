@@ -182,3 +182,85 @@ Lorsque vous faîtes un *push* sur GitHub, cela déclanche un pipeline qui va ef
   - Si la note est inférieure à 7.5, l'étape sera en échec
 
 Vous pouvez consulter le bon déroulement de ce pipeline sur la page GitHub de votre dépôt, onglet *Actions*.
+
+
+## Lancer le projet sur le Datalab
+
+Il est également possible de développer sur le Datalab.
+
+:warning: Pensez bien à *push* régulièrement votre code, car les services du Datalab ne sont pas éternels.
+
+
+### Paramétrage Git
+
+Dans un premier temps, il faut autoriser de *push* du code depuis le Datalab vers GitHub.
+
+Générez un jeton dans GitHub :
+
+- [ ] Connectez-vous à [GitHub](https://github.com/){target="_blank"}
+- [ ] [Générez un nouveau token (classic)](https://github.com/settings/tokens/new){target="_blank"}
+  - si le lien direct ne fonctionne pas : allez dans *Settings* > *Developer Settings* > *Personal access tokens (classic)*
+  - Note : Datalab
+  - Date d'expiration : 90j (minimum)
+  - Cochez repo
+  - `Generate token`
+- [ ] Copiez le token et collez le dans Notepad
+  - :warning: Celui-ci ne sera visible qu'une seule fois
+  - si vous le perdez, il faut en générer un nouveau
+
+Ensuite, déclarez ce jeton au Datalab :
+
+- [ ] Connectez-vous au [Datalab](https://datalab.sspcloud.fr/){target="_blank"}
+- [ ] Allez dans *Mon Compte*, puis *Services externes*
+- [ ] Collez le token dans *Jeton d'accès personnel GitHub*
+
+### Lancer les services
+
+Pour commencer, vous avez besoin d'une base de données PostgreSQL. Sur la Datalab
+
+- [ ] Allez dans *Catalogue de services* > *Database* > `PostgreSQL`
+- [ ] Lancez le service
+- [ ] Une fois le service lancé, copiez les infos suivantes
+  ```
+  Hostname : ?
+  Port : 5432
+  Database : ?
+  Username : ?
+  Password : ?
+  ```
+Nous allons ensuite lancer un service VSCode avec Python :
+
+- [ ] Dans le catalogue des services, allez sur *Vscode-python*
+- [ ] Cliquez sur *Configuration Vscode-python*
+- [ ] Allez dans l'onglet Git
+  - Repository : `https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
+- [ ] Lancez le service
+
+Un nouvel onglet s'ouvre avec VSCode et le dépôt qui a été cloné.
+
+Positionnez-vous dans le bon dossier :
+
+- [ ] File > Open Folder > `/home/onyxia/work/ENSAI-2A-projet-info-template/`
+
+
+### Connectez votre application et votre base de données
+
+Vous avez lancé 2 services, maintenant il va falloir les relier.
+
+Vous allez utiliser pour cela un fichier `.env` comme décrit dans la section [Variables d'environnement](## :arrow_forward: Variables d'environnement) plus haut. Dans votre VScode :
+
+- [ ] Créez à la racine de `ENSAI-2A-projet-info-template` un fichier `.env`
+- [ ] Collez le modèle (voir section *Variables d'environnement*)
+- [ ] Renseignez les champs `HOSTNAME`, `DATABASE`, `USERNAME` et `PASSWORD` avec ceux de votre service *PostgreSQL*
+- [ ] Enregistrez ce fichier
+
+### Lancez l'application
+
+Vous pouvez maintenant lancer l'application, le webservice ou les tests unitaires
+
+- [ ] Ouvrez un terminal (CTRL + ù)
+- [ ] Positionnez-vous dans le dépôt : `cd $ROOT_PROJECT_DIRECTORY/ENSAI-2A-projet-info-template`
+- [ ] Lancez au choix
+  - `python src/__main__.py`
+  - `python src/app.py`
+  - `pytest -v`
