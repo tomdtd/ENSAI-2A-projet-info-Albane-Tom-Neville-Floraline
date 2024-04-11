@@ -17,9 +17,6 @@ Cette application très simple comporte quelques éléments qui peuvent aider po
 - [ ] Clonez ce dépôt : `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
 
 
-
-
-
 ---
 
 ## :arrow_forward: Ouvrir le dépôt avec VS Code
