@@ -10,7 +10,7 @@ from dao.joueur_dao import JoueurDao
 from dto.joueur import Joueur
 
 
-@mock.patch.dict(os.environ, {"SCHEMA": "projet_test_dao"})
+@mock.patch.dict(os.environ, {"POSTGRES_SCHEMA": "projet_test_dao"})
 class TestJoueurDao(TestCase):
     """Tests des méthodes de la classe JoueurDao
     Pour éviter de polluer la base de données, les tests sont effectués
