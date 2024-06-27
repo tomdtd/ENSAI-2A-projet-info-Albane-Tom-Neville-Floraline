@@ -1,31 +1,25 @@
-import os
 import logging
-import yaml
 
-from typing import Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+
+from utils.log_init import initialiser_logs
 
 from service.joueur_service import JoueurService
 
 app = FastAPI(title="Mon webservice")
 
-# On charge le fichier de config des logs
-os.makedirs("logs", exist_ok=True)
-stream = open("logging_config.yml", encoding="utf-8")
-config = yaml.load(stream, Loader=yaml.FullLoader)
-logging.config.dictConfig(config)
-logging.info("-" * 50)
-logging.info("Lancement du Webservice                        ")
-logging.info("-" * 50)
+
+initialiser_logs("Webservice")
 
 joueur_service = JoueurService()
 
 
-# Lister tous les joueurs
-# GET http://localhost/joueur
 @app.get("/joueur/", tags=["Joueurs"])
 async def lister_tous_joueurs():
+    """Lister tous les joueurs
+    GET http://localhost/joueur
+    """
     logging.info("Lister tous les joueurs")
     liste_joueurs = joueur_service.lister_tous()
 
@@ -36,16 +30,18 @@ async def lister_tous_joueurs():
     return liste_model
 
 
-# Trouver un joueur à partir de son id
-# GET http://localhost/joueur/3
 @app.get("/joueur/{id_joueur}", tags=["Joueurs"])
 async def joueur_par_id(id_joueur: int):
+    """Trouver un joueur à partir de son id
+    GET http://localhost/joueur/3
+    """
     logging.info("Trouver un joueur à partir de son id")
     return joueur_service.trouver_par_id(id_joueur)
 
 
-# Définir un modèle Pydantic pour les Joueurs
 class JoueurModel(BaseModel):
+    """Définir un modèle Pydantic pour les Joueurs"""
+
     id_joueur: int | None = None  # Champ optionnel
     pseudo: str
     mdp: str
@@ -54,59 +50,55 @@ class JoueurModel(BaseModel):
     fan_pokemon: bool
 
 
-# Créer un joueur
 @app.post("/joueur/", tags=["Joueurs"])
 async def creer_joueur(j: JoueurModel):
+    """Créer un joueur"""
     logging.info("Créer un joueur")
     if joueur_service.pseudo_deja_utilise(j.pseudo):
         raise HTTPException(status_code=404, detail="Pseudo déjà utilisé")
-    else:
-        joueur = joueur_service.creer(j.pseudo, j.mdp, j.age, j.mail, j.fan_pokemon)
-        if not joueur:
-            raise HTTPException(
-                status_code=404, detail="Erreur lors de la création du joueur"
-            )
-        else:
-            return joueur
+
+    joueur = joueur_service.creer(j.pseudo, j.mdp, j.age, j.mail, j.fan_pokemon)
+    if not joueur:
+        raise HTTPException(status_code=404, detail="Erreur lors de la création du joueur")
+
+    return joueur
 
 
-# Modifier un joueur
 @app.put("/joueur/{id_joueur}", tags=["Joueurs"])
 def modifier_joueur(id_joueur: int, j: JoueurModel):
+    """Modifier un joueur"""
     logging.info("Modifier un joueur")
     joueur = joueur_service.trouver_par_id(id_joueur)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
-    else:
-        joueur.pseudo = j.pseudo
-        joueur.mdp = j.mdp
-        joueur.age = j.age
-        joueur.mail = j.mail
-        joueur.fan_pokemon = j.fan_pokemon
-        joueur = joueur_service.modifier(joueur)
-        if not joueur:
-            raise HTTPException(
-                status_code=404, detail="Erreur lors de la modification du joueur"
-            )
-        else:
-            return f"Joueur {j.pseudo} modifié"
+
+    joueur.pseudo = j.pseudo
+    joueur.mdp = j.mdp
+    joueur.age = j.age
+    joueur.mail = j.mail
+    joueur.fan_pokemon = j.fan_pokemon
+    joueur = joueur_service.modifier(joueur)
+    if not joueur:
+        raise HTTPException(status_code=404, detail="Erreur lors de la modification du joueur")
+
+    return f"Joueur {j.pseudo} modifié"
 
 
-# Supprimer un joueur
 @app.delete("/joueur/{id_joueur}", tags=["Joueurs"])
 def supprimer_joueur(id_joueur: int):
+    """Supprimer un joueur"""
     logging.info("Supprimer un joueur")
     joueur = joueur_service.trouver_par_id(id_joueur)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
-    else:
-        joueur_service.supprimer(joueur)
-        return f"Joueur {joueur.pseudo} supprimé"
+
+    joueur_service.supprimer(joueur)
+    return f"Joueur {joueur.pseudo} supprimé"
 
 
-# Afficher Hello
 @app.get("/hello/{name}")
 async def hello_name(name: str):
+    """Afficher Hello"""
     logging.info("Afficher Hello")
     return f"message : Hello {name}"
 
@@ -116,3 +108,5 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=80)
+
+    logging.info("Arret du Webservice")

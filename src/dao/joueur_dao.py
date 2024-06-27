@@ -9,6 +9,8 @@ from dto.joueur import Joueur
 
 
 class JoueurDao(metaclass=Singleton):
+    """Classe contenant les méthodes pour accéder aux Joueurs de la base de données"""
+
     @log
     def creer(self, joueur) -> bool:
         """Creation d'un joueur dans la base de données
@@ -176,7 +178,7 @@ class JoueurDao(metaclass=Singleton):
         except Exception as e:
             logging.info(e)
 
-        return True if res == 1 else False
+        return res == 1
 
     @log
     def supprimer(self, joueur) -> bool:

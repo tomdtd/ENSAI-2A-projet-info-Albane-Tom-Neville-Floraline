@@ -1,6 +1,6 @@
 import os
-import dotenv
 import logging
+import dotenv
 
 from unittest import mock
 
@@ -18,6 +18,8 @@ class ResetDatabase(metaclass=Singleton):
 
     @log
     def lancer(self, test_dao=False):
+        """Lancement de la réinitialisation des données
+        Si test_dao = True : réinitialisation des données de test"""
         if test_dao:
             mock.patch.dict(os.environ, {"POSTGRES_SCHEMA": "projet_test_dao"}).start()
             pop_data_path = "data/pop_db_test.sql"
@@ -33,9 +35,7 @@ class ResetDatabase(metaclass=Singleton):
 
         schema = os.environ["POSTGRES_SCHEMA"]
 
-        create_schema = (
-            f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"
-        )
+        create_schema = f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"
 
         init_db = open("data/init_db.sql", encoding="utf-8")
         init_db_as_string = init_db.read()

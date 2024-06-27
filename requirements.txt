@@ -5,6 +5,8 @@ psycopg2-binary
 pylint
 pytest
 python-dotenv
+PyYAML
 regex
 requests
 tabulate
+uvicorn

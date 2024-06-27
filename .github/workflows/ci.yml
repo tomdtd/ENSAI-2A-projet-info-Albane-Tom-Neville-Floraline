@@ -65,4 +65,4 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint --output-format=colorized --disable=C0114,C0415,W0718 $(git ls-files '*.py') --fail-under=7.5
+        pylint --output-format=colorized --disable=C0114,C0411,C0415,W0718 $(git ls-files '*.py') --fail-under=7.5

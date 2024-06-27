@@ -25,8 +25,9 @@ class PokemonVue(VueAbstraite):
             from view.menu_joueur_vue import MenuJoueurVue
 
             return MenuJoueurVue()
-        else:
-            from view.menu_joueur_vue import MenuJoueurVue
 
-            pokemons = pokemon_client.get_all_pokemon_by_types(choix)
-            return MenuJoueurVue(pokemons)
+        from view.menu_joueur_vue import MenuJoueurVue
+
+        pokemons_str = f"Liste des pokemons du type {choix} :\n\n"
+        pokemons_str += str(pokemon_client.get_all_pokemon_by_types(choix))
+        return MenuJoueurVue(pokemons_str)

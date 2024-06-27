@@ -8,6 +8,8 @@ from dao.joueur_dao import JoueurDao
 
 
 class JoueurService:
+    """Classe contenant les méthodes de service des Joueurs"""
+
     @log
     def creer(self, pseudo, mdp, age, mail, fan_pokemon) -> Joueur:
         """Création d'un joueur à partir de ses attributs"""

@@ -1,4 +1,3 @@
-from unittest import TestCase, TextTestRunner, TestLoader
 from unittest.mock import MagicMock
 
 from service.joueur_service import JoueurService
@@ -8,64 +7,101 @@ from dao.joueur_dao import JoueurDao
 from dto.joueur import Joueur
 
 
-class TestJoueurService(TestCase):
-    def test_creer_ok(self):
-        # GIVEN
-        pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
-        JoueurDao().creer = MagicMock(return_value=True)
+liste_joueurs = [
+    Joueur(pseudo="jp", age="10", mail="jp@mail.fr", mdp="1234"),
+    Joueur(pseudo="lea", age="10", mail="lea@mail.fr", mdp="0000"),
+    Joueur(pseudo="gg", age="10", mail="gg@mail.fr", mdp="abcd"),
+]
 
-        # WHEN
-        joueur = JoueurService().creer(pseudo, mdp, age, mail, fan_pokemon)
 
-        # THEN
-        self.assertEqual(joueur.pseudo, pseudo)
+def test_creer_ok():
+    """ "Création de Joueur réussie"""
 
-    def test_creer_echec(self):
-        # GIVEN
-        pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
-        JoueurDao().creer = MagicMock(return_value=False)
+    # GIVEN
+    pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
+    JoueurDao().creer = MagicMock(return_value=True)
 
-        # WHEN
-        joueur = JoueurService().creer(pseudo, mdp, age, mail, fan_pokemon)
+    # WHEN
+    joueur = JoueurService().creer(pseudo, mdp, age, mail, fan_pokemon)
 
-        # THEN
-        self.assertIsNone(joueur)
+    # THEN
+    assert joueur.pseudo == pseudo
 
-    def test_pseudo_deja_utilise_oui(self):
-        # GIVEN
-        pseudo = "lea"
 
-        j1 = Joueur(pseudo="jp", age="10", mail=None)
-        j2 = Joueur(pseudo="lea", age="10", mail=None)
-        j3 = Joueur(pseudo="gg", age="10", mail=None)
-        liste_joueurs = [j1, j2, j3]
+def test_creer_echec():
+    """Création de Joueur échouée
+    (car la méthode JoueurDao().creer retourne False)"""
 
-        JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
+    # GIVEN
+    pseudo, mdp, age, mail, fan_pokemon = "jp", "1234", 15, "z@mail.oo", True
+    JoueurDao().creer = MagicMock(return_value=False)
 
-        # WHEN
-        res = JoueurService().pseudo_deja_utilise(pseudo)
+    # WHEN
+    joueur = JoueurService().creer(pseudo, mdp, age, mail, fan_pokemon)
 
-        # THEN
-        self.assertTrue(res)
+    # THEN
+    assert joueur is None
 
-    def test_pseudo_deja_utilise_non(self):
-        # GIVEN
-        pseudo = "chaton"
 
-        j1 = Joueur(pseudo="jp", age="10", mail=None)
-        j2 = Joueur(pseudo="lea", age="10", mail=None)
-        j3 = Joueur(pseudo="gg", age="10", mail=None)
-        liste_joueurs = [j1, j2, j3]
+def test_lister_tous_inclure_mdp_true():
+    """Lister les Joueurs en incluant les mots de passe"""
 
-        JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
+    # GIVEN
+    JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
 
-        # WHEN
-        res = JoueurService().pseudo_deja_utilise(pseudo)
+    # WHEN
+    res = JoueurService().lister_tous(inclure_mdp=True)
 
-        # THEN
-        self.assertFalse(res)
+    # THEN
+    assert len(res) == 3
+    for joueur in res:
+        assert joueur.mdp is not None
+
+
+def test_lister_tous_inclure_mdp_false():
+    """Lister les Joueurs en excluant les mots de passe"""
+
+    # GIVEN
+    JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
+
+    # WHEN
+    res = JoueurService().lister_tous()
+
+    # THEN
+    assert len(res) == 3
+    for joueur in res:
+        assert not joueur.mdp
+
+
+def test_pseudo_deja_utilise_oui():
+    """Le pseudo est déjà utilisé dans liste_joueurs"""
+
+    # GIVEN
+    pseudo = "lea"
+
+    # WHEN
+    JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
+    res = JoueurService().pseudo_deja_utilise(pseudo)
+
+    # THEN
+    assert res
+
+
+def test_pseudo_deja_utilise_non():
+    """Le pseudo n'est pas utilisé dans liste_joueurs"""
+
+    # GIVEN
+    pseudo = "chaton"
+
+    # WHEN
+    JoueurDao().lister_tous = MagicMock(return_value=liste_joueurs)
+    res = JoueurService().pseudo_deja_utilise(pseudo)
+
+    # THEN
+    assert not res
 
 
 if __name__ == "__main__":
-    # Run the tests
-    result = TextTestRunner().run(TestLoader().loadTestsFromTestCase(TestJoueurService))
+    import pytest
+
+    pytest.main([__file__])
