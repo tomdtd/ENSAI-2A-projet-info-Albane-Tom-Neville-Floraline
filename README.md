@@ -80,7 +80,7 @@ Vous allez maintenant définir des variables d'environnement pour déclarer la b
 - [ ] Collez-y et complétez les éléments ci-dessous
 
 ```default
-HOST_WEBSERVICE=https://pokeapi.co/api/v2
+WEBSERVICE_HOST=https://pokeapi.co/api/v2
 
 POSTGRES_HOST=sgbd-eleves.domensai.ecole
 POSTGRES_PORT=5432

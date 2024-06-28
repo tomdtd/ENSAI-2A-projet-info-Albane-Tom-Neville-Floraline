@@ -28,11 +28,6 @@ class ResetDatabase(metaclass=Singleton):
 
         dotenv.load_dotenv()
 
-        print(os.environ["POSTGRES_HOST"])
-        print(os.environ["POSTGRES_DATABASE"])
-        print(os.environ["POSTGRES_USER"])
-        print(os.environ["POSTGRES_PASSWORD"])
-
         schema = os.environ["POSTGRES_SCHEMA"]
 
         create_schema = f"DROP SCHEMA IF EXISTS {schema} CASCADE; CREATE SCHEMA {schema};"

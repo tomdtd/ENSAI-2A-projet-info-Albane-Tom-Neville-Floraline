@@ -8,7 +8,7 @@ class PokemonClient:
     """Make call to the pokemon endpoint"""
 
     def __init__(self) -> None:
-        self.__host = os.environ["HOST_WEBSERVICE"]
+        self.__host = os.environ["WEBSERVICE_HOST"]
 
     def get_pokemon_types(self) -> List[str]:
         """
