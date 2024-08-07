@@ -3,32 +3,40 @@
 Template du projet informatique de 2e année de l'ENSAI.
 Cette application très simple comporte quelques éléments qui peuvent aider pour le projet info 2A :
 
-- programmation en couche (DAO, service, dto)
-- connexion à une base de données
-- interface dans le terminal (couche view) avec inquirerPy
+- Programmation en couche (DAO, service, view, business_object)
+- Connexion à une base de données
+- Interface dans le terminal (couche view) avec inquirerPy
 - Appel d'un Webservice
 - Création d'un Webservice
 
-## :arrow_forward: Cloner le dépôt
+## :arrow_forward: Logiciels requis
 
-- [ ] Créez un dossier `P:/Cours2A/UE3-Projet-info`
-- [ ] Allez dans ce dossier
-- [ ] Clic droit > `Git Bash here`
-- [ ] Clonez ce dépôt : `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Python 3.10](https://www.python.org/)
+- [Git](https://git-scm.com/)
 
 ---
 
-## :arrow_forward: Ouvrir le dépôt avec VS Code
+## :arrow_forward: Clonez le dépôt
 
-- [ ] Ouvrez Visual Studio Code
-- [ ] File > Open Folder 
-- [ ] Retrouvez dans l'arborescence le clone
-- [ ] Cliquez une fois sur *ENSAI-2A-projet-info-template* et cliquez sur `Sélectionner un dossier`
-  - :warning: Si le dossier parent dans l'explorer VScode (à gauche) n'est pas *ENSAI-2A-projet-info-template*, l'application ne fonctionnera pas
+- [ ] Ouvrez **Git Bash**
+- [ ] Créez un dossier `P:/Cours2A/UE3-Projet-info` et positionnez-vous dedans
+  - `mkdir -p /p/Cours2A/UE3-Projet-info && cd $_`
+- [ ] Clonez ce dépôt
+  - `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
+
+---
+
+## :arrow_forward: Ouvrez le dépôt avec VSCode
+
+- [ ] Ouvrez **Visual Studio Code**
+- [ ] File > Open Folder
+- [ ] Cliquez une seule fois sur *ENSAI-2A-projet-info-template* et cliquez sur `Sélectionner un dossier`
+  - :warning: Si le dossier parent dans l'explorer VSCode (à gauche) n'est pas *ENSAI-2A-projet-info-template*, l'application ne fonctionnera pas
 
 ### Paramètres VScode
 
-Pour information, ce dépôt contient un fichier `.vscode/settings.xml` qui définit des paramètres pour ce projet. Par exemple :
+Ce dépôt contient un fichier `.vscode/settings.xml` qui définit des paramètres pour ce projet. Par exemple :
 
 - **Black formatter** permet de mettre en forme automatiquement un fichier python
   - `editor.formatOnSave` : à chaque savegarde de fichier, le code est automatiquement mis en forme
@@ -56,9 +64,9 @@ Normalement dans le cadre de votre projet, vous n'aurez pas besoin de modifier c
 
 ---
 
-## :arrow_forward: Installer les packages nécessaires
+## :arrow_forward: Installez les packages nécessaires
 
-Dans Visual Studio Code :
+Dans VSCode :
 
 - [ ] ouvrez un terminal *Git Bash*
 - [ ] exécutez les commandes suivantes
@@ -97,15 +105,17 @@ POSTGRES_SCHEMA=projet
 - [ ] Dans Git Bash : `pytest -v` 
   - ou `python -m pytest -v` si *pytest* n'a pas été ajouté au *PATH*
 
+Les tests unitaires de la DAO utilisent les données du fichier `data/pop_db_test.sql`.
+Ces données sont chargées dans un schéma à part (projet_test_dao) pour ne pas polluer les autres données.
+
+### Couverture de tests
+
 Il est également possible de générer la couverture de tests avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
 :bulb: Le fichier `.coveragerc` permet de modifier le paramétrage
 
 - [ ] `coverage run -m pytest`
 - [ ] `coverage html`
 - [ ] Ouvrir le fichier coverage_report/index.html
-
-Les tests unitaires de la DAO utilisent les données du fichier `data/pop_db_test.sql`.
-Ces données sont chargées dans un schéma à part (projet_test_dao) pour ne pas polluer les autres données.
 
 ---
 

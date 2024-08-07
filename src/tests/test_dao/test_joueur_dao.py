@@ -8,7 +8,7 @@ from utils.securite import hash_password
 
 from dao.joueur_dao import JoueurDao
 
-from dto.joueur import Joueur
+from business_object.joueur import Joueur
 
 
 @pytest.fixture(scope="session", autouse=True)

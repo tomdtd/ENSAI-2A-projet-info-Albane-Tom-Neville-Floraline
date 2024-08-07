@@ -4,7 +4,7 @@ from service.joueur_service import JoueurService
 
 from dao.joueur_dao import JoueurDao
 
-from dto.joueur import Joueur
+from business_object.joueur import Joueur
 
 
 liste_joueurs = [

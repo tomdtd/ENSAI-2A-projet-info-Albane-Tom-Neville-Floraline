@@ -5,7 +5,7 @@ from utils.log_decorator import log
 
 from dao.db_connection import DBConnection
 
-from dto.joueur import Joueur
+from business_object.joueur import Joueur
 
 
 class JoueurDao(metaclass=Singleton):
