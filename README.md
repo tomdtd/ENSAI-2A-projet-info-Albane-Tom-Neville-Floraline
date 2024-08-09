@@ -14,6 +14,7 @@ Cette application très simple comporte quelques éléments qui peuvent aider po
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Python 3.10](https://www.python.org/)
 - [Git](https://git-scm.com/)
+- Une base de données [PostgreSQL](https://www.postgresql.org/)
 
 ---
 
