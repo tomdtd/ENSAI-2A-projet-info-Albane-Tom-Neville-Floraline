@@ -1,6 +1,7 @@
 # ENSAI-2A-projet-info-template
 
 Template du projet informatique de 2e année de l'ENSAI.
+
 Cette application très simple comporte quelques éléments qui peuvent aider pour le projet info 2A :
 
 - Programmation en couche (DAO, service, view, business_object)
@@ -57,7 +58,7 @@ Normalement dans le cadre de votre projet, vous n'aurez pas besoin de modifier c
 |------------------------------|---------------------------------------------------------------------|
 | `.env`                       | Définir les variables d'environnement                               |
 | `.vscode/settings.json`      | Configuration spécifique à Visual Studio Code                       |
-| `.github/workflows/main.yml` | Définition des workflows GitHub Actions                            |
+| `.github/workflows/ci.yml`   | Définition des workflows GitHub Actions                             |
 | `logging_config.yml`         | Configuration du système de journalisation (logging)                |
 | `.gitignore`                 | Liste des fichiers et répertoires à ignorer lors des opérations Git |
 | `.coveragerc`                | Configuration de l'outil de couverture de code (coverage)           |
@@ -69,8 +70,8 @@ Normalement dans le cadre de votre projet, vous n'aurez pas besoin de modifier c
 
 Dans VSCode :
 
-- [ ] ouvrez un terminal *Git Bash*
-- [ ] exécutez les commandes suivantes
+- [ ] Ouvrez un terminal *Git Bash*
+- [ ] Exécutez les commandes suivantes
 
 ```bash
 pip install -r requirements.txt
@@ -106,12 +107,16 @@ POSTGRES_SCHEMA=projet
 - [ ] Dans Git Bash : `pytest -v` 
   - ou `python -m pytest -v` si *pytest* n'a pas été ajouté au *PATH*
 
+### TU DAO
+
 Les tests unitaires de la DAO utilisent les données du fichier `data/pop_db_test.sql`.
+
 Ces données sont chargées dans un schéma à part (projet_test_dao) pour ne pas polluer les autres données.
 
 ### Couverture de tests
 
 Il est également possible de générer la couverture de tests avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
+
 :bulb: Le fichier `.coveragerc` permet de modifier le paramétrage
 
 - [ ] `coverage run -m pytest`
@@ -125,7 +130,7 @@ Il est également possible de générer la couverture de tests avec [Coverage](h
 Cette application propose une interface graphique très basique pour naviguer entre différents menus.
 
 - [ ] Dans Git Bash : `python src/__main__.py`
-- [ ] au premier lancement, choisissez **Ré-initialiser la base de données**
+- [ ] Au premier lancement, choisissez **Ré-initialiser la base de données**
   - cela appelle le programme `src/utils/reset_database.py`
   - qui lui même va exécuter les scripts SQL du dossier `data`
 
@@ -169,12 +174,33 @@ Cette application permet également de créer un webservice.
 
 ## :arrow_forward: Les logs
 
-- le fichier `logging_config.yml` permet de définir les paramètres de logs
-- un décorateur a été créé dans `src/utils/log_decorator.py`
-  - appliqué à une méthode, il permettra d'afficher dans les logs :
-    - les paramétres d'entrée
-    - la sortie
-- les logs sont consultables dans le dossier `logs`
+L'initalisation se fait dans le module `src/utils/log_init.py` :
+
+- Celui-ci est appelé au démarrage de l'application ou du webservice
+- Il utilise le fichier `logging_config.yml` pour la configuration
+  - pour modifier le niveau de logs :arrow_right: balise *level*
+
+Un décorateur a été créé dans `src/utils/log_decorator.py`.
+
+Appliqué à une méthode, il permettra d'afficher dans les logs :
+
+- les paramétres d'entrée
+- la sortie
+
+Les logs sont consultables dans le dossier `logs`.
+
+Exemple de logs :
+
+```
+07/08/2024 09:07:07 - INFO     - ConnexionVue
+07/08/2024 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - DEBUT
+07/08/2024 09:07:08 - INFO     -         JoueurDao.se_connecter('a', '*****') - DEBUT
+07/08/2024 09:07:08 - INFO     -         JoueurDao.se_connecter('a', '*****') - FIN
+07/08/2024 09:07:08 - INFO     -            └─> Sortie : Joueur(a, 20 ans)
+07/08/2024 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - FIN
+07/08/2024 09:07:08 - INFO     -        └─> Sortie : Joueur(a, 20 ans)
+07/08/2024 09:07:08 - INFO     - MenuJoueurVue
+```
 
 ---
 
@@ -194,8 +220,9 @@ Lorsque vous faîtes un *push* sur GitHub, cela déclanche un pipeline qui va ef
 
 Vous pouvez consulter le bon déroulement de ce pipeline sur la page GitHub de votre dépôt, onglet *Actions*.
 
+---
 
-## Lancer le projet sur le Datalab
+## :construction: Lancer le projet sur le Datalab
 
 Il est également possible de développer sur le Datalab.
 
@@ -208,8 +235,8 @@ Dans un premier temps, il faut autoriser de *push* du code depuis le Datalab ver
 
 Générez un jeton dans GitHub :
 
-- [ ] Connectez-vous à [GitHub](https://github.com/){target="_blank"}
-- [ ] [Générez un nouveau token (classic)](https://github.com/settings/tokens/new){target="_blank"}
+- [ ] Connectez-vous à [GitHub](https://github.com/)
+- [ ] [Générez un nouveau token (classic)](https://github.com/settings/tokens/new)
   - si le lien direct ne fonctionne pas : allez dans *Settings* > *Developer Settings* > *Personal access tokens (classic)*
   - Note : Datalab
   - Date d'expiration : 90j (minimum)
@@ -221,7 +248,7 @@ Générez un jeton dans GitHub :
 
 Ensuite, déclarez ce jeton au Datalab :
 
-- [ ] Connectez-vous au [Datalab](https://datalab.sspcloud.fr/){target="_blank"}
+- [ ] Connectez-vous au [Datalab](https://datalab.sspcloud.fr/)
 - [ ] Allez dans *Mon Compte*, puis *Services externes*
 - [ ] Collez le token dans *Jeton d'accès personnel GitHub*
 
