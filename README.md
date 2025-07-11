@@ -73,17 +73,6 @@ You will also need a `.env` file. See below.
 | `src`                      | Folder containing Python files organized using a layered architecture    |
 
 
-### Paramètres VScode
-
-Ce dépôt contient un fichier `.vscode/settings.xml` qui définit des paramètres pour ce projet. Par exemple :
-
-- **Black formatter** permet de mettre en forme automatiquement un fichier python
-  - `editor.formatOnSave` : à chaque sauvegarde de fichier, le code est automatiquement mis en forme
-- **Flake8** est un Linter
-  - il vérifie que le code est propre et affiche un message si ce n'est pas le cas
-- **Path** : indique les dossiers dans lesquels sont les modules python 
-  - `"PYTHONPATH": "${workspaceFolder}/src"` : src est le dossier racine des imports
-
 
 ### Settings files
 
@@ -92,7 +81,7 @@ This repository contains a large number of configuration files for setting the p
 Normally, for the purposes of your project, you won't need to modify these files, except for `.env` and `requirements.txt`.
 
 
-## :arrow_forward: Installez les packages nécessaires
+## :arrow_forward: Install required packages
 
 - [ ] In Git Bash, run the following commands to:
   - install all packages from file `requirements.txt`
@@ -147,12 +136,13 @@ It is also possible to generate test coverage using [Coverage](https://coverage.
 :bulb: The `.coveragerc` file can be used to modify the settings
 
 - [ ] `coverage run -m pytest`
+- [ ] `coverage report -m`
 - [ ] `coverage html`
-- [ ] Open the file coverage_report/index.html
+  - Download and open coverage_report/index.html
 
 
 
-## :arrow_forward: Lauch the CLI application
+## :arrow_forward: Launch the CLI application
 
 This application provides a very basic graphical interface for navigating between different menus.
 

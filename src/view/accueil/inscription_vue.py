@@ -1,13 +1,12 @@
+import os
+
 import regex
-
 from InquirerPy import inquirer
-from InquirerPy.validator import PasswordValidator, EmptyInputValidator
-
+from InquirerPy.validator import EmptyInputValidator, PasswordValidator
 from prompt_toolkit.validation import ValidationError, Validator
 
-
-from view.vue_abstraite import VueAbstraite
 from service.joueur_service import JoueurService
+from view.vue_abstraite import VueAbstraite
 
 
 class InscriptionVue(VueAbstraite):
@@ -23,10 +22,10 @@ class InscriptionVue(VueAbstraite):
         mdp = inquirer.secret(
             message="Entrez votre mot de passe : ",
             validate=PasswordValidator(
-                length=8,
+                length=os.environ["PASSWORD_LENGTH"],
                 cap=True,
                 number=True,
-                message="Au moins 8 caractères, incluant une majuscule et un chiffre",
+                message="Au moins 35 caractères, incluant une majuscule et un chiffre",
             ),
         ).execute()
 
