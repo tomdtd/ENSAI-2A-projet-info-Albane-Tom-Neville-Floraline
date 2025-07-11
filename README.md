@@ -1,40 +1,77 @@
 # ENSAI-2A-projet-info-template
 
-Template du projet informatique de 2e année de l'ENSAI.
+Template for the ENSAI 2nd year IT project.
 
-Cette application très simple comporte quelques éléments qui peuvent aider pour le projet info 2A :
+This very simple application includes a few elements that may help with the info 2A project:
 
-- Programmation en couche (DAO, service, view, business_object)
-- Connexion à une base de données
-- Interface dans le terminal (couche view) avec inquirerPy
-- Appel d'un Webservice
-- Création d'un Webservice
+- Layer programming (DAO, service, view, business_object)
+- Connection to a database
+- Terminal interface (view layer) with [inquirerPy](https://inquirerpy.readthedocs.io/en/latest/)
+- Calling a Webservice
+- Creating a webservice
 
-## :arrow_forward: Logiciels requis
+
+## :arrow_forward: Software and tools
 
 - [Visual Studio Code](https://code.visualstudio.com/)
-- [Python 3.10](https://www.python.org/)
+- [Python 3.13](https://www.python.org/)
 - [Git](https://git-scm.com/)
-- Une base de données [PostgreSQL](https://www.postgresql.org/)
+- A [PostgreSQL](https://www.postgresql.org/) database
 
----
 
-## :arrow_forward: Clonez le dépôt
+## :arrow_forward: Clone the repository
 
-- [ ] Ouvrez **Git Bash**
-- [ ] Créez un dossier `P:/Cours2A/UE3-Projet-info` et positionnez-vous dedans
-  - `mkdir -p /p/Cours2A/UE3-Projet-info && cd $_`
-- [ ] Clonez ce dépôt
+- [ ] Open VSCode
+- [ ] Open **Git Bash**
+- [ ] Clone the repo
   - `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
 
----
 
-## :arrow_forward: Ouvrez le dépôt avec VSCode
+### Open Folder
 
-- [ ] Ouvrez **Visual Studio Code**
+- [ ] Open **Visual Studio Code**
 - [ ] File > Open Folder
-- [ ] Cliquez une seule fois sur *ENSAI-2A-projet-info-template* et cliquez sur `Sélectionner un dossier`
-  - :warning: Si le dossier parent dans l'explorer VSCode (à gauche) n'est pas *ENSAI-2A-projet-info-template*, l'application ne fonctionnera pas
+- [ ] Select folder *ENSAI-2A-projet-info-template*
+  - *ENSAI-2A-projet-info-template* should be the root of your Explorer
+  - :warning: if not the application will not launch. Retry open folder
+
+
+## Repository Files Overview
+
+
+| Item                       | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `README.md`                | Provides useful information to present, install, and use the application |
+| `LICENSE`                  | Specifies the usage rights and licensing terms for the repository        |
+
+### Configuration files
+
+This repository contains a large number of configuration files for setting the parameters of the various tools used.
+
+Normally, for the purposes of your project, you won't need to modify these files, except for `.env` and `requirements.txt`.
+
+
+| Item                       | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `.github/workflows/ci.yml` | Automated workflow that runs predefined tasks (like testing, linting, or deploying) |
+| `.vscode/settings.json`    | Contains VS Code settings specific to this project                       |
+| `.coveragerc`              | Setup for test coverage                                                  |
+| `.gitignore`               | Lists the files and folders that should not be tracked by Git            |
+| `logging_config.yml`       | Setup for logging                                                        |
+| `requirements.txt`         | Lists the required Python packages for the project                       |
+
+You will also need a `.env` file. See below.
+
+
+### Folders
+
+| Item                       | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `data`                     | SQL script containing data sets                                          |
+| `doc`                      | UML diagrams, project status...                                          |
+| `logs`                     | Containing logs files (once you have launched the application)           |
+| `src`                      | Folder containing Python files organized using a layered architecture    |
+
 
 ### Paramètres VScode
 
@@ -48,46 +85,33 @@ Ce dépôt contient un fichier `.vscode/settings.xml` qui définit des paramètr
   - `"PYTHONPATH": "${workspaceFolder}/src"` : src est le dossier racine des imports
 
 
-### Fichiers de configuration
+### Settings files
 
-Ce dépôt contient de nombreux fichiers de configuration pour paramétrer les différents outils utilisés.
+This repository contains a large number of configuration files for setting the parameters of the various tools used.
 
-Normalement dans le cadre de votre projet, vous n'aurez pas besoin de modifier ces fichiers, exceptés `.env` et `requirements.txt`. Vous trouverez des explications plus détaillées par la suite.
+Normally, for the purposes of your project, you won't need to modify these files, except for `.env` and `requirements.txt`.
 
-| Fichier                      | Description                                                         |
-|------------------------------|---------------------------------------------------------------------|
-| `.env`                       | Définir les variables d'environnement                               |
-| `.vscode/settings.json`      | Configuration spécifique à Visual Studio Code                       |
-| `.github/workflows/ci.yml`   | Définition des workflows GitHub Actions                             |
-| `logging_config.yml`         | Configuration du système de journalisation (logging)                |
-| `.gitignore`                 | Liste des fichiers et répertoires à ignorer lors des opérations Git |
-| `.coveragerc`                | Configuration de l'outil de couverture de code (coverage)           |
-| `requirements.txt`           | Liste des dépendances Python requises pour le projet                |
-
----
 
 ## :arrow_forward: Installez les packages nécessaires
 
-Dans VSCode :
-
-- [ ] Ouvrez un terminal *Git Bash*
-- [ ] Exécutez les commandes suivantes
+- [ ] In Git Bash, run the following commands to:
+  - install all packages from file `requirements.txt`
+  - list all packages
 
 ```bash
 pip install -r requirements.txt
 pip list
 ```
 
----
 
-## :arrow_forward: Variables d'environnement
+## :arrow_forward: Environment variables
 
-Vous allez maintenant définir des variables d'environnement pour déclarer la base de données et le webservice auxquels vous allez connecter votre application python.
+You are now going to define environment variables to declare the database and webservice to which you are going to connect your python application.
 
-À la racine du projet le fichier :
+At the root of the project :
 
-- [ ] Créez un fichier nommé `.env` 
-- [ ] Collez-y et complétez les éléments ci-dessous
+- [ ] Create a file called `.env`
+- [ ] Paste in and complete the elements below
 
 ```default
 WEBSERVICE_HOST=https://pokeapi.co/api/v2
@@ -100,96 +124,107 @@ POSTGRES_PASSWORD=idxxxx
 POSTGRES_SCHEMA=projet
 ```
 
----
 
-## :arrow_forward: Lancer les tests unitaires
+## :arrow_forward: Unit tests
 
-- [ ] Dans Git Bash : `pytest -v` 
-  - ou `python -m pytest -v` si *pytest* n'a pas été ajouté au *PATH*
+- [ ] In Git Bash: `pytest -v` 
+  - or `python -m pytest -v` if *pytest* has not been added to *PATH*
+
 
 ### TU DAO
 
-Les tests unitaires de la DAO utilisent les données du fichier `data/pop_db_test.sql`.
+To ensure tests are repeatable, safe, and **do not interfere with the real database**, we use a dedicated schema for unit testing.
 
-Ces données sont chargées dans un schéma à part (projet_test_dao) pour ne pas polluer les autres données.
+The DAO unit tests use data from the `data/pop_db_test.sql` file.
 
-### Couverture de tests
+This data is loaded into a separate schema (projet_test_dao) so as not to pollute the other data.
 
-Il est également possible de générer la couverture de tests avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
 
-:bulb: Le fichier `.coveragerc` permet de modifier le paramétrage
+### Test coverage
+
+It is also possible to generate test coverage using [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
+
+:bulb: The `.coveragerc` file can be used to modify the settings
 
 - [ ] `coverage run -m pytest`
 - [ ] `coverage html`
-- [ ] Ouvrir le fichier coverage_report/index.html
+- [ ] Open the file coverage_report/index.html
 
----
 
-## :arrow_forward: Lancer le programme
 
-Cette application propose une interface graphique très basique pour naviguer entre différents menus.
+## :arrow_forward: Lauch the CLI application
 
-- [ ] Dans Git Bash : `python src/__main__.py`
-- [ ] Au premier lancement, choisissez **Ré-initialiser la base de données**
-  - cela appelle le programme `src/utils/reset_database.py`
-  - qui lui même va exécuter les scripts SQL du dossier `data`
+This application provides a very basic graphical interface for navigating between different menus.
 
----
+- [ ] In Git Bash: `python src/main.py`
+- [ ] On first launch, choose **Reset database**
+  - this calls the `src/utils/reset_database.py` program
+  - which will itself execute the SQL scripts in the `data` folder
 
-## :arrow_forward: Lancer le webservice
 
-Cette application permet également de créer un webservice.
+
+## :arrow_forward: Launch the webservice
+
+This application can also be used to create a webservice.
 
 - [ ] `python src/app.py`
-- Exemples de endpoints (à tester par exemple avec *Insomnia* ou éventuellement un navigateur):
-  - `GET http://localhost/docs` (swagger)
-  - `GET http://localhost/hello/you`
-  - `GET http://localhost/joueur`
-  - `GET http://localhost/joueur/3`
-  - ```
-    POST http://localhost/joueur/
-    JSON body :
-      {
-        "pseudo": "patapouf",
-        "mdp": "9999",
-        "age": "95",
-        "mail": "patapouf@mail.fr",
-        "fan_pokemon": true
-      }
-    ```
-  - ```
-    PUT http://localhost/joueur/3
-    JSON body :
-      {
-         "pseudo": "maurice_new",
-         "mdp": null,
-         "age": 20,
-         "mail": "maurice@ensai.fr",
-         "fan_pokemon": true
-      }
-    ```
-  - `DELETE http://localhost/joueur/5`
 
----
+Documentation :
 
-## :arrow_forward: Les logs
+- /docs
+- /redoc
 
-L'initialisation se fait dans le module `src/utils/log_init.py` :
+### Endpoints
 
-- Celui-ci est appelé au démarrage de l'application ou du webservice
-- Il utilise le fichier `logging_config.yml` pour la configuration
-  - pour modifier le niveau de logs :arrow_right: balise *level*
+Examples of endpoints (to be tested, for example, with *Insomnia* or a browser):
 
-Un décorateur a été créé dans `src/utils/log_decorator.py`.
 
-Appliqué à une méthode, il permettra d'afficher dans les logs :
+- `GET http://localhost/joueur`
+- `GET http://localhost/joueur/3`
+- ```
+  POST http://localhost/joueur/
+  JSON body :
+    {
+      "pseudo": "patapouf",
+      "mdp": "9999",
+      "age": "95",
+      "mail": "patapouf@mail.fr",
+      "fan_pokemon": true
+    }
+  ```
+- ```
+  PUT http://localhost/joueur/3
+  JSON body :
+    {
+       "pseudo": "maurice_new",
+       "mdp": null,
+       "age": 20,
+       "mail": "maurice@ensai.fr",
+       "fan_pokemon": true
+    }
+  ```
+- `DELETE http://localhost/joueur/5`
 
-- les paramètres d'entrée
-- la sortie
 
-Les logs sont consultables dans le dossier `logs`.
 
-Exemple de logs :
+## :arrow_forward: Logs
+
+It is initialised in the `src/utils/log_init.py` module:
+
+- This is called when the application or webservice is started.
+- It uses the `logging_config.yml` file for configuration.
+  - to change the log level :arrow_right: *level* tag
+
+A decorator has been created in `src/utils/log_decorator.py`.
+
+When applied to a method, it will display in the logs :
+
+- input parameters
+- the output
+
+The logs can be viewed in the `logs` folder.
+
+Example of logs :
 
 ```
 07/08/2024 09:07:07 - INFO     - ConnexionVue
@@ -202,107 +237,20 @@ Exemple de logs :
 07/08/2024 09:07:08 - INFO     - MenuJoueurVue
 ```
 
----
-
-## :arrow_forward: Intégration continue
-
-Le dépôt contient un fichier `.github/workflow/main.yml`.
-
-Lorsque vous faîtes un *push* sur GitHub, cela déclenche un pipeline qui va effectuer les les étapes suivantes :
-
-- Création d'un conteneur à partir d'une image Ubuntu (Linux)
-  - Autrement dit, cela crée une machine virtuelle avec simplement un noyau Linux
-- Installation de Python
-- Installation des packages requis
-- Lancement des tests unitaires (uniquement les tests de service car plus compliqué de lancer les tests dao)
-- Analyse du code avec *pylint*
-  - Si la note est inférieure à 7.5, l'étape sera en échec
-
-Vous pouvez consulter le bon déroulement de ce pipeline sur la page GitHub de votre dépôt, onglet *Actions*.
-
----
-
-## :construction: Lancer le projet sur le Datalab
-
-Il est également possible de développer sur le Datalab.
-
-:warning: Pensez bien à *push* régulièrement votre code, car les services du Datalab ne sont pas éternels.
 
 
-### Paramétrage Git
+## :arrow_forward: Continuous integration (CI)
 
-Dans un premier temps, il faut autoriser de *push* du code depuis le Datalab vers GitHub.
+The repository contains a `.github/workflow/main.yml' file.
 
-Générez un jeton dans GitHub :
+When you *push* on GitHub, it triggers a pipeline that will perform the following steps:
 
-- [ ] Connectez-vous à [GitHub](https://github.com/)
-- [ ] [Générez un nouveau token (classic)](https://github.com/settings/tokens/new)
-  - si le lien direct ne fonctionne pas : allez dans *Settings* > *Developer Settings* > *Personal access tokens (classic)*
-  - Note : Datalab
-  - Date d'expiration : 90j (minimum)
-  - Cochez repo
-  - `Generate token`
-- [ ] Copiez le token et collez le dans Notepad
-  - :warning: Celui-ci ne sera visible qu'une seule fois
-  - si vous le perdez, il faut en générer un nouveau
+- Creating a container from an Ubuntu (Linux) image
+  - In other words, it creates a virtual machine with just a Linux kernel.
+- Install Python
+- Install the required packages
+- Run the unit tests (only the service tests, as it's more complicated to run the dao tests)
+- Analyse the code with *pylint*
+  - If the score is less than 7.5, the step will fail
 
-Ensuite, déclarez ce jeton au Datalab :
-
-- [ ] Connectez-vous au [Datalab](https://datalab.sspcloud.fr/)
-- [ ] Allez dans *Mon Compte*, puis *Services externes*
-- [ ] Collez le token dans *Jeton d'accès personnel GitHub*
-
-### Lancer les services
-
-Pour commencer, vous avez besoin d'une base de données PostgreSQL. Sur la Datalab
-
-- [ ] Allez dans *Catalogue de services* > *Database* > `PostgreSQL`
-- [ ] Lancez le service
-- [ ] Une fois le service lancé, copiez les infos suivantes
-  ```
-  Hostname : ?
-  Port : 5432
-  Database : ?
-  Username : ?
-  Password : ?
-  ```
-Nous allons ensuite lancer un service VSCode avec Python :
-
-- [ ] Dans le catalogue des services, allez sur *Vscode-python*
-- [ ] Cliquez sur *Configuration Vscode-python*
-- [ ] Allez dans l'onglet Git
-  - Repository : `https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
-- [ ] Lancez le service
-
-Un nouvel onglet s'ouvre avec VSCode et le dépôt qui a été cloné.
-
-Positionnez-vous dans le bon dossier :
-
-- [ ] File > Open Folder > `/home/onyxia/work/ENSAI-2A-projet-info-template/`
-
-
-### Connectez votre application et votre base de données
-
-Vous avez lancé 2 services, maintenant il va falloir les relier.
-
-Vous allez utiliser pour cela un fichier `.env` comme décrit dans la section [Variables d'environnement](##:arrow_forward:-Variables-d'environnement) plus haut. Dans votre VScode :
-
-- [ ] Créez à la racine de `ENSAI-2A-projet-info-template` un fichier `.env`
-- [ ] Collez le modèle (voir section *Variables d'environnement*)
-- [ ] Renseignez les champs `HOSTNAME`, `DATABASE`, `USERNAME` et `PASSWORD` avec ceux de votre service *PostgreSQL*
-- [ ] Enregistrez ce fichier
-
-### Installez les packages
-
-- [ ] Ouvrez un terminal (CTRL + ù)
-- [ ] Positionnez-vous dans le dépôt : `cd $ROOT_PROJECT_DIRECTORY/ENSAI-2A-projet-info-template`
-- [ ] `pip install -r requirements.txt`
-
-
-### Lancez l'application
-
-Vous pouvez maintenant lancer l'application, le webservice ou les tests unitaires
-
-- `python src/__main__.py` (puis commencez par ré-initialiser la bdd)
-- `python src/app.py` (à tester)
-- `pytest -v`
+You can check how this pipeline is progressing on your repository's GitHub page, *Actions* tab.

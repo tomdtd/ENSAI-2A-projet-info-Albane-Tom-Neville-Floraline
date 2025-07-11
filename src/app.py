@@ -1,11 +1,11 @@
 import logging
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
-from utils.log_init import initialiser_logs
-
 from service.joueur_service import JoueurService
+from utils.log_init import initialiser_logs
 
 app = FastAPI(title="Mon webservice")
 
@@ -15,11 +15,15 @@ initialiser_logs("Webservice")
 joueur_service = JoueurService()
 
 
+@app.get("/", include_in_schema=False)
+async def redirect_to_docs():
+    """Redirect to the API documentation"""
+    return RedirectResponse(url="/docs")
+
+
 @app.get("/joueur/", tags=["Joueurs"])
 async def lister_tous_joueurs():
-    """Lister tous les joueurs
-    GET http://localhost/joueur
-    """
+    """Lister tous les joueurs"""
     logging.info("Lister tous les joueurs")
     liste_joueurs = joueur_service.lister_tous()
 
@@ -32,9 +36,7 @@ async def lister_tous_joueurs():
 
 @app.get("/joueur/{id_joueur}", tags=["Joueurs"])
 async def joueur_par_id(id_joueur: int):
-    """Trouver un joueur à partir de son id
-    GET http://localhost/joueur/3
-    """
+    """Trouver un joueur à partir de son id"""
     logging.info("Trouver un joueur à partir de son id")
     return joueur_service.trouver_par_id(id_joueur)
 
@@ -107,6 +109,6 @@ async def hello_name(name: str):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=80)
+    uvicorn.run(app, host="0.0.0.0", port=9876)
 
     logging.info("Arret du Webservice")
