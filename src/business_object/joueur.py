@@ -25,7 +25,7 @@ class Joueur:
         self.mdp = mdp
         self.age = age
         self.mail = mail
-        self.fan_pokemon = fan_pokemon
+        self.joueur_poker = joueur_poker
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
@@ -33,4 +33,4 @@ class Joueur:
 
     def as_list(self) -> list[str]:
         """Retourne les attributs du joueur dans une liste"""
-        return [self.pseudo, self.age, self.mail, self.fan_pokemon]
+        return [self.pseudo, self.age, self.mail, self.joueur_poker]
