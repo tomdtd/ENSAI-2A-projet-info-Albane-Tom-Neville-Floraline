@@ -16,7 +16,7 @@ Pour afficher ce diagramme dans VScode :
 
 ```mermaid
 classDiagram
-    class Joueur {
+    class Joueurb {
         +id_joueur: int
         +pseudo: string
         +mdp: string
@@ -24,36 +24,77 @@ classDiagram
         +mail: string
         +fan_pokemon: bool
     }
-    
-    class JoueurDao {
-        +creer(Joueur): bool
-        +trouver_par_id(int): Joueur
-        +lister_tous(): list[Joueur]
-        +supprimer(Joueur): bool
-        +se_connecter(str,str): Joueur
-    }
-    
-    class JoueurService {
-        +creer(str...): Joueur
-        +trouver_par_id(int): Joueur
-        +lister_tous(): list[Joueur]
-        +afficher_tous(): str
-        +supprimer(Joueur): bool
-        +se_connecter(str,str): Joueur
+
+    class Siege {
+      - id_siege_ : int
     }
 
-    class AccueilVue {
+    class Table {
+      - id_table_ : int
+      - grosse_blinde : dict[siege : int, valeur : int]
+    }
+
+    class Partie {
+      + id_partie : int
+      + joueurs : list[JoueurPartie]
+      + repartition_blinde()
+      + calcul_gagnant(flop, dict[Joueur : Main])
+    }
+
+    class JoueurPartie {
+        + main : Main
+        + statut : str
+        + miser()
+        + se_coucher()
+        + suivre()
     }
     
-    class ConnexionVue {
+    class Joueur {
+        + identifiant : str
+        + pseudo : str
+        + mot_de_passe : str
+        + credit : int
+        + jouer_partie()
+        + augmenter_credit()
+
     }
 
-    class MenuJoueurVue {
+    class Combinaison {
+      - cartes : list[cartes]
+      + combinaison() : int
     }
 
-    class VueAbstraite{
-      +afficher()
-      +choisir_menu()
+    class Flop {
+      «Create» __init__(cartes : list[Carte] = [])
+    }
+    
+    class Carte{
+      VALEURS : tuple[str]
+      COULEURS : tuple[str]
+      - valeur : str
+      - couleur : str
+      «property» + valeur : str
+      «property» + couleur : str
+      «Create» __init__(valeur : str, couleur : str)
+      «classmethod» + VALEURS() : tuple[str]
+      «classmethod» + COULEURS() : tuple[str]
+      __eq__(other) : bool
+      __str__() : str
+      __repr__() : str
+      __hash__() : int
+    }
+
+    class Croupier {
+      + melanger(cartes : ListeDeCartes)
+      + ajouter_carte(cartes : ListeDeCartes,  carte : Carte)
+
+    }
+
+    class ListeDeCartes{
+      - cartes : list[Carte]
+      «Create» __init__(cartes : list[Carte] or None)
+      - __str__() : str
+      - __len__() : int
     }
 
     VueAbstraite <|-- AccueilVue
@@ -64,4 +105,5 @@ classDiagram
     JoueurService ..> JoueurDao : appelle
     Joueur <.. JoueurService: utilise
     Joueur <.. JoueurDao: utilise
+    Carte "1" o-- "1..*" Combinaison : contient
 ```
