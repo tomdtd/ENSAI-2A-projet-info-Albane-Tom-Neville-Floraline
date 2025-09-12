@@ -16,29 +16,71 @@ Pour afficher ce diagramme dans VScode :
 
 ```mermaid
 classDiagram
-    class Joueurb {
-        +id_joueur: int
-        +pseudo: string
-        +mdp: string
-        +age: int
-        +mail: string
-        +fan_pokemon: bool
+    class Joueur {
+      + identifiant : str
+      + pseudo : str
+      + mot_de_passe : str
+      + credit : int
+      + jouer_partie()
+      + augmenter_credit()
+    }
+
+    class Admin {
+      + crediter_joueur()
+      + consulter_stat()
+    }
+
+    class Transaction {
+      - id_transaction_ : int
+      - id_joueur : int
+      - solde : int
+      - date : datetime
+    }
+
+      class Pot {
+      - montant_pot : int
+      - id_joueur : int
+      - grouper_mise :list[int]
+      - affecter_pot :list[int]
+      - reinitialiser_pot :list[int]
+
     }
 
     class Siege {
       - id_siege_ : int
     }
 
-    class Table {
-      - id_table_ : int
-      - grosse_blinde : dict[siege : int, valeur : int]
+    class Monnaie {
+      - monnaie : int
     }
 
-    class Partie {
+    class Table {
+      - id_table_ : int
+      - nb_siege : int
+      - nb_joueur: int
+      - grosse_blinde : monnaie
+    }
+
+    class AccessPartie {
+      + tables_ : int
+      + id_partie : int
+      + rejoindre_table()
+      + creer_table()
+    }
+
+    class Main {
       + id_partie : int
       + joueurs : list[JoueurPartie]
       + repartition_blinde()
       + calcul_gagnant(flop, dict[Joueur : Main])
+    }
+
+
+    class Partie {
+      + id_partie : int
+      + joueurs : list[JoueurPartie]
+      + pot : list[monnaie]
+      + finir_partie() : bool
     }
 
     class JoueurPartie {
@@ -49,14 +91,10 @@ classDiagram
         + suivre()
     }
     
-    class Joueur {
-        + identifiant : str
-        + pseudo : str
-        + mot_de_passe : str
-        + credit : int
-        + jouer_partie()
-        + augmenter_credit()
-
+    class MainJoueur {
+      «Create» __init__(cartes : list[Carte] = [])
+      - cartes : list[cartes]
+      + combinaison() : int
     }
 
     class Combinaison {
@@ -97,13 +135,10 @@ classDiagram
       - __len__() : int
     }
 
-    VueAbstraite <|-- AccueilVue
-    VueAbstraite <|-- ConnexionVue
-    VueAbstraite <|-- MenuJoueurVue
-    MenuJoueurVue ..> JoueurService : appelle
-    ConnexionVue ..> JoueurService : appelle
-    JoueurService ..> JoueurDao : appelle
-    Joueur <.. JoueurService: utilise
-    Joueur <.. JoueurDao: utilise
-    Carte "1" o-- "1..*" Combinaison : contient
+    Joueur <|-- JoueurPartie
+    ListeDeCartes <|-- Flop
+    Partie "1" o-- "1..*" JoueurPartie : participe
+    Carte "1..*" o-- "1..5" Combinaison : contient
+    Carte "1..*" o-- "1..*" ListeDeCartes : contient
+    Siege "1..8" o-- "1" Table : contient
 ```
