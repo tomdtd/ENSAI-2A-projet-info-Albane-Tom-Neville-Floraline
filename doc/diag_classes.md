@@ -148,4 +148,9 @@ classDiagram
     Carte "1..*" o-- "2" MainJoueur : contient
     Carte "1..*" o-- "1..*" ListeDeCartes : contient
     Siege "1..8" o-- "1" Table : contient
+    Joueur "1" o-- "1" Monnaie : possède
+    Admin "1" -- "0..*" Transaction : permet
+    Transaction "1" o-- "1" Monnaie : modifie
+    Transaction "1" -- "1" Joueur : payer
+    Transaction "1" -- "1" Joueur : reçoit
 ```
