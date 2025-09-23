@@ -17,7 +17,7 @@ Pour afficher ce diagramme dans VScode :
 ```mermaid
 classDiagram
     class Joueur {
-      + identifiant : str
+      + id_joueur_ : str
       + pseudo : str
       + mot_de_passe : str
       + credit : int
