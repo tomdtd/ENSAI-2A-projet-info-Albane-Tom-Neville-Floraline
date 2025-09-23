@@ -91,10 +91,15 @@ classDiagram
         + suivre()
     }
     
-    class MainJoueur {
+    class MainJoueurComplete {
       «Create» __init__(cartes : list[Carte] = [])
       - cartes : list[cartes]
       + combinaison() : int
+    }
+
+    class MainJoueur {
+      «Create» __init__(cartes : tuple[Carte])
+      - cartes : tuple[Carte]
     }
 
     class Combinaison {
@@ -137,8 +142,10 @@ classDiagram
 
     Joueur <|-- JoueurPartie
     ListeDeCartes <|-- Flop
+    ListeDeCartes <|-- MainJoueurComplete
     Partie "1" o-- "1..*" JoueurPartie : participe
     Carte "1..*" o-- "1..5" Combinaison : contient
+    Carte "1..*" o-- "2" MainJoueur : contient
     Carte "1..*" o-- "1..*" ListeDeCartes : contient
     Siege "1..8" o-- "1" Table : contient
 ```
