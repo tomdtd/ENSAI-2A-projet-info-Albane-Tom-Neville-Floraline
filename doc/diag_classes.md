@@ -20,14 +20,15 @@ classDiagram
       + id_joueur : str
       + pseudo : str
       - mot_de_passe : str
-      + credit : int
-      + jouer_partie(): void
+      - credit : int
+      «Create» __init__(id_joueur : str, pseudo : str, mot_de_passe : str, credit : int = 0)
+      + jouer_partie() void
       + augmenter_credit(montant : int)
     }
 
     class Admin {
       + crediter_joueur(joueur :  Joueur)
-      + consulter_stat() : dict
+      + consulter_stat() dict
     }
 
     class Transaction {
@@ -35,44 +36,55 @@ classDiagram
       - id_joueur : int
       - solde : int
       - date : datetime
+      «Create» __init__(id_transaction : int, joueur_id : str, solde : int, date : datetime)
     }
 
       class Pot {
       - montant_pot : int
       - joueurs_contributeurs : list[int]
-      - grouper_mise (): void
-      - affecter_pot (): void
-      - reinitialiser_pot (): void
+      «Create» __init__(montant_pot : int = 0, joueurs_contributeurs : list[int] = [])
+      + grouper_mise () void
+      + affecter_pot () void
+      + reinitialiser_pot () void
 
     }
 
     class Siege {
-      - id_siege_ : int
-      - est_occupe : bool
+      + id_siege_ : int
+      + est_occupe : bool
+      + occuper() void
+      + liberer() void
+      «Create» __init__(id_siege : int)
     }
 
     class Monnaie {
-      - valeur : int
+      + valeur : int
+      «Create» __init__(valeur : int)
+      + __str__() str
+      + __repr__() str
     }
 
     class Table {
-      - id_table_ : int
-      - nb_sieges : int
-      - nb_joueurs: int
-      - blind_initial : monnaie
+      + id_table_ : int
+      + nb_sieges : int
+      + nb_joueurs: int
+      + blind_initial : Monnaie
+      «Create» __init__(id_table : int, nb_sieges : int, blind_initial : Monnaie)
     }
 
     class AccessPartie {
       + tables_ : int
       + id_partie : int
-      + rejoindre_table(joueur : Joueur) : bool
-      + creer_table(nb_sieges : int) : Table
+      + rejoindre_table(joueur : Joueur) bool
+      + creer_table(nb_sieges : int) Table
+      «Create» __init__()
     }
 
     class Main {
       + id_partie : int
       + joueurs : list[JoueurPartie]
       + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
+      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
     }
 
 
@@ -81,33 +93,37 @@ classDiagram
       + joueurs : list[JoueurPartie]
       + tour : int
       + pot : Pot
-      + repartition_blind() : void
-      + gerer_blind() : void
-      + finir_partie() : bool
+      + repartition_blind() void
+      + gerer_blind() void
+      + finir_partie() bool
+      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
     }
 
     class JoueurPartie {
         + main : Main
         + statut : str
+        + siege : Siege
         + miser(montant : int)
-        + se_coucher() : void
-        + suivre() : void
+        + se_coucher() void
+        + suivre() void
+        «Create» __init__(joueur : Joueur, siege : Siege)
     }
     
     class MainJoueurComplete {
       «Create» __init__(cartes : list[Carte] = [])
-      - cartes : list[cartes]
-      + combinaison() : int
+      - cartes list[cartes]
+      + combinaison() int
     }
 
     class MainJoueur {
+      - cartes tuple[Carte]
       «Create» __init__(cartes : tuple[Carte])
-      - cartes : tuple[Carte]
     }
 
     class Combinaison {
-      - cartes : list[cartes]
-      + combinaison() : int
+      - cartes list[cartes]
+      + combinaison() int
+      «Create» __init__(cartes : list[Carte] = [])
     }
 
     class Flop {
@@ -122,26 +138,29 @@ classDiagram
       «property» + valeur : str
       «property» + couleur : str
       «Create» __init__(valeur : str, couleur : str)
-      «classmethod» + VALEURS() : tuple[str]
-      «classmethod» + COULEURS() : tuple[str]
-      __eq__(other) : bool
-      __str__() : str
-      __repr__() : str
-      __hash__() : int
+      «classmethod» + VALEURS() tuple[str]
+      «classmethod» + COULEURS() tuple[str]
+      __eq__(other) bool
+      __str__() str
+      __repr__() str
+      __hash__() int
     }
 
     class Croupier {
+      + pioche : ListeDeCartes
       + melanger(cartes : ListeDeCartes)
       + debarrasser (cartes: ListeDeCartes)
       + ajouter_carte(cartes : ListeDeCartes,  carte : Carte)
+      «Create» __init__(pioche : ListeDeCartes = None)
 
     }
 
     class ListeDeCartes{
       - cartes : list[Carte]
       «Create» __init__(cartes : list[Carte] or None)
-      - __str__() : str
-      - __len__() : int
+      - __str__() str
+      - __len__() int
+      + ajouter_carte(carte : Carte)
     }
 
     Joueur <|-- JoueurPartie
