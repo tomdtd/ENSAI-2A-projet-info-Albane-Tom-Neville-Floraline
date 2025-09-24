@@ -52,9 +52,9 @@ classDiagram
     class Siege {
       + id_siege_ : int
       + est_occupe : bool
+      «Create» __init__(id_siege : int)
       + occuper() void
       + liberer() void
-      «Create» __init__(id_siege : int)
     }
 
     class Monnaie {
@@ -75,16 +75,16 @@ classDiagram
     class AccessPartie {
       + tables_ : int
       + id_partie : int
+      «Create» __init__()
       + rejoindre_table(joueur : Joueur) bool
       + creer_table(nb_sieges : int) Table
-      «Create» __init__()
     }
 
     class Main {
       + id_partie : int
       + joueurs : list[JoueurPartie]
-      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
       «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
+      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
     }
 
 
@@ -93,25 +93,25 @@ classDiagram
       + joueurs : list[JoueurPartie]
       + tour : int
       + pot : Pot
+      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
       + repartition_blind() void
       + gerer_blind() void
       + finir_partie() bool
-      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
     }
 
     class JoueurPartie {
         + main : Main
         + statut : str
         + siege : Siege
+        «Create» __init__(joueur : Joueur, siege : Siege)
         + miser(montant : int)
         + se_coucher() void
         + suivre() void
-        «Create» __init__(joueur : Joueur, siege : Siege)
     }
     
     class MainJoueurComplete {
-      «Create» __init__(cartes : list[Carte] = [])
       - cartes list[cartes]
+      «Create» __init__(cartes : list[Carte] = [])
       + combinaison() int
     }
 
@@ -122,8 +122,9 @@ classDiagram
 
     class Combinaison {
       - cartes list[cartes]
+      «Create» init(cartes : list[Carte] = [])
       + combinaison() int
-      «Create» __init__(cartes : list[Carte] = [])
+      
     }
 
     class Flop {
@@ -148,10 +149,10 @@ classDiagram
 
     class Croupier {
       + pioche : ListeDeCartes
+      «Create» __init__(pioche : ListeDeCartes = None)
       + melanger(cartes : ListeDeCartes)
       + debarrasser (cartes: ListeDeCartes)
       + ajouter_carte(cartes : ListeDeCartes,  carte : Carte)
-      «Create» __init__(pioche : ListeDeCartes = None)
 
     }
 
