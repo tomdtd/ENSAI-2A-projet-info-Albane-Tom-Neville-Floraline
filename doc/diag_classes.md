@@ -19,7 +19,7 @@ classDiagram
     class Joueur {
       + id_joueur : str
       + pseudo : str
-      + mot_de_passe : str
+      - mot_de_passe : str
       + credit : int
       + jouer_partie(): void
       + augmenter_credit(montant : int)
