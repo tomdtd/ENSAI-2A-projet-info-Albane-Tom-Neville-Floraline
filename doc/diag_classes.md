@@ -154,13 +154,13 @@ classDiagram
     Partie "1" --> "1" Table : se_joue_sur
     Croupier "1" o-- "1..*" Carte : gère
     JoueurPartie "1..8" o-- "1..*" Main : gère
+    JoueurPartie "1..8" o-- "1*" MainJoueurComplete : compare
     MainJoueur "1" o-- "2" ListeDeCartes : contient
     MainJoueurComplete "1" o-- "2" MainJoueur : contient
     ListeDeCartes "1" *-- "1..*" Carte : contient
     Table "1" o-- "1..8" Siege : contient
     JoueurPartie "0..1" o-- "1" Siege : occupe
     MainJoueur "1" o-- "1..*" ListeDeCartes: utilise
-    JoueurPartie "1..8" o-- "1*" MainJoueurComplete : compare
     Joueur "1" o-- "1" Monnaie : possède  
     Transaction "1" -- "0..*" Admin : permet
     Transaction "1" --> "1" Monnaie : utilise
