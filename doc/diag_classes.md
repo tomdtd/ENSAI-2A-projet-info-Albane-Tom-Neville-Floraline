@@ -22,13 +22,13 @@ classDiagram
       - mot_de_passe : str
       - credit : int
       «Create» __init__(id_joueur : str, pseudo : str, mot_de_passe : str, credit : int = 0)
-      + jouer_partie() void
+      + jouer_partie() : void
       + augmenter_credit(montant : int)
     }
 
     class Admin {
       + crediter_joueur(joueur :  Joueur)
-      + consulter_stat() dict
+      + consulter_stat() : dict
     }
 
     class Transaction {
@@ -43,9 +43,9 @@ classDiagram
       - montant_pot : int
       - joueurs_contributeurs : list[int]
       «Create» __init__(montant_pot : int = 0, joueurs_contributeurs : list[int] = [])
-      + grouper_mise () void
-      + affecter_pot () void
-      + reinitialiser_pot () void
+      + grouper_mise () : void
+      + affecter_pot () : void
+      + reinitialiser_pot () : void
 
     }
 
@@ -53,8 +53,8 @@ classDiagram
       + id_siege_ : int
       + est_occupe : bool
       «Create» __init__(id_siege : int)
-      + occuper() void
-      + liberer() void
+      + occuper() : void
+      + liberer() : void
     }
 
     class Monnaie {
@@ -76,15 +76,15 @@ classDiagram
       + tables_ : int
       + id_partie : int
       «Create» __init__()
-      + rejoindre_table(joueur : Joueur) bool
-      + creer_table(nb_sieges : int) Table
+      + rejoindre_table(joueur : Joueur) : bool
+      + creer_table(nb_sieges : int) : Table
     }
 
     class Main {
       + id_partie : int
       + joueurs : list[JoueurPartie]
       «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
-      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
+      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete): Joueur
     }
 
 
@@ -94,36 +94,37 @@ classDiagram
       + tour : int
       + pot : Pot
       «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
-      + repartition_blind() void
-      + gerer_blind() void
-      + finir_partie() bool
+      + repartition_blind() : void
+      + gerer_blind() : void
+      + finir_partie() : bool
     }
 
     class JoueurPartie {
         + main : Main
         + statut : str
+        + dealer : bool
         + siege : Siege
         «Create» __init__(joueur : Joueur, siege : Siege)
         + miser(montant : int)
-        + se_coucher() void
-        + suivre() void
+        + se_coucher() : void
+        + suivre() : void
     }
     
     class MainJoueurComplete {
-      - cartes list[cartes]
+      - cartes : list[cartes]
       «Create» __init__(cartes : list[Carte] = [])
-      + combinaison() int
+      + combinaison() : int
     }
 
     class MainJoueur {
-      - cartes tuple[Carte]
+      - cartes : tuple[Carte]
       «Create» __init__(cartes : tuple[Carte])
     }
 
     class Combinaison {
-      - cartes list[cartes]
-      «Create» init(cartes : list[Carte] = [])
-      + combinaison() int
+      - cartes : list[cartes]
+      «Create» __init__(cartes : list[Carte] = [])
+      + combinaison() : int
       
     }
 
@@ -139,12 +140,12 @@ classDiagram
       «property» + valeur : str
       «property» + couleur : str
       «Create» __init__(valeur : str, couleur : str)
-      «classmethod» + VALEURS() tuple[str]
-      «classmethod» + COULEURS() tuple[str]
-      __eq__(other) bool
-      __str__() str
-      __repr__() str
-      __hash__() int
+      «classmethod» + VALEURS() : tuple[str]
+      «classmethod» + COULEURS() : tuple[str]
+      __eq__(other) : bool
+      __str__() : str
+      __repr__() : str
+      __hash__() : int
     }
 
     class Croupier {
@@ -159,12 +160,12 @@ classDiagram
     class ListeDeCartes{
       - cartes : list[Carte]
       «Create» __init__(cartes : list[Carte] or None)
-      - __str__() str
-      - __len__() int
+      - __str__() : str
+      - __len__() : int
       + ajouter_carte(carte : Carte)
     }
 
-    Joueur <|-- JoueurPartieKV
+    Joueur <|-- JoueurPartie
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
     Carte <|-- MainJoueurComplete
