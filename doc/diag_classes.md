@@ -41,7 +41,7 @@ classDiagram
 
       class Pot {
       - montant_pot : int
-      - joueurs_contributeurs : list[int]
+      - joueurs_contributeurs : list[JoueurPartie]
       «Create» __init__(montant_pot : int = 0, joueurs_contributeurs : list[int] = [])
       + grouper_mise () void
       + affecter_pot () void
