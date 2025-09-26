@@ -73,11 +73,10 @@ classDiagram
     }
 
     class AccessPartie {
-      + tables_ : int
-      + id_partie : int
+      + tables : list[Table]
       «Create» __init__()
-      + rejoindre_table(joueur : Joueur) : bool
-      + creer_table(nb_sieges : int) : Table
+      + rejoindre_table(joueur : Joueur) bool
+      + creer_table(nb_sieges : int) Table
     }
 
     class Main {
@@ -169,7 +168,8 @@ classDiagram
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
     ListeDeCartes <|-- MainJoueurComplete
-    AccessPartie "1" o-- "1..*" Partie : ouvre
+    Joueur "1" --> "1..*" AccessPartie : accède
+    AccessPartie "1" o-- "1..*" Table : contient
     Partie "1" --> "0..*" JoueurPartie : contient
     Partie "1" o-- "1" Pot : possède
     Partie "1" --> "1" Table : se_joue_sur
