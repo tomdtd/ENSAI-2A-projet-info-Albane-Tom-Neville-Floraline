@@ -168,7 +168,7 @@ classDiagram
     Joueur <|-- JoueurPartie
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
-    Carte <|-- MainJoueurComplete
+    ListeDeCartes <|-- MainJoueurComplete
     AccessPartie "1" o-- "1..*" Partie : ouvre
     Partie "1" --> "0..*" JoueurPartie : contient
     Partie "1" o-- "1" Pot : possède
@@ -177,13 +177,14 @@ classDiagram
     JoueurPartie "1..8" o-- "1..*" Main : gère
     Main "1" o-- "1..8" MainJoueurComplete : compare
     MainJoueurComplete "1" o-- "0..1" MainJoueur : contient
-    ListeDeCartes "1" *-- "1..*" Carte : contient
+    MainJoueurComplete "1" o-- "0..1" Flop : contient
+    ListeDeCartes "1" o-- "1..*" Carte : contient
     Table "1" o-- "1..8" Siege : contient
     JoueurPartie "0..1" o-- "1" Siege : occupe
     MainJoueur "1" o-- "1..*" Carte: utilise
     Joueur "1" o-- "1" Monnaie : possède  
-    Transaction "1" -- "0..*" Admin : permet
-    Transaction "1" --> "1" Monnaie : utilise
-    Transaction "1" --> "1" Joueur : débite
+    Admin "1" -- "0..*" Transaction: permet
+    Transaction "1" o-- "1..*" Monnaie : contient
+    Joueur "1" --> "1" Transaction : débite
     Transaction "1" --> "1" Joueur : crédite
 ```
