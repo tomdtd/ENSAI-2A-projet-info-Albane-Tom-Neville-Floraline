@@ -182,8 +182,7 @@ classDiagram
     Table "1" o-- "1..8" Siege : contient
     JoueurPartie "1" o-- "1" Siege : occupe
     MainJoueur "1" o-- "1..*" Carte: utilise
-    Joueur "1" o-- "1..*" Monnaie : possède 
-    JoueurPartie "1" o-- "1..*" Monnaie : possède   
+    Joueur "1" o-- "1..*" Monnaie : possède  
     Pot "1" o-- "1..*" Monnaie : possède  
     Admin "1" -- "0..*" Transaction: permet
     Transaction "1" o-- "1..*" Monnaie : contient
