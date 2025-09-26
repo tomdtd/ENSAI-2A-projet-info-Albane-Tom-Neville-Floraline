@@ -7,7 +7,7 @@ Ce diagramme est codé avec [mermaid](https://mermaid.js.org/syntax/classDiagram
 * inconvénient : on ne maîtrise pas bien l'affichage
 
 Pour afficher ce diagramme dans VScode :
-
+kv
 * à gauche aller dans **Extensions** (ou CTRL + SHIFT + X)
 * rechercher `mermaid`
   * installer l'extension **Markdown Preview Mermaid Support**
@@ -164,23 +164,22 @@ classDiagram
       + ajouter_carte(carte : Carte)
     }
 
-    Joueur <|-- JoueurPartie
+    Joueur <|-- JoueurPartieKV
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
-    ListeDeCartes <|-- MainJoueurComplete
+    Carte <|-- MainJoueurComplete
     AccessPartie "1" o-- "1..*" Partie : ouvre
     Partie "1" --> "0..*" JoueurPartie : contient
     Partie "1" o-- "1" Pot : possède
     Partie "1" --> "1" Table : se_joue_sur
     Croupier "1" o-- "1..*" Carte : gère
     JoueurPartie "1..8" o-- "1..*" Main : gère
-    JoueurPartie "1..8" o-- "1*" MainJoueurComplete : compare
-    MainJoueur "1" o-- "2" ListeDeCartes : contient
-    MainJoueurComplete "1" o-- "2" MainJoueur : contient
+    Main "1" o-- "1..8" MainJoueurComplete : compare
+    MainJoueurComplete "1" o-- "0..1" MainJoueur : contient
     ListeDeCartes "1" *-- "1..*" Carte : contient
     Table "1" o-- "1..8" Siege : contient
     JoueurPartie "0..1" o-- "1" Siege : occupe
-    MainJoueur "1" o-- "1..*" ListeDeCartes: utilise
+    MainJoueur "1" o-- "1..*" Carte: utilise
     Joueur "1" o-- "1" Monnaie : possède  
     Transaction "1" -- "0..*" Admin : permet
     Transaction "1" --> "1" Monnaie : utilise
