@@ -33,7 +33,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="diag_classes_files/libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="diag_classes_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="diag_classes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="diag_classes_files/libs/bootstrap/bootstrap-a0cc812b62111fd39191e77879272a7e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="diag_classes_files/libs/bootstrap/bootstrap-23f522e12aa86ea0a60c5bdcf08b6e19.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -68,89 +68,115 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <pre class="mermaid"><code>classDiagram
     class Joueur {
-      + identifiant : str
+      + id_joueur : str
       + pseudo : str
-      + mot_de_passe : str
-      + credit : int
-      + jouer_partie()
-      + augmenter_credit()
+      - mot_de_passe : str
+      - credit : int
+      «Create» __init__(id_joueur : str, pseudo : str, mot_de_passe : str, credit : int = 0)
+      + jouer_partie() void
+      + augmenter_credit(montant : int)
     }
 
     class Admin {
-      + crediter_joueur()
-      + consulter_stat()
+      + crediter_joueur(joueur :  Joueur)
+      + consulter_stat() dict
+      + bannir_joueur(joueur : Joueur)
     }
 
     class Transaction {
-      - id_transaction_ : int
+      - id_transaction : int
       - id_joueur : int
       - solde : int
       - date : datetime
+      «Create» __init__(id_transaction : int, joueur_id : str, solde : int, date : datetime)
     }
 
       class Pot {
       - montant_pot : int
-      - id_joueur : int
-      - grouper_mise :list[int]
-      - affecter_pot :list[int]
-      - reinitialiser_pot :list[int]
+      - joueurs_contributeurs : list[int]
+      «Create» __init__(montant_pot : int = 0, joueurs_contributeurs : list[int] = [])
+      + grouper_mise () void
+      + affecter_pot () void
+      + reinitialiser_pot () void
 
     }
 
     class Siege {
-      - id_siege_ : int
+      + id_siege_ : int
+      + est_occupe : bool
+      «Create» __init__(id_siege : int)
+      + occuper() void
+      + liberer() void
     }
 
     class Monnaie {
-      - monnaie : int
+      + valeur : int
+      «Create» __init__(valeur : int)
+      + __str__() str
+      + __repr__() str
     }
 
     class Table {
-      - id_table_ : int
-      - nb_siege : int
-      - nb_joueur: int
-      - grosse_blinde : monnaie
+      + id_table_ : int
+      + nb_sieges : int
+      + nb_joueurs: int
+      + blind_initial : Monnaie
+      «Create» __init__(id_table : int, nb_sieges : int, blind_initial : Monnaie)
     }
 
     class AccessPartie {
       + tables_ : int
       + id_partie : int
-      + rejoindre_table()
-      + creer_table()
+      «Create» __init__()
+      + rejoindre_table(joueur : Joueur) bool
+      + creer_table(nb_sieges : int) Table
     }
 
     class Main {
       + id_partie : int
       + joueurs : list[JoueurPartie]
-      + repartition_blinde()
-      + calcul_gagnant(flop, dict[Joueur : Main])
+      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
+      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
     }
 
 
     class Partie {
       + id_partie : int
       + joueurs : list[JoueurPartie]
-      + pot : list[monnaie]
-      + finir_partie() : bool
+      + tour : int
+      + pot : Pot
+      «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
+      + repartition_blind() void
+      + gerer_blind() void
+      + finir_partie() bool
     }
 
     class JoueurPartie {
         + main : Main
         + statut : str
-        + miser()
-        + se_coucher()
-        + suivre()
+        + siege : Siege
+        «Create» __init__(joueur : Joueur, siege : Siege)
+        + miser(montant : int)
+        + se_coucher() void
+        + suivre() void
     }
     
-    class MainJoueur {
+    class MainJoueurComplete {
+      - cartes list[cartes]
       «Create» __init__(cartes : list[Carte] = [])
-      - cartes : list[cartes]
-      + combinaison() : int
+      + combinaison() int
+    }
+
+    class MainJoueur {
+      - cartes tuple[Carte]
+      «Create» __init__(cartes : tuple[Carte])
     }
 
     class Combinaison {
-      - cartes : list[cartes]
-      + combinaison() : int
+      - cartes list[cartes]
+      «Create» init(cartes : list[Carte] = [])
+      + combinaison() int
+      
     }
 
     class Flop {
@@ -165,16 +191,19 @@ ul.task-list li input[type="checkbox"] {
       «property» + valeur : str
       «property» + couleur : str
       «Create» __init__(valeur : str, couleur : str)
-      «classmethod» + VALEURS() : tuple[str]
-      «classmethod» + COULEURS() : tuple[str]
-      __eq__(other) : bool
-      __str__() : str
-      __repr__() : str
-      __hash__() : int
+      «classmethod» + VALEURS() tuple[str]
+      «classmethod» + COULEURS() tuple[str]
+      __eq__(other) bool
+      __str__() str
+      __repr__() str
+      __hash__() int
     }
 
     class Croupier {
+      + pioche : ListeDeCartes
+      «Create» __init__(pioche : ListeDeCartes = None)
       + melanger(cartes : ListeDeCartes)
+      + debarrasser (cartes: ListeDeCartes)
       + ajouter_carte(cartes : ListeDeCartes,  carte : Carte)
 
     }
@@ -182,16 +211,32 @@ ul.task-list li input[type="checkbox"] {
     class ListeDeCartes{
       - cartes : list[Carte]
       «Create» __init__(cartes : list[Carte] or None)
-      - __str__() : str
-      - __len__() : int
+      - __str__() str
+      - __len__() int
+      + ajouter_carte(carte : Carte)
     }
 
-    Joueur &lt;|-- JoueurPartie
+    Joueur &lt;|-- JoueurPartieKV
     ListeDeCartes &lt;|-- Flop
-    Partie "1" o-- "1..*" JoueurPartie : participe
-    Carte "1..*" o-- "1..5" Combinaison : contient
-    Carte ""1..* o-- "1" ListeDeCartes : contient
-    Siege "1..8" o-- "1" Table : contient</code></pre>
+    ListeDeCartes &lt;|-- Combinaison
+    Carte &lt;|-- MainJoueurComplete
+    AccessPartie "1" o-- "1..*" Partie : ouvre
+    Partie "1" --&gt; "0..*" JoueurPartie : contient
+    Partie "1" o-- "1" Pot : possède
+    Partie "1" --&gt; "1" Table : se_joue_sur
+    Croupier "1" o-- "1..*" Carte : gère
+    JoueurPartie "1..8" o-- "1..*" Main : gère
+    MainJoueurComplete "1..8" o-- "1*" Main : compare
+    MainJoueurComplete "1" o-- "0..1" MainJoueur : contient
+    ListeDeCartes "1" *-- "1..*" Carte : contient
+    Table "1" o-- "1..8" Siege : contient
+    JoueurPartie "0..1" o-- "1" Siege : occupe
+    MainJoueur "1" o-- "1..*" Carte: utilise
+    Joueur "1" o-- "1" Monnaie : possède  
+    Transaction "1" -- "0..*" Admin : permet
+    Transaction "1" --&gt; "1" Monnaie : utilise
+    Transaction "1" --&gt; "1" Joueur : débite
+    Transaction "1" --&gt; "1" Joueur : crédite</code></pre>
 </section>
 
 </main>

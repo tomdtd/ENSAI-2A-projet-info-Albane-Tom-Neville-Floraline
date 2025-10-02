@@ -7,7 +7,7 @@ Ce diagramme est codé avec [mermaid](https://mermaid.js.org/syntax/classDiagram
 * inconvénient : on ne maîtrise pas bien l'affichage
 
 Pour afficher ce diagramme dans VScode :
-
+kv
 * à gauche aller dans **Extensions** (ou CTRL + SHIFT + X)
 * rechercher `mermaid`
   * installer l'extension **Markdown Preview Mermaid Support**
@@ -40,8 +40,8 @@ classDiagram
     }
 
       class Pot {
-      - montant_pot : int
-      - joueurs_contributeurs : list[int]
+      - montant_pot : Monnaie
+      - joueurs_contributeurs : list[JoueurPartie]
       «Create» __init__(montant_pot : int = 0, joueurs_contributeurs : list[int] = [])
       + grouper_mise () void
       + affecter_pot () void
@@ -50,7 +50,7 @@ classDiagram
     }
 
     class Siege {
-      + id_siege_ : int
+      + id_siege : int
       + est_occupe : bool
       «Create» __init__(id_siege : int)
       + occuper() void
@@ -73,8 +73,7 @@ classDiagram
     }
 
     class AccessPartie {
-      + tables_ : int
-      + id_partie : int
+      + tables : list[Table]
       «Create» __init__()
       + rejoindre_table(joueur : Joueur) bool
       + creer_table(nb_sieges : int) Table
@@ -84,7 +83,7 @@ classDiagram
       + id_partie : int
       + joueurs : list[JoueurPartie]
       «Create» __init__(id_partie : int, joueurs : list[JoueurPartie] = [])
-      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete):Joueur
+      + calcul_gagnant(joueurs: Joueur, MainJoueurComplete): Joueur
     }
 
 
@@ -102,6 +101,7 @@ classDiagram
     class JoueurPartie {
         + main : Main
         + statut : str
+        + dealer : bool
         + siege : Siege
         «Create» __init__(joueur : Joueur, siege : Siege)
         + miser(montant : int)
@@ -110,19 +110,19 @@ classDiagram
     }
     
     class MainJoueurComplete {
-      - cartes list[cartes]
+      - cartes : list[cartes]
       «Create» __init__(cartes : list[Carte] = [])
       + combinaison() int
     }
 
     class MainJoueur {
-      - cartes tuple[Carte]
+      - cartes : tuple[Carte]
       «Create» __init__(cartes : tuple[Carte])
     }
 
     class Combinaison {
-      - cartes list[cartes]
-      «Create» init(cartes : list[Carte] = [])
+      - cartes : list[cartes]
+      «Create» __init__(cartes : list[Carte] = [])
       + combinaison() int
       
     }
@@ -139,8 +139,8 @@ classDiagram
       «property» + valeur : str
       «property» + couleur : str
       «Create» __init__(valeur : str, couleur : str)
-      «classmethod» + VALEURS() tuple[str]
-      «classmethod» + COULEURS() tuple[str]
+      «classmethod» + VALEURS() : tuple[str]
+      «classmethod» + COULEURS() : tuple[str]
       __eq__(other) bool
       __str__() str
       __repr__() str
@@ -168,22 +168,24 @@ classDiagram
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
     ListeDeCartes <|-- MainJoueurComplete
-    AccessPartie "1" o-- "1..*" Partie : ouvre
+    Joueur "1" --> "1..*" AccessPartie : accède
+    AccessPartie "1" o-- "1..*" Table : contient
     Partie "1" --> "0..*" JoueurPartie : contient
     Partie "1" o-- "1" Pot : possède
     Partie "1" --> "1" Table : se_joue_sur
     Croupier "1" o-- "1..*" Carte : gère
     JoueurPartie "1..8" o-- "1..*" Main : gère
-    JoueurPartie "1..8" o-- "1*" MainJoueurComplete : compare
-    MainJoueur "1" o-- "2" ListeDeCartes : contient
-    MainJoueurComplete "1" o-- "2" MainJoueur : contient
-    ListeDeCartes "1" *-- "1..*" Carte : contient
+    Main "1" o-- "1..8" MainJoueurComplete : compare
+    MainJoueurComplete "1" o-- "0..1" MainJoueur : contient
+    MainJoueurComplete "1" o-- "0..1" Flop : contient
+    ListeDeCartes "1" o-- "1..*" Carte : contient
     Table "1" o-- "1..8" Siege : contient
-    JoueurPartie "0..1" o-- "1" Siege : occupe
-    MainJoueur "1" o-- "1..*" ListeDeCartes: utilise
-    Joueur "1" o-- "1" Monnaie : possède  
-    Transaction "1" -- "0..*" Admin : permet
-    Transaction "1" --> "1" Monnaie : utilise
-    Transaction "1" --> "1" Joueur : débite
+    JoueurPartie "1" o-- "1" Siege : occupe
+    MainJoueur "1" o-- "1..*" Carte: utilise
+    Joueur "1" o-- "1..*" Monnaie : possède  
+    Pot "1" o-- "1..*" Monnaie : possède  
+    Admin "1" -- "0..*" Transaction: permet
+    Transaction "1" o-- "1..*" Monnaie : contient
+    Joueur "1" --> "1" Transaction : débite
     Transaction "1" --> "1" Joueur : crédite
 ```
