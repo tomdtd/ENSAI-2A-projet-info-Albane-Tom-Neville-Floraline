@@ -28,6 +28,4 @@ class TestFlop():
         with pytest.raises(ValueError) as excinfo:
             Flop(cartes)
         assert "Le flop doit contenir entre 3 et 5 cartes" in str(excinfo.value)
-        # THEN
-        assert len(flop.cartes) == 3
-        assert flop.cartes == cartes
+        
