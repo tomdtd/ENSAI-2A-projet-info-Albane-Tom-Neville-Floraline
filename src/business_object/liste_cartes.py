@@ -42,5 +42,8 @@ class ListeCartes():
             raise ValueError(f"{carte} doit être une Carte.")
         else:
             self.__cartes.append(carte)
+
+    def get_cartes(self):
+        return self.__cartes
     
 
