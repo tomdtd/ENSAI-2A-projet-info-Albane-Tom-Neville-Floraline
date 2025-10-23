@@ -1,6 +1,6 @@
 """Implémentation de la classe ListeCartes."""
 
-from carte import Carte
+from src.business_object.carte import Carte
 
 class ListeCartes():
     """

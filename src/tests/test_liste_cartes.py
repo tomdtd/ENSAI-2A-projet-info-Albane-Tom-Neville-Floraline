@@ -33,3 +33,4 @@ class TestListeCartes():
         with pytest.raises(ValueError, match=re.escape(expected_message)):
             # WHEN
             ListeCartes(liste_cartes)
+                                        
