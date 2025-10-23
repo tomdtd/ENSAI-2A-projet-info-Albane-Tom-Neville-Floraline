@@ -27,7 +27,7 @@ class TestListeCartes():
         # GIVEN
         liste_cartes = [pytest.as_coeur, "2 de Pique"]
 
-        message_attendu = f"Tous les elements de {cartes} doivent être des cartes."
+        message_attendu = f"Tous les elements de {liste_cartes} doivent être des cartes."
 
         # THEN
         with pytest.raises(ValueError, match=re.escape(expected_message)):
