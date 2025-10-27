@@ -1,6 +1,8 @@
 """Implémentation de la classe MainJoueurComplete."""
 
 from src.business_object.liste_cartes import ListeCartes
+from src.business_object.combinaison import Combinaison
+from src.business_object.carte import Carte
 
 class MainJoueurComplete(ListeCartes):
     """
@@ -20,18 +22,59 @@ class MainJoueurComplete(ListeCartes):
     """
     def __init__(self, cartes):
         if len(cartes) < 2 or len(cartes) > 7 :
-                raise ValueError(f"Le flop doit contenir entre 2 et 7 cartes.")
+                raise ValueError(f"La main complète doit contenir entre 2 et 7 cartes.")
         super().__init__(cartes)
-    
-    @classmethod #permet de créer a partir des classes main et flop 
+
+    @classmethod #permet de créer a partir des classes main et flop
                  # main_complete = MainJoueurComplete.recuperer_main_et_flop(main, flop)
     def recuperer_main_et_flop(cls, main: "MainJoueur", flop: "Flop"):
         return cls(list(main.get_cartes()) + flop.get_cartes())
 
     def combinaison(self):
         "Determine la combinaison de la main complete d'un joueur."
-        self.cartes.sort()
-        
+        cartes = self.get_cartes()
+        valeurs = [c.valeur for c in cartes]
+        couleurs = [c.couleur for c in cartes]
 
+        ordre_valeurs = {val: i for i, val in enumerate(Carte.VALEURS())}
+        indices = [ordre_valeurs[v] for v in valeurs]
 
+        compte_valeurs = {v: valeurs.count(v) for v in set(valeurs)}
+        compte_couleurs = {c: couleurs.count(c) for c in set(couleurs)}
 
+        # Vérification quinte flush / quinte royale
+        for couleur in set(couleurs):
+            cartes_couleur = [c for c in cartes if c.couleur == couleur]
+            indices_couleur = sorted([ordre_valeurs[c.valeur] for c in cartes_couleur])
+            for i in range(len(indices_couleur) - 4):
+                if indices_couleur[i:i+5] == list(range(indices_couleur[i], indices_couleur[i]+5)):
+                    valeurs_quinte_flush = [Carte.VALEURS()[idx] for idx in indices_couleur[i:i+5]]
+                    if set(["10","Valet","Dame","Roi","As"]).issubset(valeurs_quinte_flush):
+                        return Combinaison.QuinteRoyale
+                    return Combinaison.QuinteFlush
+
+        # Vérification flush seule
+        for couleur, count in compte_couleurs.items():
+            if count >= 5:
+                return Combinaison.Flush
+
+        # Vérification quinte seule
+        indices_uniques = sorted(set(indices))
+        for i in range(len(indices_uniques) - 4):
+            if indices_uniques[i:i+5] == list(range(indices_uniques[i], indices_uniques[i]+5)):
+                return Combinaison.Quinte
+
+        # Vérification autres combinaisons
+        counts = sorted(compte_valeurs.values(), reverse=True)
+        if 4 in counts:
+            return Combinaison.Carre
+        if 3 in counts and 2 in counts:
+            return Combinaison.Full
+        if 3 in counts:
+            return Combinaison.Brelan
+        if counts.count(2) == 2:
+            return Combinaison.DoublePaire
+        if 2 in counts:
+            return Combinaison.Paire
+
+        return Combinaison.CarteHaute
