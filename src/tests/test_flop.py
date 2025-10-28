@@ -1,13 +1,15 @@
 import pytest
 from src.business_object.flop import Flop
+from src.business_object.carte import Carte
+from src.business_object.liste_cartes import ListeCartes
 
 class TestFlop():
-    def test_flop_valide_ok(self):
+    def test_flop_valide_ok(self) :
         # GIVEN
         cartes = [
             Carte("As", "Pique"),
             Carte("Roi", "Coeur"),
-            Carte("Dame", "Trèfle")
+            Carte("Dame", "Trêfle")
         ]
 
         # WHEN

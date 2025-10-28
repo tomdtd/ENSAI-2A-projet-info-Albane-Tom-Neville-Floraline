@@ -46,4 +46,7 @@ class ListeCartes():
     def get_cartes(self):
         return self.__cartes
     
-
+    @property
+    def cartes(self):
+        """Retourne la liste des cartes."""
+        return self.__cartes
