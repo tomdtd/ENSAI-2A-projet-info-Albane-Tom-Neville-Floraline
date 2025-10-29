@@ -45,12 +45,18 @@ class MainJoueurComplete(ListeCartes):
         # Vérification quinte flush / quinte royale
         for couleur in set(couleurs):
             cartes_couleur = [c for c in cartes if c.couleur == couleur]
-            indices_couleur = sorted([ordre_valeurs[c.valeur] for c in cartes_couleur])
+            valeurs_couleur = {c.valeur for c in cartes_couleur}
+
+            # Vérifie Quinte Royale (même couleur, valeurs spécifiques)
+            if {"10", "Valet", "Dame", "Roi", "As"}.issubset(valeurs_couleur):
+                return Combinaison.QuinteRoyale
+
+            # Vérifie Quinte Flush (5 valeurs consécutives, même couleur)
+            valeurs_connues = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Valet", "Dame", "Roi", "As"]
+            indices_couleur = [valeurs_connues.index(v) for v in valeurs_couleur if v in valeurs_connues]
+            indices_couleur.sort()
             for i in range(len(indices_couleur) - 4):
-                if indices_couleur[i:i+5] == list(range(indices_couleur[i], indices_couleur[i]+5)):
-                    valeurs_quinte_flush = [Carte.VALEURS()[idx] for idx in indices_couleur[i:i+5]]
-                    if set(["10","Valet","Dame","Roi","As"]).issubset(valeurs_quinte_flush):
-                        return Combinaison.QuinteRoyale
+                if indices_couleur[i + 4] - indices_couleur[i] == 4 and len(set(indices_couleur[i:i + 5])) == 5:
                     return Combinaison.QuinteFlush
 
         # Vérification flush seule

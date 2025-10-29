@@ -1,6 +1,7 @@
 import pytest
 from src.business_object.main_joueur_complete import MainJoueurComplete
 from src.business_object.combinaison import Combinaison
+from src.business_object.carte import Carte
 import re
 
 class TestMainJoueurComplete():
@@ -29,18 +30,18 @@ class TestMainJoueurComplete():
 
     def test_combinaison_QuinteRoyale(self):
         # GIVEN
-        liste_cartes =  [
-            pytest.as_coeur,
-            pytest.roi_coeur,
-            pytest.dame_coeur,
-            pytest.valet_coeur,
-            pytest.dix_coeur,
-            pytest.deux_pique,
-            pytest.trois_trefle
+        liste_cartes = [
+            Carte("As", "Coeur"),
+            Carte("Roi", "Coeur"),
+            Carte("Dame", "Coeur"),
+            Carte("Valet", "Coeur"),
+            Carte("10", "Coeur"),
+            Carte("2", "Pique"),
+            Carte("3", "Trêfle")
         ]
 
         # WHEN
-        cartes = MainJoueurComplete(liste_cartes)
+        main_complete = MainJoueurComplete(liste_cartes)
 
         # THEN
-        assert cartes.combinaison() == Combinaison.QuinteRoyale
+        assert main_complete.combinaison() == Combinaison.QuinteRoyale
