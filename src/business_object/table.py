@@ -1,3 +1,5 @@
+from src.business_object.siege import Siege
+
 class Table:
     def __init__(self, id_table: int, nb_sieges: int, blind_initial: Monnaie):
         self.id_table = id_table
