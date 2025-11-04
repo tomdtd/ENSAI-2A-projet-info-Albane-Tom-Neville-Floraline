@@ -1,6 +1,6 @@
 class Siege:
     """
-    Classe représentant un siège dans un contexte commercial.
+    Classe représentant un siège à une table de poker
     
     Attributs:
     ----------

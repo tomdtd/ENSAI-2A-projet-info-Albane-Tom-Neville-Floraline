@@ -1,3 +1,5 @@
+from src.business_object.table import Table
+
 class AccessPartie:
     def __init__(self):
         self.tables: list[Table] = []
@@ -6,7 +8,7 @@ class AccessPartie:
         for table in self.tables:
             for siege in table.sieges:
                 if not siege.est_occupe():
-                    siege.occupe = True  # You might want to assign joueur here
+                    siege.occupe = True  
                     return True
         return False
 
