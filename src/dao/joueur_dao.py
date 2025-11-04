@@ -56,7 +56,7 @@ class JoueurDao(metaclass=Singleton):
 
     @log
     def trouver_par_id(self, id_joueur) -> Joueur:
-        """trouver un joueur grace à son id
+        """Trouver un joueur grace à son id
 
         Parameters
         ----------
