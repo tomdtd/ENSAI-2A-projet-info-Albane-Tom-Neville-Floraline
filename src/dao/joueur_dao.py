@@ -32,15 +32,15 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO joueur(pseudo, mdp, age, mail, fan_pokemon) VALUES        "
-                        "(%(pseudo)s, %(mdp)s, %(age)s, %(mail)s, %(fan_pokemon)s)             "
-                        "  RETURNING id_joueur;                                                ",
+                        "INSERT INTO utilisateur (pseudo, mot_de_passe, age, mail, credit)"
+                        "VALUES (%(pseudo)s, %(mot_de_passe)s, %(age)s, %(mail)s, %(credit)s)"
+                        "RETURNING id_utilisateur;                                              ",
                         {
                             "pseudo": joueur.pseudo,
                             "mdp": joueur.mdp,
                             "age": joueur.age,
+                            "credit": joueur.credit,
                             "mail": joueur.mail,
-                            "fan_pokemon": joueur.fan_pokemon,
                         },
                     )
                     res = cursor.fetchone()
@@ -88,7 +88,7 @@ class JoueurDao(metaclass=Singleton):
                 pseudo=res["pseudo"],
                 age=res["age"],
                 mail=res["mail"],
-                fan_pokemon=res["fan_pokemon"],
+                credit=res["credit"],
                 id_joueur=res["id_joueur"],
             )
 
@@ -129,8 +129,8 @@ class JoueurDao(metaclass=Singleton):
                     pseudo=row["pseudo"],
                     mdp=row["mdp"],
                     age=row["age"],
+                    credit=row["credit"],
                     mail=row["mail"],
-                    fan_pokemon=row["fan_pokemon"],
                 )
 
                 liste_joueurs.append(joueur)
@@ -162,15 +162,15 @@ class JoueurDao(metaclass=Singleton):
                         "   SET pseudo      = %(pseudo)s,                   "
                         "       mdp         = %(mdp)s,                      "
                         "       age         = %(age)s,                      "
+                        "       credit      = %(credit)s,                   "
                         "       mail        = %(mail)s,                     "
-                        "       fan_pokemon = %(fan_pokemon)s               "
                         " WHERE id_joueur = %(id_joueur)s;                  ",
                         {
                             "pseudo": joueur.pseudo,
                             "mdp": joueur.mdp,
                             "age": joueur.age,
                             "mail": joueur.mail,
-                            "fan_pokemon": joueur.fan_pokemon,
+                            "credit": joueur.credit,
                             "id_joueur": joueur.id_joueur,
                         },
                     )
@@ -249,7 +249,7 @@ class JoueurDao(metaclass=Singleton):
                 mdp=res["mdp"],
                 age=res["age"],
                 mail=res["mail"],
-                fan_pokemon=res["fan_pokemon"],
+                credit=res["credit"],
                 id_joueur=res["id_joueur"],
             )
 

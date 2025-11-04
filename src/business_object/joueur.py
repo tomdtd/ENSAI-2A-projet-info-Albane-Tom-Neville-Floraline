@@ -16,7 +16,7 @@ class Joueur:
         nombre de crédits du joueur
     """
 
-    def __init__(self, pseudo, age, mail, credit mdp=None, id_joueur=None):
+    def __init__(self, pseudo, age, mail, credit, mdp=None, id_joueur=None):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
