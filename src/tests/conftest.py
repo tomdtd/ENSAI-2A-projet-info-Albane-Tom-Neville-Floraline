@@ -1,4 +1,4 @@
-"Ficher pour configurer les test"
+"Fichier pour configurer les test"
 
 
 import pytest
