@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
     %% Titre du diagramme
     %% Modèle Physique de Données (MPD) - Serveur de Poker
