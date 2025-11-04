@@ -30,5 +30,8 @@ class TableService :
         return False
 
     @log
-    def 
+    def lister_tables_disponibles(self) -> list[Table]:
+        """Liste toutes les tables qui ont au moins un siège disponible."""
+        tables = TableDao().lister_tous()
+        return [table for table in tables if not table.table_remplie()]
 
