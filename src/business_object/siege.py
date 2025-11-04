@@ -4,7 +4,8 @@ class Siege:
     
     Attributs:
     ----------
-        occupe (bool): Indique si le siège est occupé ou non.       
+        occupe (bool): Indique si le siège est occupé ou non.
+        id_joueur(Joueur) : référence du joueur occupant le siège, son ID       
 
     Méthodes:
     ----------
@@ -13,6 +14,7 @@ class Siege:
     """
     def __init__(self):
         self.occupe = False
+        self.id_joueur = None
 
     def est_occupe(self) -> bool:
         return self.occupe

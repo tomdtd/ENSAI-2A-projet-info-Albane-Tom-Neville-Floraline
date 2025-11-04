@@ -23,6 +23,7 @@ class Joueur:
         self.mdp = mdp
         self.age = age
         self.credit = credit
+        self.mail = mail
         
 
     def __str__(self):

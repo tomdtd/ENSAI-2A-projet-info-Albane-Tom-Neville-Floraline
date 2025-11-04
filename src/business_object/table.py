@@ -8,5 +8,10 @@ class Table:
         self.sieges = [Siege() for _ in range(nb_sieges)]
 
     def table_remplie(self) -> bool:
+        """Renvoie un booléen selon si la table est remplie ou non"""
         return all(siege.est_occupe() for siege in self.sieges)
+
+    def get_joueurs(self) -> list[Joueur]:
+        """Retourne la liste des joueurs assis à cette table."""
+        return [siege.joueur for siege in self.sieges if siege.est_occupe() and siege.joueur is not None]
 
