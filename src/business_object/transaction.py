@@ -18,16 +18,7 @@ class Transaction :
     date : datetime
         Date et heure de la transaction.
 
-    Attributes
-    ----------
-    __id_transaction : int
-        Identifiant unique de la transaction.
-    __id_joueur : str
-        Identifiant du joueur concerné.
-    __solde : int
-        Montant de la transaction.
-    __date : datetime
-        Date et heure de l’opération.
+
     """
 
     def __init__(self, id_transaction: int, joueur_id: str, solde: int, date: datetime):

@@ -70,12 +70,22 @@ entity "Transactions" as T_TRANSACTIONS {
   * montant : DECIMAL(10, 2)
   * date_transaction : TIMESTAMP
 }
-
+' Table des administrateurs 
+entity "Administrateurs" as T_ADMINISTRATEURS {
+  * **id_admin** : INTEGER <<PK>> <<AI>>
+  --
+  * nom_admin : VARCHAR(100)
+  * mot_de_passe_hash : VARCHAR(255)
+  * email : VARCHAR(100) <<UNIQUE>>
+}
 
 ' --- Définition des Relations ---
 
 ' Un joueur peut avoir plusieurs transactions
 T_JOUEURS ||--o{ T_TRANSACTIONS
+
+'Admin et Transactions 
+T_ADMINISTRATEURS ||--o{ T_TRANSACTIONS
 
 ' Une table de jeu peut accueillir plusieurs parties (dans le temps)
 T_TABLES ||--o{ T_PARTIES
