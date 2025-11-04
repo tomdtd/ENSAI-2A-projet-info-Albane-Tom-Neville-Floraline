@@ -50,7 +50,7 @@ def setup_test_environment():
 # ou remplacer par le code initial
 # @pytest.fixture(scope="session", autouse=True)
 # def setup_test_environment():
-#     """Initialisation des données de test"""
+#     Initialisation des données de test
 #     with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
 #         ResetDatabase().lancer(test_dao=True)
 #         yield
