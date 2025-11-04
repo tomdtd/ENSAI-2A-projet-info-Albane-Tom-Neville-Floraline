@@ -239,7 +239,6 @@ class JoueurDao(metaclass=Singleton):
                     res = cursor.fetchone()
         except Exception as e:
             logging.info(e)
-
         joueur = None
 
         if res:
