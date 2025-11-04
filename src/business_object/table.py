@@ -1,4 +1,6 @@
 from src.business_object.siege import Siege
+from src.business_object.monnaie import Monnaie
+from src.business_object.joueur import Joueur
 
 class Table:
     def __init__(self, id_table: int, nb_sieges: int, blind_initial: Monnaie):
