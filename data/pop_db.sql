@@ -3,9 +3,9 @@
 -- =====================================================================
 
 -- -----------------------------------------------------
--- Insertion de 100 utilisateurs avec des noms français
+-- Insertion de 100 joueurs avec des noms français
 -- -----------------------------------------------------
-INSERT INTO utilisateur (pseudo, mot_de_passe, credit) VALUES
+INSERT INTO joueur (pseudo, mdp, credit) VALUES
 ('jean.dupont', 'hash_placeholder', 150.00), ('marie.curie', 'hash_placeholder', 2500.50), ('pierre.martin', 'hash_placeholder', 75.25),
 ('sophie.bernard', 'hash_placeholder', 500.00), ('luc.dubois', 'hash_placeholder', 1200.00), ('camille.robert', 'hash_placeholder', 300.00),
 ('antoine.richard', 'hash_placeholder', 950.75), ('emilie.petit', 'hash_placeholder', 45.00), ('julien.durand', 'hash_placeholder', 880.00),
@@ -40,11 +40,11 @@ INSERT INTO utilisateur (pseudo, mot_de_passe, credit) VALUES
 ('celestine.ferreira', 'hash_placeholder', 1950.00), ('baptiste.morvan', 'hash_placeholder', 95.00), ('anouk.fleury', 'hash_placeholder', 620.00);
 
 -- -----------------------------------------------------
--- Création des portefeuilles pour chaque utilisateur
+-- Création des portefeuilles pour chaque joueur
 -- On copie simplement le crédit initial dans le solde du portefeuille.
 -- -----------------------------------------------------
-INSERT INTO portefeuille (id_utilisateur, solde)
-SELECT id_utilisateur, credit FROM utilisateur;
+INSERT INTO portefeuille (id_joueur, solde)
+SELECT id_joueur, credit FROM joueur;
 
 -- -----------------------------------------------------
 -- Insertion de 20 tables de poker
@@ -62,13 +62,13 @@ INSERT INTO table_poker (nom_table, nb_sieges, blind_initial) VALUES
 -- Ajout de joueurs à quelques tables
 -- -----------------------------------------------------
 -- Table 1 (Débutants - Paris), 5 joueurs
-INSERT INTO table_joueur (id_table, id_utilisateur) VALUES (1, 1), (1, 4), (1, 8), (1, 15), (1, 22);
+INSERT INTO table_joueur (id_table, id_joueur) VALUES (1, 1), (1, 4), (1, 8), (1, 15), (1, 22);
 -- Table 2 (Micro Limite - Lyon), 6 joueurs (pleine)
-INSERT INTO table_joueur (id_table, id_utilisateur) VALUES (2, 2), (2, 5), (2, 10), (2, 11), (2, 20), (2, 30);
+INSERT INTO table_joueur (id_table, id_joueur) VALUES (2, 2), (2, 5), (2, 10), (2, 11), (2, 20), (2, 30);
 -- Table 5 (Cash Game NL25 - Bordeaux), 3 joueurs
-INSERT INTO table_joueur (id_table, id_utilisateur) VALUES (5, 3), (5, 6), (5, 9);
+INSERT INTO table_joueur (id_table, id_joueur) VALUES (5, 3), (5, 6), (5, 9);
 -- Table 9 (Heads Up - Nantes), 2 joueurs
-INSERT INTO table_joueur (id_table, id_utilisateur) VALUES (9, 7), (9, 14);
+INSERT INTO table_joueur (id_table, id_joueur) VALUES (9, 7), (9, 14);
 
 -- -----------------------------------------------------
 -- Mise à jour du compteur de joueurs sur les tables peuplées
@@ -85,19 +85,19 @@ UPDATE table_poker SET nb_joueurs = 2 WHERE id_table = 9;
 -- Une partie sur la table 2 avec tous les joueurs
 INSERT INTO partie (id_table, pot) VALUES (2, 5.75);
 SET @last_partie_id = LAST_INSERT_ID();
-INSERT INTO partie_joueur (id_partie, id_utilisateur) VALUES
+INSERT INTO partie_joueur (id_partie, id_joueur) VALUES
 (@last_partie_id, 2), (@last_partie_id, 5), (@last_partie_id, 10),
 (@last_partie_id, 11), (@last_partie_id, 20), (@last_partie_id, 30);
 
 -- Une autre partie sur la table 2
 INSERT INTO partie (id_table, pot) VALUES (2, 12.50);
 SET @last_partie_id = LAST_INSERT_ID();
-INSERT INTO partie_joueur (id_partie, id_utilisateur) VALUES
+INSERT INTO partie_joueur (id_partie, id_joueur) VALUES
 (@last_partie_id, 2), (@last_partie_id, 5), (@last_partie_id, 10),
 (@last_partie_id, 11), (@last_partie_id, 20), (@last_partie_id, 30);
 
 -- Une partie sur la table 9 (Heads Up)
 INSERT INTO partie (id_table, pot) VALUES (9, 22.00);
 SET @last_partie_id = LAST_INSERT_ID();
-INSERT INTO partie_joueur (id_partie, id_utilisateur) VALUES
+INSERT INTO partie_joueur (id_partie, id_joueur) VALUES
 (@last_partie_id, 7), (@last_partie_id, 14);

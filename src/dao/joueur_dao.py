@@ -32,16 +32,16 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO utilisateur (pseudo, mot_de_passe, age, mail, credit)"
-                        "VALUES (%(pseudo)s, %(mot_de_passe)s, %(age)s, %(mail)s, %(credit)s)"
-                        "RETURNING id_utilisateur;                                              ",
+                        "INSERT INTO joueur (id_joueur, pseudo, mot_de_passe, age, credit)"
+                        "VALUES (%(id_joueur)s, %(pseudo)s, %(mot_de_passe)s, %(age)s, %(credit)s)"
+                        "RETURNING id_joueur;                                              ",
                         {
+                            "id_joueur": joueur.id_joueur,
                             "pseudo": joueur.pseudo,
                             "mdp": joueur.mdp,
                             "age": joueur.age,
                             "credit": joueur.credit,
-                            "mail": joueur.mail,
-                        },
+                        },x
                     )
                     res = cursor.fetchone()
         except Exception as e:
