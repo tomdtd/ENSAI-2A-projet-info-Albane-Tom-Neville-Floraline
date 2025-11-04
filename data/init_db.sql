@@ -20,6 +20,7 @@ CREATE TABLE joueur (
   pseudo VARCHAR(50) NOT NULL UNIQUE,
   -- On utilise VARCHAR(255) pour stocker un hash du mot de passe, jamais le mot de passe en clair.
   mdp VARCHAR(255) NOT NULL,
+  mail VARCHAR(255) NOT NULL,
   age INT NOT NULL,
   credit DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
