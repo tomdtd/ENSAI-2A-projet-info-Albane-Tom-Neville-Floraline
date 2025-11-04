@@ -1,4 +1,6 @@
-INSERT INTO joueur(id_joueur, pseudo, mdp, mail, age, credit) VALUES
+INSERT INTO joueur(id_joueur, pseudo, mdp, mail, age, credit)
+OVERRIDING SYSTEM VALUE
+VALUES
 (999, 'admin',    '0000', 'admin@projet.fr', 0, 0),
 (998, 'a',        'a',    'a@ensai.fr',      20, 10),
 (997, 'maurice',  '1234', 'maurice@ensai.fr',20, 50),
