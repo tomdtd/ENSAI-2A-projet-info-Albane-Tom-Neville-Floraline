@@ -66,7 +66,7 @@ def test_creer_ok():
     """Création de Joueur réussie"""
 
     # GIVEN
-    joueur = Joueur(pseudo="gg", age=44, mail="test@test.io")
+    joueur = Joueur(pseudo="gg", age=44, mdp="123abc", credit=0)
 
     # WHEN
     creation_ok = JoueurDao().creer(joueur)
@@ -80,7 +80,7 @@ def test_creer_ko():
     """Création de Joueur échouée (age et mail incorrects)"""
 
     # GIVEN
-    joueur = Joueur(pseudo="gg", age="chaine de caractere", mail=12)
+    joueur = Joueur(pseudo="gg", age="chaine de caractere", mdp="123abc", credit=0)
 
     # WHEN
     creation_ok = JoueurDao().creer(joueur)
@@ -94,7 +94,7 @@ def test_modifier_ok():
 
     # GIVEN
     new_mail = "maurice@mail.com"
-    joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mail=new_mail)
+    joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mdp="123abc", credit=0)
 
     # WHEN
     modification_ok = JoueurDao().modifier(joueur)
@@ -107,7 +107,7 @@ def test_modifier_ko():
     """Modification de Joueur échouée (id inconnu)"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@mail.com")
+    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", credit=0)
 
     # WHEN
     modification_ok = JoueurDao().modifier(joueur)
@@ -120,7 +120,7 @@ def test_supprimer_ok():
     """Suppression de Joueur réussie"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mail="miguel@projet.fr")
+    joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mdp="123abc", credit=0)
 
     # WHEN
     suppression_ok = JoueurDao().supprimer(joueur)
@@ -133,7 +133,7 @@ def test_supprimer_ko():
     """Suppression de Joueur échouée (id inconnu)"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mail="no@z.fr")
+    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", credit=0)
 
     # WHEN
     suppression_ok = JoueurDao().supprimer(joueur)
