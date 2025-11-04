@@ -35,4 +35,16 @@ class TableService :
         tables = TableDao().lister_tous()
         return [table for table in tables if not table.table_remplie()]
 
-    
+    @log
+    def quitter_table(self, joueur: Joueur, id_table: int) -> bool:
+        """Un joueur quitte une table et libère son siège."""
+        table = TableDao().trouver_par_id(id_table)
+        if table:
+            for siege in table.sieges:
+                if siege.id_joueur == joueur.id_joueur:
+                    siege.occupe = False
+                    siege.id_joueur = None
+                    return TableDao().modifier(table)
+        return False
+
+
