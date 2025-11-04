@@ -44,8 +44,10 @@ class JoueurDao(metaclass=Singleton):
                         },
                     )
                     res = cursor.fetchone()
+                connection.commit() 
         except Exception as e:
-            logging.info(e)
+            #logging.info(e)
+            logging.exception("Erreur lors de la création du joueur")
 
         created = False
         if res:

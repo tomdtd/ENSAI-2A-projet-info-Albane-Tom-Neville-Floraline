@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS joueur;
 -- Stocke les informations sur les joueurs inscrits.
 -- -----------------------------------------------------
 CREATE TABLE joueur (
-  id_joueur INT PRIMARY KEY,
+  id_joueur INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   pseudo VARCHAR(50) NOT NULL UNIQUE,
   -- On utilise VARCHAR(255) pour stocker un hash du mot de passe, jamais le mot de passe en clair.
   mdp VARCHAR(255) NOT NULL,
