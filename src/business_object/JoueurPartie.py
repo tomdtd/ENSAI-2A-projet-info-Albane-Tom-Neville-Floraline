@@ -1,7 +1,7 @@
 class JoueurPartie:
     """
     Classe d'association liant un Joueur à une Partie.
-    Elle contient les informations spécifiques au joueur pour cette partie.
+    
     Attributs:
     ----------
     joueur : Joueur
@@ -35,7 +35,7 @@ class JoueurPartie:
         self.mise_tour = Monnaie(0) 
 
     def miser(self, montant: int):
-        """Le joueur mise un certain montant."""
+        """Le joueur mise un certain montant"""
         self.solde_partie.debiter(montant)
         self.mise_tour.crediter(montant)
         print(f"{self.joueur.pseudo} mise {montant}.")
@@ -44,3 +44,4 @@ class JoueurPartie:
         """Le joueur se couche."""
         self.statut = "couché"
         print(f"{self.joueur.pseudo} se couche.")
+

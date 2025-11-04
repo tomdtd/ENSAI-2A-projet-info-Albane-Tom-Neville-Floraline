@@ -30,7 +30,27 @@ class Joueur:
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
         return f"Joueur({self.pseudo}, {self.age} ans)"
+    
+    def __repr__(self) -> str:
+        return f"Joueur(id={self.id_joueur}, pseudo='{self.pseudo}', solde={self.solde.get()})"
 
-    def as_list(self) -> list[str]:
-        """Retourne les attributs du joueur dans une liste"""
-        return [self.pseudo, self.age, self.mail, self.joueur_poker]
+    def crediter(self, montant: int):
+        """Crédite le solde du joueur."""
+        self.solde.crediter(montant)
+
+    def debiter(self, montant: int):
+        """Débite le solde du joueur."""
+        self.solde.debiter(montant)
+
+    def jouer_partie(self):
+        """Action pour qu'un joueur rejoigne ou démarre une partie."""
+        print(f"Le joueur {self.pseudo} entre dans une partie.")
+
+    def changer_mdp(self, last_mdp, new_mdp: str) -> None:
+        """Permet à l'administrateur de changer son mot de passe."""
+        if self.mdp != last_mdp: 
+            print("Mot de passe actuel incorrect.")
+        else : 
+            self.mdp = new_mdp
+            print(f"Le mot de passe de l'administrateur {self.name} a été changé.")
+

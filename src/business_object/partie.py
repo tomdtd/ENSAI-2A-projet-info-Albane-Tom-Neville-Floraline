@@ -1,22 +1,22 @@
 class partie : 
     """
     Classe représentant une partie du jeu
-    Attributes:
+    Attributs:
     ----------
     joueurs : list[JoueurPartie] 
 
     Liste des joueurs dans la partie
 
-    jour int:
+    jour : int
     Jour actuel de la partie            
     
-    pot Pot: 
+    pot : Pot 
     Pot de la partie     
 
     id_partie : int 
     Identifiant unique de la partie            
 
-    Methods:
+    Methodes:
     ------- 
     repartition_blind() : 
         Gère la répartition des blinds entre les joueurs    
