@@ -32,17 +32,16 @@ class JoueurDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO joueur (id_joueur, pseudo, mdp, mail, age, credit)"
-                        "VALUES (%(id_joueur)s, %(pseudo)s, %(mdp)s, %(mail)s, %(age)s, %(credit)s)"
+                        "INSERT INTO joueur (pseudo, mdp, mail, age, credit)"
+                        "VALUES (%(pseudo)s, %(mdp)s, %(mail)s, %(age)s, %(credit)s)"
                         "RETURNING id_joueur;                                              ",
                         {
-                            "id_joueur": joueur.id_joueur,
                             "pseudo": joueur.pseudo,
                             "mdp": joueur.mdp,
                             "mail": joueur.mail,
                             "age": joueur.age,
                             "credit": joueur.credit,
-                        },x
+                        },
                     )
                     res = cursor.fetchone()
         except Exception as e:
@@ -91,7 +90,6 @@ class JoueurDao(metaclass=Singleton):
                 mdp=res["mdp"],
                 mail=res["mail"],
                 credit=res["credit"],
-                id_joueur=res["id_joueur"],
             )
 
         return joueur
@@ -127,7 +125,6 @@ class JoueurDao(metaclass=Singleton):
         if res:
             for row in res:
                 joueur = Joueur(
-                    id_joueur=row["id_joueur"],
                     pseudo=row["pseudo"],
                     mdp=row["mdp"],
                     mail=row["mail"],
@@ -165,7 +162,7 @@ class JoueurDao(metaclass=Singleton):
                         "       mdp         = %(mdp)s,                      "
                         "       mail        = %(mail)s,                     "
                         "       age         = %(age)s,                      "
-                        "       credit      = %(credit)s,                   "
+                        "       credit      = %(credit)s                    "
                         " WHERE id_joueur = %(id_joueur)s;                  ",
                         {
                             "pseudo": joueur.pseudo,
@@ -252,7 +249,6 @@ class JoueurDao(metaclass=Singleton):
                 mail=res["mail"],
                 age=res["age"],
                 credit=res["credit"],
-                id_joueur=res["id_joueur"],
             )
 
         return joueur
