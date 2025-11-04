@@ -1,6 +1,7 @@
 from src.business_object.table import Table
 from src.business_object.joueur import Joueur
 
+
 class AccessPartie:
     def __init__(self):
         self.tables: list[Table] = []
