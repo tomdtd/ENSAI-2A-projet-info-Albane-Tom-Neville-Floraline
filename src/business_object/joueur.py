@@ -12,20 +12,18 @@ class Joueur:
         le mot de passe du joueur
     age : int
         age du joueur
-    mail : str
-        mail du joueur
-    fan_pokemon : bool
-        indique si le joueur est un fan de Pokemon
+    credit : int
+        nombre de crédits du joueur
     """
 
-    def __init__(self, pseudo, age, mail, mdp=None, fan_pokemon=False, id_joueur=None):
+    def __init__(self, pseudo, age, mail, credit mdp=None, id_joueur=None):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
         self.mdp = mdp
         self.age = age
-        self.mail = mail
-        self.joueur_poker = joueur_poker
+        self.credit = credit
+        
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
