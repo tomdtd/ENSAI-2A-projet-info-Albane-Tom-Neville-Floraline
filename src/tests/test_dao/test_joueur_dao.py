@@ -12,50 +12,12 @@ from dao.joueur_dao import JoueurDao
 from business_object.joueur import Joueur
 
 
-joueurs = [
-    (999, "admin",    "0000",    "admin@projet.fr", 0,  0),
-    (998, "a",        "a",       "a@ensai.fr",      20, 10),
-    (997, "maurice",  "1234",    "maurice@ensai.fr",20, 50),
-    (996, "batricia", "9876",    "bat@projet.fr",   25, 30),
-    (995, "miguel",   "abcd",    "miguel@projet.fr",23, 15),
-    (994, "gilbert",  "toto",    "gilbert@projet.fr",21, 40),
-    (993, "junior",   "aaaa",    "junior@projet.fr", 15, 20),
-]
-
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
     """Initialisation des données de test"""
     with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
-        # reset de la base (script SQL préparé dans ResetDatabase)
         ResetDatabase().lancer(test_dao=True)
-
-        # insertion idempotente : OVERRIDING SYSTEM VALUE + ON CONFLICT DO NOTHING
-        with DBConnection().connection as connection:
-            with connection.cursor() as cursor:
-                for id_joueur, pseudo, mdp_plain, mail, age, credit in joueurs:
-                    mdp_hashed = hash_password(mdp_plain, pseudo)
-                    cursor.execute(
-                        """
-                        INSERT INTO joueur(id_joueur, pseudo, mdp, mail, age, credit)
-                        OVERRIDING SYSTEM VALUE
-                        VALUES (%s, %s, %s, %s, %s, %s)
-                        ON CONFLICT (id_joueur) DO NOTHING
-                        """,
-                        (id_joueur, pseudo, mdp_hashed, mail, age, credit),
-                    )
-            connection.commit()
-
         yield
-"""
-# ou remplacer par le code initial
-# @pytest.fixture(scope="session", autouse=True)
-# def setup_test_environment():
-#     Initialisation des données de test
-#     with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
-#         ResetDatabase().lancer(test_dao=True)
-#         yield
-# 
-"""
 
 
 def test_trouver_par_id_existant():
