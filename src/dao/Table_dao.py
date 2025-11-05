@@ -93,7 +93,7 @@ class TableDao(metaclass=Singleton):
         return table
 
     @log
-    def mettre_a_jour(self, table: Table) -> bool:
+    def modifier(self, table: Table) -> bool:
         """Modifie les propriétés d'une table
 
         Parameters
@@ -209,7 +209,7 @@ class TableDao(metaclass=Singleton):
         return deleted
 
     @log
-    def lister_toutes(self) -> list[Table]:
+    def lister_tous(self) -> list[Table]:
         """Récupère la liste de toutes les tables disponibles
 
         Parameters
