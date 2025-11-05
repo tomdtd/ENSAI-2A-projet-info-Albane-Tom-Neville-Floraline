@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 
-from dao.Admin_dao import AdminDao
+from dao.admin_dao import AdminDao
 from business_object.admin import Admin
 
 class TestAdminDao(unittest.TestCase):
@@ -175,7 +175,7 @@ class TestAdminDao(unittest.TestCase):
         }
         self.mock_cursor.fetchone.return_value = mock_joueur_data
         
-        result = self.Admin_dao.banir_joueur(1, 1, "Comportement inapproprié")
+        result = self.admin_dao.banir_joueur(1, 1, "Comportement inapproprié")
         
         self.assertTrue(result)
         # Vérifie que trois appels execute ont été faits (select + insert + delete)

@@ -359,5 +359,5 @@ class PartieDao(metaclass=Singleton):
                     res = cursor.fetchone()
         except Exception as e:
             logging.info(e)
-
+ 
         return res["count"] if res else 0

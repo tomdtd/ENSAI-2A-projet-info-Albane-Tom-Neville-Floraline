@@ -30,8 +30,8 @@ entity "Joueurs" as T_JOUEURS {
 entity "Tables" as T_TABLES {
   * **id_table** : INTEGER <<PK>> <<AI>>
   --
-  * nom_table : VARCHAR(100)
   * nb_sieges_max : INTEGER
+  * siege : list[Siege]
   * blind_initial : DECIMAL(10, 2)
 }
 
@@ -42,9 +42,17 @@ entity "Parties" as T_PARTIES {
   * id_table : INTEGER <<FK>>
   * date_debut : TIMESTAMP
   * date_fin : TIMESTAMP
-  * statut_partie : VARCHAR(20) ' ex: "en_attente", "en_cours", "terminee"
-  * pot_total : DECIMAL(10, 2)
+  * pot : DECIMAL(10, 2)
   * cartes_communes : VARCHAR(20) ' Flop, Turn, River (ex: "AS,KD,5C,8S,JD")
+}
+
+'Tables pour les sièges des joueurs
+entity "Siege" as T_SIEGE {
+  * **id_siege** : INTEGER <<PK>> <<AI>>
+  --
+  * id_table : INTEGER <<FK>>
+  * numero_siege : INTEGER
+  * est_occupe : BOOLEAN
 }
 
 ' Table de jonction pour la relation N-M entre Joueurs et Parties
@@ -106,5 +114,8 @@ T_TABLES ||--o{ T_PARTIES
 ' Relation N-M entre Joueurs et Parties, via la table de jonction
 T_JOUEURS }|--|| T_JOUEURS_PARTIES
 T_PARTIES }|--|| T_JOUEURS_PARTIES
+
+' Relation entre tables et sièges
+T_TABLES ||--o{ T_SIEGE
 
 @enduml

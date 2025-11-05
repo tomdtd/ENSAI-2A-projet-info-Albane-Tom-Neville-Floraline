@@ -30,12 +30,13 @@ class Partie :
     gérer_blind() :
         Gère les blinds pour chaque tour de la partie
     """
-    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], jour : int, pot : Pot):
+    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], jour : int, pot : Pot, id_table : int, date_debut : str) :
         self.id_partie = id_partie
         self.joueurs = joueurs  
-        self.jour = jour
         self.pot = pot 
-
+        self.id_table = id_table
+        self.date_debut = date_debut
+        self.date_fin = None
     def __str__(self):
         return f"Partie(id_partie={self.id_partie}, joueurs={self.joueurs}, jour={self.jour}, pot={self.pot})"  
 

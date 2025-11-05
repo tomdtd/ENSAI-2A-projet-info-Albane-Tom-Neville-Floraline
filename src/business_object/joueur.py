@@ -10,25 +10,26 @@ class Joueur:
         pseudo du joueur
     mdp : str
         le mot de passe du joueur
-    age : int
-        age du joueur
     credit : int
         nombre de crédits du joueur
+    mail : str
+        adresse mail du joueur 
+    date_creation : str
+        date de création du compte joueur  
     """
 
-    def __init__(self, pseudo, age, mail, credit, mdp=None, id_joueur=None):
+    def __init__(self, pseudo, mail, credit, mdp, id_joueur, date_creation):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
         self.mdp = mdp
-        self.age = age
         self.credit = credit
         self.mail = mail
-        
+        self.date_creation = date_creation
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
-        return f"Joueur({self.pseudo}, {self.age} ans)"
+        return f"Joueur({self.pseudo}, {self.mail} ans)"
     
     def __repr__(self) -> str:
         return f"Joueur(id={self.id_joueur}, pseudo='{self.pseudo}', solde={self.solde.get()})"
