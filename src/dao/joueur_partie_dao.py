@@ -58,6 +58,3 @@ class JoueurPartieDao(metaclass=Singleton):
 
         return created
 
-
-
-
