@@ -1,5 +1,6 @@
 import pytest
 from src.business_object.pot import Pot
+from src.business_object.monnaie import Monnaie
 
 class TestPot : 
     def test_initialisation_pot(self):

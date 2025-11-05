@@ -6,7 +6,7 @@ from src.business_object.monnaie import Monnaie
 
 
 class Pot:
-     """
+    """
     La classe Pot modélise la cagnotte commune d'une partie de poker.
 
     Parameters

@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from utils.securite import hash_password
 from business_object.joueur import Joueur
 from dao.joueur_dao import JoueurDao
-from services.joueur_service import JoueurService
+from service.joueur_service import JoueurService
 
 @pytest.fixture
 def mock_joueur_dao():
