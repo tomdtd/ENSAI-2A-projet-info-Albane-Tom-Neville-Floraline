@@ -20,8 +20,8 @@ entity "Joueurs" as T_JOUEURS {
   * **id_joueur** : INTEGER <<PK>> <<AI>>
   --
   * pseudo : VARCHAR(50) <<UNIQUE>>
-  * mot_de_passe_hash : VARCHAR(255)
-  * email : VARCHAR(100) <<UNIQUE>>
+  * mdp_hash : VARCHAR(255)
+  * mail : VARCHAR(100) <<UNIQUE>>
   * credit : DECIMAL(10, 2)
   * date_creation : TIMESTAMP
 }
@@ -30,9 +30,10 @@ entity "Joueurs" as T_JOUEURS {
 entity "Tables" as T_TABLES {
   * **id_table** : INTEGER <<PK>> <<AI>>
   --
-  * nb_sieges_max : INTEGER
+  * nb_sieges : INTEGER
   * siege : list[Siege]
   * blind_initial : DECIMAL(10, 2)
+  * table_remplie : BOOLEAN
 }
 
 ' Table pour les parties qui ont lieu sur les tables
@@ -63,9 +64,8 @@ entity "Joueurs_Parties" as T_JOUEURS_PARTIES {
   * main_joueur : VARCHAR(10) ' ex: "AC,KH"
   * montant_mise_total : DECIMAL(10, 2)
   * numero_siege : INTEGER
-  * statut_dans_la_partie : VARCHAR(20) ' ex: "actif", "couche", "all_in"
   * gain_perte : DECIMAL(10, 2)
-  * combinaison_finale : VARCHAR(50) ' ex: "Full House"
+  * combinaison : VARCHAR(50) ' 
 }
 
 ' Table pour l'historique des transactions financières
@@ -113,9 +113,14 @@ T_TABLES ||--o{ T_PARTIES
 
 ' Relation N-M entre Joueurs et Parties, via la table de jonction
 T_JOUEURS }|--|| T_JOUEURS_PARTIES
-T_PARTIES }|--|| T_JOUEURS_PARTIES
 
-' Relation entre tables et sièges
-T_TABLES ||--o{ T_SIEGE
+' Relation entre parties et sièges
+T_PARTIES ||--o{ T_SIEGE
+
+'Relation entre joueurs et sièges (via Joueurs_Parties)
+T_JOUEURS ||--o{ T_JOUEURS_PARTIES
+
+'Relation entre joueur et sièges (via Joueurs_Parties)
+T_SIEGE }|--|| T_JOUEURS_PARTIES
 
 @enduml

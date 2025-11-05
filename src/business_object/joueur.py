@@ -16,6 +16,10 @@ class Joueur:
         adresse mail du joueur 
     date_creation : str
         date de création du compte joueur  
+    age : int
+        age du joueur
+    solde : Monnaie
+        solde du joueur 
     """
 
     def __init__(self, pseudo, mail, credit, mdp, id_joueur, date_creation):
@@ -23,8 +27,8 @@ class Joueur:
         self.id_joueur = id_joueur
         self.pseudo = pseudo
         self.mdp = mdp
-        self.credit = credit
         self.mail = mail
+        self.credit = credit
         self.date_creation = date_creation
 
     def __str__(self):
