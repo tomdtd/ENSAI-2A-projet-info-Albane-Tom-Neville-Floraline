@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import Mock, patch
 from datetime import datetime, timedelta
 
-from dao.admin_dao import AdminDao
+from dao.Admin_dao import AdminDao
 from business_object.admin import Admin
 
 class TestAdminDao(unittest.TestCase):
@@ -51,7 +51,7 @@ class TestAdminDao(unittest.TestCase):
         """Test de trouver_par_id quand l'admin n'existe pas"""
         self.mock_cursor.fetchone.return_value = None
         
-        result = self.admin_dao.trouver_par_id(999)
+        result = self.admin_dao.trouver_par_id(9999)
         
         self.assertIsNone(result)
 
@@ -186,7 +186,7 @@ class TestAdminDao(unittest.TestCase):
         self.mock_cursor.fetchone.return_value = None
         
         with self.assertRaises(ValueError):
-            self.admin_dao.banir_joueur(999, 1, "Raison")
+            self.admin_dao.banir_joueur(99999, 1, "Raison")
 
     def test_debannir_joueur_success(self):
         """Test de débannissement d'un joueur avec succès"""

@@ -284,7 +284,7 @@ class AdminDao(metaclass=Singleton):
                     )
                     joueur = cursor.fetchone()
                     
-                    if not joueur:
+                    if not joueur :
                         raise ValueError("Joueur non trouvé")
                     
                     # Insérer dans joueurs_banis
