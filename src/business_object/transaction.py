@@ -21,7 +21,7 @@ class Transaction :
 
     """
 
-    def __init__(self, id_transaction: int, id_joueur: str, solde: int, date: datetime):
+    def __init__(self, id_joueur: str, solde: int, date: datetime, id_transaction: int = None):
         if not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
         if not isinstance(id_joueur, int):
@@ -57,3 +57,10 @@ class Transaction :
     def __repr__(self):
         return (f"Transaction(id_transaction={self.__id_transaction!r}, "
                 f"joueur_id={self.__id_joueur!r}, solde={self.__solde!r}, date={self.__date!r})")
+
+    @id_transaction.setter
+    def id_transaction(self, value):
+        """Setter pour permettre à la DAO d'assigner l'ID généré par la base."""
+        if not isinstance(value, int):
+            raise TypeError("id_transaction doit être un entier.")
+        self.__id_transaction = value

@@ -36,7 +36,7 @@ class TransactionDao(metaclass=Singleton):
                         {
                             "id_transaction": transaction.id_transaction,
                             "id_joueur": transaction.id_joueur,
-                            "solde": trnasaction.solde,
+                            "solde": transaction.solde,
                             "date": transaction.date
                         },
                     )

@@ -10,6 +10,7 @@ from dao.db_connection import DBConnection
 from dao.transaction_dao import TransactionDao
 
 from business_object.transaction import Transaction
+from datetime import datetime
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_test_environment():
@@ -22,7 +23,7 @@ def test_creer_ok():
     """Création d'une Transaction' réussie"""
 
     # GIVEN
-    transaction = Transaction(id_transaction=1, id_joueur=999, solde=5, date=1)
+    transaction = Transaction(id_transaction=1, id_joueur=999, solde=5, date=datetime.strptime("2025-11-05 14:32:10", "%Y-%m-%d %H:%M:%S"))
 
     # WHEN
     creation_ok = TransactionDao().creer(transaction)
