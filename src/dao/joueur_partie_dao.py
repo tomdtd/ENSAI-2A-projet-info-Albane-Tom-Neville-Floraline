@@ -11,7 +11,7 @@ from business_object.joueur import Joueur
 class JoueurPartieDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs lors d'une partie dans la base de données"""
     @log
-    def creer(self, joueur, id_partie) -> bool:
+    def creer(self, joueur_partie, id_partie) -> bool:
         """Creation d'un joueur_partie dans la base de données
 
         Parameters
@@ -38,23 +38,22 @@ class JoueurPartieDao(metaclass=Singleton):
                         "VALUES (%(id_partie)s, %(id_joueur)s, %(mise_joueur)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
                         "RETURNING id_joueur;                                              ",
                         {
-                            "id_partie": jp.id_partie,
-                            "id_joueur": jp.id_joueur,
-                            "mise_joueur": str(jp.mise_joueur),
-                            "solde_partie": str(jp.solde_partie),
-                            "statut": jp.statut,
-                            "id_siege": jp.id_siege,
+                            "id_partie": id_partie,
+                            "id_joueur": joueur_partie.joueur.id_joueur,
+                            "mise_joueur": str(joueur_partie.mise_tour),
+                            "solde_partie": str(joueur_partie.solde_partie),
+                            "statut": joueur_partie.statut,
+                            "id_siege": joueur_partie.siege.id_siege,
                         },
                     )
                     res = cursor.fetchone()
                 connection.commit() 
         except Exception as e:
-            #logging.info(e)
             logging.exception("Erreur lors de la création du joueur_partie")
 
         created = False
         if res:
-            joueur.id_joueur = res["id_joueur"]
+            joueur_partie.id_joueur = res["id_joueur"]
             created = True
 
         return created

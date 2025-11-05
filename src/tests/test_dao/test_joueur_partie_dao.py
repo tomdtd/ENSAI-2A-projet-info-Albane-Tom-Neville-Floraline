@@ -11,7 +11,7 @@ from dao.joueur_partie_dao import JoueurPartieDao
 
 from business_object.JoueurPartie import JoueurPartie
 from business_object.joueur import Joueur
-from business_object.Siege import Siege
+from business_object.siege import Siege
 
 
 @pytest.fixture(scope="session", autouse=True)
