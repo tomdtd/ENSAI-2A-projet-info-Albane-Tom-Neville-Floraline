@@ -24,8 +24,8 @@ class Transaction :
     def __init__(self, id_transaction: int, id_joueur: str, solde: int, date: datetime):
         if not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
-        if not isinstance(joueur_id, str):
-            raise TypeError("id_joueur doit être une chaîne de caractères.")
+        if not isinstance(id_joueur, int):
+            raise TypeError("id_joueur doit être un entier.")
         if not isinstance(solde, int):
             raise TypeError("solde doit être un entier.")
         if not isinstance(date, datetime):

@@ -124,7 +124,7 @@ CREATE TABLE partie_joueur (
 CREATE TABLE transaction (
   id_transaction INT NOT NULL, 
   id_joueur INT NOT NULL, 
-  solde: INT DEFAULT 0,
+  solde INT DEFAULT 0,
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_transaction),
   CONSTRAINT fk_transaction_joueur
