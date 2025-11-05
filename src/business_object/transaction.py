@@ -21,7 +21,7 @@ class Transaction :
 
     """
 
-    def __init__(self, id_transaction: int, joueur_id: str, solde: int, date: datetime):
+    def __init__(self, id_transaction: int, id_joueur: str, solde: int, date: datetime):
         if not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
         if not isinstance(joueur_id, str):
@@ -31,7 +31,7 @@ class Transaction :
         if not isinstance(date, datetime):
             raise TypeError("date doit être un objet datetime.")
         self.__id_transaction = id_transaction
-        self.__id_joueur = joueur_id
+        self.__id_joueur = id_joueur
         self.__solde = solde
         self.__date = date
 
