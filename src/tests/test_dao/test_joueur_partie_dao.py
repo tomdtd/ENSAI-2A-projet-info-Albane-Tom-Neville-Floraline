@@ -8,10 +8,12 @@ from utils.securite import hash_password
 
 from dao.db_connection import DBConnection
 from dao.joueur_partie_dao import JoueurPartieDao
+from dao.joueur_dao import JoueurDao
 
 from business_object.JoueurPartie import JoueurPartie
 from business_object.joueur import Joueur
 from business_object.siege import Siege
+from business_object.partie import Partie
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -25,9 +27,13 @@ def test_creer_ok():
     """Création de Joueur réussie"""
 
     # GIVEN
-    joueur_partie = JoueurPartie(joueur= Joueur(pseudo="gg", age=44, mail="gg@ensai.fr", mdp="123abc", credit=0),
+    joueur = Joueur(pseudo="gg", age=44, mail="gg@ensai.fr", mdp="123abc", credit=0)
+    JoueurDao().creer(joueur)
+    joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=100)
+    partie = Partie(id_partie=123,joueurs=[], jour=1,pot=pot_test)
+    PartieDao().creer(partie)
     id_partie = 123
 
     # WHEN
