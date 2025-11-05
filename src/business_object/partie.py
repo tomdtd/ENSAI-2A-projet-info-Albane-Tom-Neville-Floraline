@@ -1,4 +1,7 @@
-class partie : 
+from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.pot import Pot
+
+class Partie : 
     """
     Classe représentant une partie du jeu
     Attributs:
