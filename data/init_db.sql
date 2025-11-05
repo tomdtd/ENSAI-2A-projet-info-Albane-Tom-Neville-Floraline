@@ -101,8 +101,10 @@ CREATE TABLE partie (
 CREATE TABLE partie_joueur (
   id_partie INT NOT NULL,
   id_joueur INT NOT NULL,
-  -- On pourrait ajouter des informations comme la mise du joueur, ses cartes, etc.
-  -- mise_joueur DECIMAL(10, 2),
+  mise_joueur DECIMAL(10,2) DEFAULT 0.00,
+  solde_partie DECIMAL(10,2) DEFAULT 0.00,
+  statut VARCHAR(50) DEFAULT 'en attente',
+  id_siege INT NULL,
   PRIMARY KEY (id_partie, id_joueur),
   CONSTRAINT fk_partiejoueur_partie
     FOREIGN KEY (id_partie)

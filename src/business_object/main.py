@@ -1,4 +1,6 @@
-class Main(liste_cartes):
+from src.business_object.liste_cartes import ListeCartes
+
+class Main(ListeCartes):
     """
     Représente les cartes privées d'un joueur.
     Hérite de la classe liste_cartes.           
