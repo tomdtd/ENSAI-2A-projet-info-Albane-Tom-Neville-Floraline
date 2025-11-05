@@ -1,0 +1,38 @@
+import os
+import pytest
+
+from unittest.mock import patch
+
+from utils.reset_database import ResetDatabase
+from utils.securite import hash_password
+
+from dao.db_connection import DBConnection
+from dao.joueur_partie_dao import JoueurPartieDao
+
+from business_object.JoueurPartie import JoueurPartie
+from business_object.joueur import Joueur
+from business_object.Siege import Siege
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_environment():
+    """Initialisation des données de test"""
+    with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
+        ResetDatabase().lancer(test_dao=True)
+        yield
+
+def test_creer_ok():
+    """Création de Joueur réussie"""
+
+    # GIVEN
+    joueur_partie = JoueurPartie(joueur= Joueur(pseudo="gg", age=44, mail="gg@ensai.fr", mdp="123abc", credit=0),
+                                 siege= Siege(), 
+                                 solde_partie=100)
+    id_partie = 123
+
+    # WHEN
+    creation_ok = JoueurPartieDao().creer(joueur_partie, id_partie)
+
+    # THEN
+    assert creation_ok
+    assert joueur_partie.id_joueur
