@@ -4,6 +4,7 @@ from utils.log_decorator import log
 from utils.securite import hash_password
 
 from business_object.table import Table
+from business_object.joueur import Joueur
 from dao.Table_dao import TableDao
 class TableService :
     """Classe contenant les méthodes de service des tables"""
