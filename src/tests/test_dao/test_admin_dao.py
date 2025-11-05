@@ -175,7 +175,7 @@ class TestAdminDao(unittest.TestCase):
         }
         self.mock_cursor.fetchone.return_value = mock_joueur_data
         
-        result = self.admin_dao.banir_joueur(1, 1, "Comportement inapproprié")
+        result = self.Admin_dao.banir_joueur(1, 1, "Comportement inapproprié")
         
         self.assertTrue(result)
         # Vérifie que trois appels execute ont été faits (select + insert + delete)
