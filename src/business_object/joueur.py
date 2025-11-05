@@ -14,8 +14,6 @@ class Joueur:
         nombre de crédits du joueur
     mail : str
         adresse mail du joueur 
-    date_creation : str
-        date de création du compte joueur  
     age : int
         age du joueur
     solde : Monnaie
@@ -29,7 +27,6 @@ class Joueur:
         self.mdp = mdp
         self.mail = mail
         self.credit = credit
-        self.date_creation = date_creation
         self.age = age  
 
     def __str__(self):
