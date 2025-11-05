@@ -101,7 +101,7 @@ CREATE TABLE partie (
 CREATE TABLE partie_joueur (
   id_partie INT NOT NULL,
   id_joueur INT NOT NULL,
-  mise_tour INT DEFAULT 0.00,
+  mise_tour INT DEFAULT 0,
   solde_partie DECIMAL(10,2) DEFAULT 0.00,
   statut VARCHAR(50) DEFAULT 'en attente',
   id_siege INT NULL,
@@ -114,4 +114,21 @@ CREATE TABLE partie_joueur (
     FOREIGN KEY (id_joueur)
     REFERENCES joueur(id_joueur)
     ON DELETE CASCADE
+);
+
+
+-- -----------------------------------------------------
+-- Table `transaction` 
+-- Gere les transaction.
+-- -----------------------------------------------------
+CREATE TABLE transaction (
+  id_transaction INT NOT NULL, 
+  id_joueur INT NOT NULL, 
+  solde INT DEFAULT 0,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id_transaction),
+  CONSTRAINT fk_transaction_joueur
+        FOREIGN KEY (id_joueur)
+        REFERENCES joueur(id_joueur)
+        ON DELETE CASCADE
 );

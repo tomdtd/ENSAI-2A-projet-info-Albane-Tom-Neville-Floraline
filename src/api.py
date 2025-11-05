@@ -4,7 +4,7 @@ from src.service.table_service import TableService
 from src.business_object.joueur import Joueur
 from src.business_object.table import Table
 
-app = FastAPI()
+app = FastAPI(title="pickpoker")
 
 # Instancie tes services
 joueur_service = JoueurService()

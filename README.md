@@ -1,8 +1,8 @@
 # ENSAI-2A-projet-info-template
 
-Template for the ENSAI 2nd year IT project.
+Template for the poker application.
 
-This very simple application includes a few elements that may help with the info 2A project:
+This very simple application includes a few elements that may help with our info 2A project:
 
 - Layer programming (DAO, service, view, business_object)
 - Connection to a database
@@ -31,8 +31,8 @@ This very simple application includes a few elements that may help with the info
 
 - [ ] Open **Visual Studio Code**
 - [ ] File > Open Folder
-- [ ] Select folder *ENSAI-2A-projet-info-template*
-  - *ENSAI-2A-projet-info-template* should be the root of your Explorer
+- [ ] Select folder *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline*
+  - *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline* should be the root of your Explorer
   - :warning: if not the application will not launch. Retry open folder
 
 
@@ -103,7 +103,7 @@ At the root of the project :
 - [ ] Paste in and complete the elements below
 
 ```default
-WEBSERVICE_HOST=https://pokeapi.co/api/v2
+WEBSERVICE_HOST=https://pickpoker.com/api
 
 POSTGRES_HOST=sgbd-eleves.domensai.ecole
 POSTGRES_PORT=5432
