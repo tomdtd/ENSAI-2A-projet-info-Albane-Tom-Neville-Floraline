@@ -1,53 +1,64 @@
-from tabulate import tabulate
 from utils.log_decorator import log
 from tabulate import tabulate
-from utils.log_decorator import log
-from business_object.accesspartie import AccessPartie
-from business_object.monnaie import Monnaie
 from business_object.joueur import Joueur
+from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.pot import Pot
+from src.business_object.partie import Partie
+from business_object.monnaie import Monnaie
 
 
 class PartieService:
-    """Classe contenant les méthodes de service pour gérer les parties"""
+    """Service pour orchestrer le lancement et la gestion d'une partie de poker"""
 
-    def __init__(self):
-        self.access_partie = AccessPartie()
-
-    @log
-    def creer_table(self, nb_sieges: int, blind: float):
-        """Créer une nouvelle table avec un nombre de sièges et un blind"""
-        blind_monnaie = Monnaie(blind)
-        return self.access_partie.creer_table(nb_sieges, blind_monnaie)
+    def __init__(self, logger=None):
+        self.logger = logger
+        self.id_compteur = 1  # Identifiant unique de partie
 
     @log
-    def rejoindre_table(self, joueur: Joueur) -> bool:
-        """Permet à un joueur de rejoindre une table avec siège libre"""
-        return self.access_partie.rejoindre_table(joueur)
+    def lancer_partie(self, joueurs: list[Joueur], dealer_id: int) -> str:
+        """Instancie une Partie, répartit les blinds, joue un tour et affiche le résumé"""
+        try:
+            # Initialiser les JoueurPartie avec Monnaie et statut par défaut
+            joueurs_partie = []
+            for j in joueurs:
+                jp = JoueurPartie(
+                    joueur=j,
+                    solde_partie=Monnaie(valeur=int(j.credit)),
+                    statut="actif",
+                    mise_tour=Monnaie(valeur=0),
+                    siege=None,
+                    main=None
+                )
+                joueurs_partie.append(jp)
 
-    @log
-    def afficher_tables(self) -> str:
-        """Affiche toutes les tables créées avec leur état"""
-        entetes = ["ID Table", "Blind", "Sièges", "Occupés"]
-        lignes = []
+            # Créer le pot initial
+            pot = Pot()
 
-        for table in self.access_partie.tables:
-            nb_occupes = sum(1 for s in table.sieges if s.est_occupe())
-            lignes.append([
-                table.id_table,
-                str(table.blind_initial),
-                len(table.sieges),
-                nb_occupes
-            ])
+            # Créer la partie
+            partie = Partie(
+                joueurs=joueurs_partie,
+                jour=1,
+                pot=pot,
+                id_partie=self.id_compteur
+            )
+            self.id_compteur += 1
 
-        str_tables = "-" * 100
-        str_tables += "\nListe des tables \n"
-        str_tables += "-" * 100 + "\n"
-        str_tables += tabulate(
-            tabular_data=lignes,
-            headers=entetes,
-            tablefmt="psql",
-            floatfmt=".2f"
-        )
-        str_tables += "\n"
+            # Répartition des blinds
+            partie.repartition_blind()
 
-        return str_tables
+            # Gérer les blinds du tour
+            partie.gérer_blind()
+
+            # Fin de partie
+            partie.finir_partie()
+
+            # Affichage du résumé avec tabulate
+            resume = [
+                [jp.joueur.pseudo, jp.solde_partie.get(), jp.statut]
+                for jp in partie.joueurs
+            ]
+            print(tabulate(resume, headers=["Pseudo", "Crédit", "Statut"], tablefmt="grid"))
+
+            return f"Partie {partie.id_partie} terminée avec succès."
+        except Exception as e:
+            return f"Erreur lors du lancement de la partie : {str(e)}"

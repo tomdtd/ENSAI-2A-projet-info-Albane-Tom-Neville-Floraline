@@ -24,7 +24,7 @@ This very simple application includes a few elements that may help with our info
 - [ ] Open VSCode
 - [ ] Open **Git Bash**
 - [ ] Clone the repo
-  - `git clone https://github.com/ludo2ne/ENSAI-2A-projet-info-template.git`
+  - `git clone https://github.com/tomdtd/ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline.git`
 
 
 ### Open Folder
