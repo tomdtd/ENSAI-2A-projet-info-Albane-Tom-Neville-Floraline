@@ -82,3 +82,23 @@ def test_supprimer_ok():
     # THEN
     assert suppression_ok
 
+def test_modifier_ok():
+    """Modification de JoueurPartie réussie"""
+
+    # GIVEN
+    joueur = Joueur(pseudo="pseudo2", age=44, mail="pseudo2@ensai.fr", mdp="123abc", credit=0)
+    JoueurDao().creer(joueur)
+    new_solde_partie = 200
+    joueur_partie = JoueurPartie(joueur= joueur,
+                                 siege= Siege(), 
+                                 solde_partie=new_solde_partie)
+    partie = Partie(id_partie=1,joueurs=[], jour=1,pot=Pot())
+    PartieDao().creer(partie)
+    JoueurPartieDao().creer(joueur_partie, 1)
+
+    # WHEN
+    modification_ok = JoueurPartieDao().modifier(joueur_partie, 1)
+
+    # THEN
+    assert modification_ok
+

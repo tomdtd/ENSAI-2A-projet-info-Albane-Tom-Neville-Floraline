@@ -34,7 +34,7 @@ class JoueurPartieDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO partie_joueur (id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege )"
+                        "INSERT INTO partie_joueur (id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege)"
                         "VALUES (%(id_partie)s, %(id_joueur)s, %(mise_tour)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
                         "RETURNING id_joueur;                                              ",
                         {
@@ -87,3 +87,46 @@ class JoueurPartieDao(metaclass=Singleton):
             raise
 
         return res > 0
+    
+    
+    @log
+    def modifier(self, joueur_partie, id_partie) -> bool:
+        """Modification d'un joueur partie dans la base de données
+
+        Parameters
+        ----------
+        joueur_partie : JoueurPartie
+
+        Returns
+        -------
+        created : bool
+            True si la modification est un succès
+            False sinon
+        """
+
+        res = None
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE partie_joueur                               "
+                        "   SET mise_tour     = %(mise_tour)s,              "
+                        "       solde_partie  = %(solde_partie)s,           "
+                        "       statut        = %(statut)s,                 "
+                        "       id_siege      = %(id_siege)s                "
+                        " WHERE id_joueur = %(id_joueur)s AND id_partie = %(id_partie)s;                  ",
+                        {
+                            "id_partie": id_partie,
+                            "id_joueur":joueur_partie.joueur.id_joueur,
+                            "mise_tour": joueur_partie.mise_tour.valeur,
+                            "solde_partie": joueur_partie.solde_partie.valeur,
+                            "statut": joueur_partie.statut,
+                            "id_siege": joueur_partie.siege.id_siege,
+                        },
+                    )
+                    res = cursor.rowcount
+        except Exception as e:
+            logging.info(e)
+
+        return res == 1
