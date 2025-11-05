@@ -33,9 +33,9 @@ class AdminDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT admin_id, name, mdp, mail "
-                        "FROM admins "
-                        "WHERE admin_id = %(admin_id)s;",
+                        "SELECT id_admin, nom_admin, mot_de_passe_hash, email "
+                        "FROM administrateurs "
+                        "WHERE id_admin = %(admin_id)s;",
                         {"admin_id": admin_id},
                     )
                     res = cursor.fetchone()
@@ -45,21 +45,21 @@ class AdminDao(metaclass=Singleton):
         admin = None
         if res:
             admin = Admin(
-                admin_id=res["admin_id"],
-                name=res["name"],
-                mdp=res["mdp"],
-                mail=res["mail"],
+                admin_id=res["id_admin"],
+                name=res["nom_admin"],
+                mdp=res["mot_de_passe_hash"],
+                mail=res["email"],
             )
 
         return admin
 
     @log
-    def trouver_par_nom(self, name: str) -> Optional[Admin]:
+    def trouver_par_nom(self, nom_admin: str) -> Optional[Admin]:
         """Trouver un administrateur par son nom
 
         Parameters
         ----------
-        name : str
+        nom_admin : str
 
         Returns
         -------
@@ -74,10 +74,10 @@ class AdminDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT admin_id, name, mdp, mail "
-                        "FROM admins "
-                        "WHERE name = %(name)s;",
-                        {"name": name},
+                        "SELECT id_admin, nom_admin, mot_de_passe_hash, email "
+                        "FROM administrateurs "
+                        "WHERE nom_admin = %(nom_admin)s;",
+                        {"nom_admin": nom_admin},
                     )
                     res = cursor.fetchone()
         except Exception as e:
@@ -86,22 +86,22 @@ class AdminDao(metaclass=Singleton):
         admin = None
         if res:
             admin = Admin(
-                admin_id=res["admin_id"],
-                name=res["name"],
-                mdp=res["mdp"],
-                mail=res["mail"],
+                admin_id=res["id_admin"],
+                name=res["nom_admin"],
+                mdp=res["mot_de_passe_hash"],
+                mail=res["email"],
             )
 
         return admin
 
     @log
-    def verifier_identifiants(self, name: str, mdp: str) -> Optional[Admin]:
+    def verifier_identifiants(self, nom_admin: str, mot_de_passe_hash: str) -> Optional[Admin]:
         """Vérifier les identifiants de connexion d'un administrateur
 
         Parameters
         ----------
-        name : str
-        mdp : str
+        nom_admin : str
+        mot_de_passe_hash : str
 
         Returns
         -------
@@ -116,10 +116,10 @@ class AdminDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT admin_id, name, mdp, mail "
-                        "FROM admins "
-                        "WHERE name = %(name)s AND mdp = %(mdp)s;",
-                        {"name": name, "mdp": mdp},
+                        "SELECT id_admin, nom_admin, mot_de_passe_hash, email "
+                        "FROM administrateurs "
+                        "WHERE nom_admin = %(nom_admin)s AND mot_de_passe_hash = %(mot_de_passe_hash)s;",
+                        {"nom_admin": nom_admin, "mot_de_passe_hash": mot_de_passe_hash},
                     )
                     res = cursor.fetchone()
         except Exception as e:
@@ -128,22 +128,22 @@ class AdminDao(metaclass=Singleton):
         admin = None
         if res:
             admin = Admin(
-                admin_id=res["admin_id"],
-                name=res["name"],
-                mdp=res["mdp"],
-                mail=res["mail"],
+                admin_id=res["id_admin"],
+                name=res["nom_admin"],
+                mdp=res["mot_de_passe_hash"],
+                mail=res["email"],
             )
 
         return admin
 
     @log
-    def changer_mot_de_passe(self, admin_id: int, nouveau_mdp: str) -> bool:
+    def changer_mot_de_passe(self, admin_id: int, nouveau_mot_de_passe_hash: str) -> bool:
         """Changer le mot de passe d'un administrateur
 
         Parameters
         ----------
         admin_id : int
-        nouveau_mdp : str
+        nouveau_mot_de_passe_hash : str
 
         Returns
         -------
@@ -156,12 +156,12 @@ class AdminDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE admins "
-                        "SET mdp = %(nouveau_mdp)s "
-                        "WHERE admin_id = %(admin_id)s;",
+                        "UPDATE administrateurs "
+                        "SET mot_de_passe_hash = %(nouveau_mot_de_passe_hash)s "
+                        "WHERE id_admin = %(admin_id)s;",
                         {
                             "admin_id": admin_id,
-                            "nouveau_mdp": nouveau_mdp,
+                            "nouveau_mot_de_passe_hash": nouveau_mot_de_passe_hash,
                         }
                     )
                     updated = cursor.rowcount > 0
@@ -171,7 +171,6 @@ class AdminDao(metaclass=Singleton):
 
         return updated
 
-    # === GESTION DES TRANSACTIONS ===
 
     @log
     def valider_transaction(self, id_transaction: int) -> bool:
@@ -253,16 +252,17 @@ class AdminDao(metaclass=Singleton):
 
         return list(res) if res else []
 
-    # === GESTION DES JOUEURS ===
+ 
 
     @log
-    def banir_joueur(self, id_joueur: int, raison: str) -> bool:
-        """Bannir un joueur
+    def banir_joueur(self, id_joueur: int, id_admin: int, raison_ban: str) -> bool:
+        """Bannir un joueur en le déplaçant vers la table joueurs_banis
 
         Parameters
         ----------
         id_joueur : int
-        raison : str
+        id_admin : int
+        raison_ban : str
 
         Returns
         -------
@@ -274,18 +274,40 @@ class AdminDao(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    # Marquer le joueur comme banni
+                    # Récupérer les informations du joueur
                     cursor.execute(
-                        "UPDATE joueurs "
-                        "SET est_banni = TRUE, date_bannissement = %(date_bannissement)s, raison_bannissement = %(raison)s "
-                        "WHERE id_joueur = %(id_joueur)s;",
+                        "SELECT pseudo, mot_de_passe_hash, email, credit FROM joueurs WHERE id_joueur = %(id_joueur)s;",
+                        {"id_joueur": id_joueur},
+                    )
+                    joueur = cursor.fetchone()
+                    
+                    if not joueur:
+                        raise ValueError("Joueur non trouvé")
+                    
+                    # Insérer dans joueurs_banis
+                    cursor.execute(
+                        """
+                        INSERT INTO joueurs_banis (id_admin, pseudo, mot_de_passe_hash, email, credit, date_ban, raison_ban)
+                        VALUES (%(id_admin)s, %(pseudo)s, %(mot_de_passe_hash)s, %(email)s, %(credit)s, %(date_ban)s, %(raison_ban)s);
+                        """,
                         {
-                            "id_joueur": id_joueur,
-                            "date_bannissement": datetime.now(),
-                            "raison": raison,
+                            "id_admin": id_admin,
+                            "pseudo": joueur["pseudo"],
+                            "mot_de_passe_hash": joueur["mot_de_passe_hash"],
+                            "email": joueur["email"],
+                            "credit": joueur["credit"],
+                            "date_ban": datetime.now(),
+                            "raison_ban": raison_ban,
                         }
                     )
-                    banned = cursor.rowcount > 0
+                    
+                    # Supprimer du joueur de la table joueurs
+                    cursor.execute(
+                        "DELETE FROM joueurs WHERE id_joueur = %(id_joueur)s;",
+                        {"id_joueur": id_joueur},
+                    )
+                    
+                    banned = True
         except Exception as e:
             logging.info(e)
             banned = False
@@ -293,12 +315,12 @@ class AdminDao(metaclass=Singleton):
         return banned
 
     @log
-    def debannir_joueur(self, id_joueur: int) -> bool:
-        """Débannir un joueur
+    def debannir_joueur(self, pseudo: str) -> bool:
+        """Débannir un joueur en le restaurant dans la table joueurs
 
         Parameters
         ----------
-        id_joueur : int
+        pseudo : str
 
         Returns
         -------
@@ -310,20 +332,83 @@ class AdminDao(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
+                    # Récupérer les informations du joueur banni
                     cursor.execute(
-                        "UPDATE joueurs "
-                        "SET est_banni = FALSE, date_bannissement = NULL, raison_bannissement = NULL "
-                        "WHERE id_joueur = %(id_joueur)s;",
-                        {"id_joueur": id_joueur},
+                        "SELECT pseudo, mot_de_passe_hash, email, credit FROM joueurs_banis WHERE pseudo = %(pseudo)s;",
+                        {"pseudo": pseudo},
                     )
-                    unbanned = cursor.rowcount > 0
+                    joueur_banni = cursor.fetchone()
+                    
+                    if not joueur_banni:
+                        raise ValueError("Joueur banni non trouvé")
+                    
+                    # Vérifier si le pseudo n'est pas déjà utilisé par un autre joueur
+                    cursor.execute(
+                        "SELECT COUNT(*) FROM joueurs WHERE pseudo = %(pseudo)s;",
+                        {"pseudo": pseudo},
+                    )
+                    existe_deja = cursor.fetchone()[0] > 0
+                    
+                    if existe_deja:
+                        raise ValueError("Un joueur avec ce pseudo existe déjà")
+                    
+                    # Insérer dans joueurs
+                    cursor.execute(
+                        """
+                        INSERT INTO joueurs (pseudo, mot_de_passe_hash, email, credit, date_creation)
+                        VALUES (%(pseudo)s, %(mot_de_passe_hash)s, %(email)s, %(credit)s, %(date_creation)s);
+                        """,
+                        {
+                            "pseudo": joueur_banni["pseudo"],
+                            "mot_de_passe_hash": joueur_banni["mot_de_passe_hash"],
+                            "email": joueur_banni["email"],
+                            "credit": joueur_banni["credit"],
+                            "date_creation": datetime.now(),  # Nouvelle date de création
+                        }
+                    )
+                    
+                    # Supprimer de joueurs_banis
+                    cursor.execute(
+                        "DELETE FROM joueurs_banis WHERE pseudo = %(pseudo)s;",
+                        {"pseudo": pseudo},
+                    )
+                    
+                    unbanned = True
         except Exception as e:
             logging.info(e)
             unbanned = False
 
         return unbanned
 
-    # === STATISTIQUES INDIVIDUELLES ===
+    @log
+    def lister_joueurs_banis(self) -> List[Dict]:
+        """Lister tous les joueurs bannis
+
+        Returns
+        -------
+        list[dict]
+            Liste des joueurs bannis
+        """
+
+        res = None
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        SELECT jb.pseudo, jb.email, jb.credit, jb.date_ban, jb.raison_ban, a.nom_admin as admin_banisseur
+                        FROM joueurs_banis jb
+                        LEFT JOIN administrateurs a ON jb.id_admin = a.id_admin
+                        ORDER BY jb.date_ban DESC;
+                        """
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.info(e)
+
+        return list(res) if res else []
+
 
     @log
     def obtenir_statistiques_joueur(self, id_joueur: int) -> Dict:
@@ -351,7 +436,6 @@ class AdminDao(metaclass=Singleton):
                             j.email,
                             j.credit,
                             j.date_creation,
-                            j.est_banni,
                             
                             -- Statistiques des parties
                             COUNT(DISTINCT jp.id_partie) as total_parties,
@@ -378,7 +462,7 @@ class AdminDao(metaclass=Singleton):
                         LEFT JOIN parties p ON jp.id_partie = p.id_partie
                         LEFT JOIN transactions t ON j.id_joueur = t.id_joueur
                         WHERE j.id_joueur = %(id_joueur)s
-                        GROUP BY j.id_joueur, j.pseudo, j.email, j.credit, j.date_creation, j.est_banni;
+                        GROUP BY j.id_joueur, j.pseudo, j.email, j.credit, j.date_creation;
                         """,
                         {"id_joueur": id_joueur},
                     )
@@ -431,7 +515,6 @@ class AdminDao(metaclass=Singleton):
 
         return list(res) if res else []
 
-    # === STATISTIQUES COLLECTIVES ===
 
     @log
     def obtenir_statistiques_globales(self) -> Dict:
@@ -451,10 +534,10 @@ class AdminDao(metaclass=Singleton):
                     cursor.execute(
                         """
                         SELECT 
-                            -- Joueurs
+                            -- Joueurs actifs
                             COUNT(*) as total_joueurs,
-                            COUNT(CASE WHEN est_banni THEN 1 END) as joueurs_bannis,
-                            COUNT(CASE WHEN est_admin THEN 1 END) as total_admins,
+                            (SELECT COUNT(*) FROM joueurs_banis) as total_joueurs_banis,
+                            COUNT(DISTINCT id_admin) as total_admins,
                             AVG(credit) as credit_moyen,
                             
                             -- Parties
@@ -475,18 +558,10 @@ class AdminDao(metaclass=Singleton):
                             SUM(CASE WHEN type_transaction = 'retrait' THEN montant ELSE 0 END) as total_retraits_platforme,
                             SUM(CASE WHEN type_transaction = 'gain_partie' THEN montant ELSE 0 END) as total_gains_parties_platforme
                             
-                        FROM (
-                            SELECT j.id_joueur, j.est_banni, j.est_admin, j.credit FROM joueurs j
-                        ) j
-                        CROSS JOIN (
-                            SELECT p.id_partie, p.statut_partie, p.pot_total FROM parties p
-                        ) p
-                        CROSS JOIN (
-                            SELECT t.id_table, t.nb_sieges_max FROM tables t
-                        ) t
-                        CROSS JOIN (
-                            SELECT tr.id_transaction, tr.type_transaction, tr.montant FROM transactions tr
-                        ) tr;
+                        FROM joueurs j
+                        CROSS JOIN parties p
+                        CROSS JOIN tables t
+                        CROSS JOIN transactions tr;
                         """
                     )
                     res = cursor.fetchone()
@@ -527,7 +602,6 @@ class AdminDao(metaclass=Singleton):
                                   NULLIF(COUNT(DISTINCT jp.id_partie), 0), 2) as taux_victoire
                         FROM joueurs j
                         LEFT JOIN joueurs_parties jp ON j.id_joueur = jp.id_joueur
-                        WHERE j.est_banni = FALSE
                         GROUP BY j.id_joueur, j.pseudo, j.credit
                         ORDER BY total_gains DESC, taux_victoire DESC
                         LIMIT %(limite)s;
@@ -573,13 +647,18 @@ class AdminDao(metaclass=Singleton):
                             
                             -- Transactions récentes
                             COUNT(CASE WHEN t.date_transaction >= %(date_limite)s THEN 1 END) as transactions_recentes,
-                            SUM(CASE WHEN t.date_transaction >= %(date_limite)s THEN t.montant ELSE 0 END) as volume_transactions_recent
+                            SUM(CASE WHEN t.date_transaction >= %(date_limite)s THEN t.montant ELSE 0 END) as volume_transactions_recent,
+                            
+                            -- Bannissements récents
+                            COUNT(CASE WHEN jb.date_ban >= %(date_limite)s THEN 1 END) as bannissements_recents
                             
                         FROM joueurs j
                         CROSS JOIN parties p
                         CROSS JOIN transactions t
+                        CROSS JOIN joueurs_banis jb
                         WHERE p.date_debut >= %(date_limite)s OR p.date_fin >= %(date_limite)s 
-                           OR t.date_transaction >= %(date_limite)s OR j.date_creation >= %(date_limite)s;
+                           OR t.date_transaction >= %(date_limite)s OR j.date_creation >= %(date_limite)s
+                           OR jb.date_ban >= %(date_limite)s;
                         """,
                         {"date_limite": date_limite},
                     )

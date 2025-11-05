@@ -2,7 +2,7 @@ class Admin:
     """ 
     Classe des administrateurs du serveur de poker 
     
-    Attributs:
+    Parameters:
     ----------
     admin_id : int
         L'identifiant unique de l'administrateur.               
@@ -10,14 +10,17 @@ class Admin:
         Le nom de l'administrateur.
     mdp : str
         Le mot de passe de l'administrateur.
+    mail : str
+        L'adresse e-mail de l'administrateur.
     Méthodes:
     ---------       
     """
-    def __init__(self, admin_id, name, mdp):
+    def __init__(self, admin_id, name, mdp, mail):
 
         self.admin_id = admin_id
         self.name = name
         self.mdp = mdp
+        self.mail = mail
 
     def changer_mdp(self, last_mdp, new_mdp: str) -> None:
         """Permet à l'administrateur de changer son mot de passe."""

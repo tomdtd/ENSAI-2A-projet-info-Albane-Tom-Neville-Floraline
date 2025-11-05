@@ -15,7 +15,7 @@ skinparam arrow {
 
 ' --- Définition des Tables ---
 
-' Table pour les utilisateurs (Joueurs et Admins)
+' Table pour les utilisateurs (Joueurs )
 entity "Joueurs" as T_JOUEURS {
   * **id_joueur** : INTEGER <<PK>> <<AI>>
   --
@@ -23,7 +23,6 @@ entity "Joueurs" as T_JOUEURS {
   * mot_de_passe_hash : VARCHAR(255)
   * email : VARCHAR(100) <<UNIQUE>>
   * credit : DECIMAL(10, 2)
-  * est_admin : BOOLEAN
   * date_creation : TIMESTAMP
 }
 
@@ -78,16 +77,30 @@ entity "Administrateurs" as T_ADMINISTRATEURS {
   * mot_de_passe_hash : VARCHAR(255)
   * email : VARCHAR(100) <<UNIQUE>>
 }
+' Table pour les utilisateurs banis (Joueurs )
+
+entity "Joueurs_banis" as T_JOUEURS_B {
+  --
+  * id_admin : INTEGER  <<FK>>
+  * pseudo : VARCHAR(50) <<UNIQUE>>
+  * mot_de_passe_hash : VARCHAR(255)
+  * email : VARCHAR(100) <<UNIQUE>>
+  * credit : DECIMAL(10, 2)
+  * date_banis : Date de banissement
+  * raison_ban : VARCHAR(255)
+
+}
 
 ' --- Définition des Relations ---
-
+' Admins et joueurs banis
+T_ADMINISTRATEURS ||--o{ T_JOUEURS_B
 ' Un joueur peut avoir plusieurs transactions
 T_JOUEURS ||--o{ T_TRANSACTIONS
 
 'Admin et Transactions 
 T_ADMINISTRATEURS ||--o{ T_TRANSACTIONS
 
-' Une table de jeu peut accueillir plusieurs parties (dans le temps)
+'Une table de jeu peut accueillir plusieurs parties (dans le temps)
 T_TABLES ||--o{ T_PARTIES
 
 ' Relation N-M entre Joueurs et Parties, via la table de jonction
