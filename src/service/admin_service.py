@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
 from utils.log_decorator import log
-from dao.admin_dao import AdminDao
+from dao.Admin_dao import AdminDao
 from business_object.admin import Admin
 from utils.securite import hash_password, verify_password
 
@@ -21,7 +21,7 @@ class AdminService:
     def verifier_identifiants(self, nom_admin: str, mot_de_passe: str) -> Optional[Admin]:
         """Vérifier les identifiants de connexion d'un administrateur."""
         admin = AdminDao().trouver_par_nom(nom_admin)
-        if admin and verify_password(mot_de_passe, admin.mdp):
+        if admin and verify_password(mot_de_passe, admin.mdp, nom_admin):
             return admin
         return None
 
@@ -32,7 +32,7 @@ class AdminService:
         if not admin:
             return False
 
-        if not verify_password(ancien_mot_de_passe, admin.mdp):
+        if not verify_password(ancien_mot_de_passe, admin.mdp, admin.name):
             return False
 
         nouveau_mot_de_passe_hash = hash_password(nouveau_mot_de_passe, admin.name)
