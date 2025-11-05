@@ -63,3 +63,15 @@ def test_creer_ko():
     # THEN
     assert not creation_ok
 
+def test_supprimer_ok():
+    """Suppression de JoueurPartie réussie"""
+
+    # GIVEN
+    joueur_partie = JoueurPartie(1, 999, 0, 0, 'en attente', 3)
+
+    # WHEN
+    suppression_ok = JoueurPartieDao().supprimer(joueur_partie.id_joueur)
+
+    # THEN
+    assert suppression_ok
+

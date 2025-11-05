@@ -58,3 +58,32 @@ class JoueurPartieDao(metaclass=Singleton):
 
         return created
 
+    @log
+    def supprimer(self, id_joueur) -> bool:
+        """Suppression d'un joueur dans la table partie_joueur
+
+        Parameters
+        ----------
+        id_joueur : int
+            id du joueur à supprimer de la table partie_joueur
+
+        Returns
+        -------
+            True si le joueur a bien été supprimé
+        """
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Supprimer le compte d'un joueur
+                    cursor.execute(
+                        "DELETE FROM partie_joueur                  "
+                        " WHERE id_joueur=%(id_joueur)s      ",
+                        {"id_joueur": id_joueur},
+                    )
+                    res = cursor.rowcount
+        except Exception as e:
+            logging.info(e)
+            raise
+
+        return res > 0
