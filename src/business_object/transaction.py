@@ -22,7 +22,7 @@ class Transaction :
     """
 
     def __init__(self, id_joueur: str, solde: int, date: datetime, id_transaction: int = None):
-        if not isinstance(id_transaction, int):
+        if id_transaction is not None and not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
         if not isinstance(id_joueur, int):
             raise TypeError("id_joueur doit être un entier.")
