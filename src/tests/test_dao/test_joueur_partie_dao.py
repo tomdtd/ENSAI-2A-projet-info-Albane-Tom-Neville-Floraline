@@ -34,9 +34,9 @@ def test_creer_ok():
     joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=100)
-    partie = Partie(id_partie=123,joueurs=[], jour=1,pot=Pot())
+    partie = Partie(id_partie=1,joueurs=[], jour=1,pot=Pot())
     PartieDao().creer(partie)
-    id_partie = 123
+    id_partie = 1
 
     # WHEN
     creation_ok = JoueurPartieDao().creer(joueur_partie, id_partie)
@@ -67,10 +67,17 @@ def test_supprimer_ok():
     """Suppression de JoueurPartie réussie"""
 
     # GIVEN
-    joueur_partie = JoueurPartie(1, 999, 0, 0, 'en attente', 3)
+    joueur = Joueur(pseudo="pseudo", age=44, mail="pseudo@ensai.fr", mdp="123abc", credit=0)
+    JoueurDao().creer(joueur)
+    joueur_partie = JoueurPartie(joueur= joueur,
+                                 siege= Siege(), 
+                                 solde_partie=100)
+    partie = Partie(id_partie=1,joueurs=[], jour=1,pot=Pot())
+    PartieDao().creer(partie)
+    JoueurPartieDao().creer(joueur_partie, 1)
 
     # WHEN
-    suppression_ok = JoueurPartieDao().supprimer(joueur_partie.id_joueur)
+    suppression_ok = JoueurPartieDao().supprimer(joueur_partie.joueur.id_joueur)
 
     # THEN
     assert suppression_ok

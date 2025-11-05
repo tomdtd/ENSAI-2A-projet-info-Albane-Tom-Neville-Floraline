@@ -31,3 +31,4 @@ def test_creer_ok():
     # THEN
     assert creation_ok
     assert transaction.id_transaction
+
