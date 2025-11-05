@@ -11,7 +11,7 @@ class Transaction :
     ----------
     id_transaction : int
         Identifiant unique de la transaction.
-    joueur_id : str
+    id_joueur : str
         Identifiant du joueur associé à la transaction.
     solde : int
         Montant de la transaction (positif pour un crédit, négatif pour un débit).
@@ -25,7 +25,7 @@ class Transaction :
         if not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
         if not isinstance(joueur_id, str):
-            raise TypeError("joueur_id doit être une chaîne de caractères.")
+            raise TypeError("id_joueur doit être une chaîne de caractères.")
         if not isinstance(solde, int):
             raise TypeError("solde doit être un entier.")
         if not isinstance(date, datetime):

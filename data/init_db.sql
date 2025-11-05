@@ -123,12 +123,12 @@ CREATE TABLE partie_joueur (
 -- -----------------------------------------------------
 CREATE TABLE transaction (
   id_transaction INT NOT NULL, 
-  joueur_id INT NOT NULL, 
+  id_joueur INT NOT NULL, 
   solde: INT DEFAULT 0,
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_transaction),
   CONSTRAINT fk_transaction_joueur
-        FOREIGN KEY (joueur_id)
+        FOREIGN KEY (id_joueur)
         REFERENCES joueur(id_joueur)
         ON DELETE CASCADE
 );

@@ -38,7 +38,7 @@ class TestTransaction:
 
         assert "Transaction" in repr_output
         assert "id_transaction=2" in repr_output
-        assert "joueur_id='Tom'" in repr_output
+        assert "id_joueur='Tom'" in repr_output
 
     def test_transaction_id_transaction_invalide(self):
         """Vérifie qu'une transaction sans id provoque une erreur."""
