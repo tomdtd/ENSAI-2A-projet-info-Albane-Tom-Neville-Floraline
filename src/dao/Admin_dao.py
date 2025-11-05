@@ -8,6 +8,9 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.admin import Admin
+from business_object.joueur import Joueur
+
+
 
 class AdminDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Administrateurs de la base de données"""
