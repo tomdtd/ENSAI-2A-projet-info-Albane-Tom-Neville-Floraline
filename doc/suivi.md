@@ -2,14 +2,14 @@
 
 # :clipboard:  Présentation du sujet
 
-* **Sujet** : Application pour gérer une liste de joueurs et de joueuses
-* **Tuteur / Tutrice** : Rick Auray (rick.auray@ensai.fr)
-* [Dépôt GitHub](https://github.com/ludo2ne/ENSAI-projet-info-2A-template)
+* **Sujet** : Application pour jouer en ligne au poker
+* **Tuteur / Tutrice** : Lucas Bouju 
+* [Dépôt GitHub](https://github.com/tomdtd/ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline.git)
 
 # :dart: Échéances
 
 ---
-Dossier d'Analyse :  :clock1: <iframe src="https://free.timeanddate.com/countdown/i83zdl7u/n1264/cf11/cm0/cu2/ct4/cs0/ca0/co0/cr0/ss0/cac009/cpcf00/pcfff/tcfff/fs100/szw256/szh108/iso2023-10-07T12:00:00" allowtransparency="true" frameborder="0" width="130" height="16"></iframe>
+Dossier d'Analyse :  :clock1: <iframe src="https://free.timeanddate.com/countdown/i83zdl7u/n1264/cf11/cm0/cu2/ct4/cs0/ca0/co0/cr0/ss0/cac009/cpcf00/pcfff/tcfff/fs100/szw256/szh108/iso2025-10-07T12:00:00" allowtransparency="true" frameborder="0" width="130" height="16"></iframe>
 
 ---
 
@@ -22,43 +22,39 @@ gantt
     %%excludes  YYYY-MM-DD and/or sunday and/or weekends 
      
     section Suivi
-    TP1 et Suivi 1               :milestone, 2023-09-01,
-    TP2 et Suivi 2               :milestone, 2023-09-08,
-    TP3                          :milestone, 2023-09-15,
-    TP4 et Suivi 3               :milestone, 2023-09-29,
-    Suivi 4                      :milestone, 2023-10-13,
-    3j immersion                 :active,    2023-10-25, 3d
-    Suivi 7                      :milestone, 2023-11-17,
+    TP1 et Suivi 1               :milestone, 2025-08-29,
+    TP2 et Suivi 2               :milestone, 2025-09-05,
+    TP3 et Suivi 3               :milestone, 2025-09-12,
+    TP4                          :milestone, 2025-09-19,
+    Suivi 4                      :milestone, 2025-10-03,
+    3j immersion et suivi 5 et 6 :done,    2025-11-04, 3d
+    Suivi 7                      :milestone, 2025-11-14,
     
     section Rendu
-    Dossier Analyse              :milestone, 2023-10-07,
-    Rapport + Code               :milestone, 2023-11-25,
-    Soutenance                   :milestone, 2023-12-11,
+    Dossier Analyse              :milestone, 2025-09-27,
+    Rapport + Code               :milestone, 2025-11-22,
+    Soutenance                   :milestone, 2025-12-10,
     
     section Vac
-    Toussaint                    :crit,    2023-10-28, 2023-11-05
+    Toussaint                    :crit,    2025-10-25, 2025-11-02
     
     section Analyse
-    analyse sujet                :done,      2023-09-01, 15d
-    modélisation                 :active,    2023-09-08, 15d
-    rédaction                    :active,    2023-09-20, 2023-10-05
-    relecture                    :active,    2023-10-05, 2023-10-07
+    Lancement du projet          :done,      2025-08-29, 7d
+    étude préalable              :done,    2025-08-29, 15d
+    rédaction                    :done,    2025-08-29, 30d
+    relecture                    :done,    2025-09-20, 6d
     
     section Code
-    coder une v0                 :active,    2023-09-20, 15d
-    lister classes à coder       :active,    2023-10-07, 7d
-    
-
-    %%Stats univariées retraités   :done,         2021-11-28, 3d
+    lister les classes à coder   :done,    2025-09-15, 7d
+    coder une v0 des classes     :done,    2025-09-19, 30d
 ```
 
 # :calendar: Livrables
 
-| Date    | Livrables                                                    |
 | ------- | ------------------------------------------------------------ |
-| 07 oct. | [Dossier d'Analyse](https://www.overleaf.com/)               |
-| 25 nov. | Rapport final + code (:hammer_and_wrench:  [correcteur orthographe et grammaire](https://www.scribens.fr/))|
-| 12 déc. | Soutenance                                                   |
+| 27 sep. | [Dossier d'Analyse](https://www.overleaf.com/)               |
+| 22 nov. | Rapport final + code |
+| 10 déc. | Soutenance                                                    |
 
 # :construction: Todo List
 
@@ -66,24 +62,21 @@ gantt
 
 * [x] Diagramme de Gantt
 * [x] Diagramme de cas d'utilisation
+* [x] Diagramme C4
 * [x] Diagramme de classe
-* [ ] Répartition des parties à rédiger
 
 ## Code
 
-* [ ] Créer dépôt Git commun
-  * [ ] vérifier que tout le monde peut **push** et **pull**
-* [ ] Version 0 de l'application
-  * coder une et une seule fonctionnalité simple de A à Z, et faire tourner l'appli
-  * cela permettra à toute l'équipe d'avoir une bonne base de départ
-* [ ] Lister classes et méthodes à coder
+* [x] Business Layer
+* [x] Service Layer
+* [x] DAO Layer
+* [x] Web service
+* [x] Controller Layer
 
 ---
 
-* [ ] appel WS
-* [ ] création WS
-* [ ] Vue inscription
-* [ ] hacher mdp
+* [x] appel WS
+* [x] création WS
 
 ---
 
