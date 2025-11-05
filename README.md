@@ -1,6 +1,6 @@
-# ENSAI-2A-projet-info-template
+# ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline
 
-Template for the poker application.
+Recommendations for the poker application.
 
 This very simple application includes a few elements that may help with our info 2A project:
 
@@ -161,8 +161,8 @@ This application can also be used to create a webservice.
 
 Documentation :
 
-- /docs
-- /redoc
+- https://en.wikipedia.org/wiki/Texas_hold_%27em
+- https://oag.ca.gov/sites/all/files/agweb/pdfs/gambling/BGC_texas.pdf
 
 ### Endpoints
 
@@ -170,30 +170,26 @@ Examples of endpoints (to be tested, for example, with *Insomnia* or a browser):
 
 
 - `GET http://localhost/joueur`
-- `GET http://localhost/joueur/3`
+- `GET http://localhost/joueur/1`
 - ```
   POST http://localhost/joueur/
   JSON body :
     {
-      "pseudo": "patapouf",
+      "pseudo": "jean.dupont",
       "mdp": "9999",
-      "age": "95",
-      "mail": "patapouf@mail.fr",
-      "fan_pokemon": true
+      "credit": "150.00"
     }
   ```
 - ```
   PUT http://localhost/joueur/3
   JSON body :
     {
-       "pseudo": "maurice_new",
-       "mdp": null,
-       "age": 20,
-       "mail": "maurice@ensai.fr",
-       "fan_pokemon": true
+       "pseudo": "marie.curie",
+       "mdp": 12345,
+       "credit": "2500.50" 
     }
   ```
-- `DELETE http://localhost/joueur/5`
+- `DELETE http://localhost/joueur/2`
 
 
 
@@ -217,14 +213,22 @@ The logs can be viewed in the `logs` folder.
 Example of logs :
 
 ```
-07/08/2024 09:07:07 - INFO     - ConnexionVue
-07/08/2024 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - DEBUT
-07/08/2024 09:07:08 - INFO     -         JoueurDao.se_connecter('a', '*****') - DEBUT
-07/08/2024 09:07:08 - INFO     -         JoueurDao.se_connecter('a', '*****') - FIN
-07/08/2024 09:07:08 - INFO     -            └─> Sortie : Joueur(a, 20 ans)
-07/08/2024 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - FIN
-07/08/2024 09:07:08 - INFO     -        └─> Sortie : Joueur(a, 20 ans)
-07/08/2024 09:07:08 - INFO     - MenuJoueurVue
+22/11/2025 09:07:07 - INFO     - ConnexionVue
+22/11/2025 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - DEBUT
+22/11/2025 09:07:08 - INFO     -         hash_password('*****', 'a') - DEBUT
+22/11/2025 09:07:08 - INFO     -         hash_password('*****', 'a') - FIN
+22/11/2025 09:07:08 - INFO     -         JoueurDao.se_connecter('a', 'hashed_*****') - DEBUT
+22/11/2025 09:07:08 - INFO     -         JoueurDao.se_connecter('a', 'hashed_*****') - FIN
+22/11/2025 09:07:08 - INFO     -            └─> Sortie : Joueur(a, 20 ans)
+22/11/2025 09:07:08 - INFO     -     JoueurService.se_connecter('a', '*****') - FIN
+22/11/2025 09:07:08 - INFO     -        └─> Sortie : Joueur(a, 20 ans)
+22/11/2025 09:07:08 - INFO     -     JoueurService.pseudo_deja_utilise('a') - DEBUT
+22/11/2025 09:07:08 - INFO     -         JoueurDao.lister_tous() - DEBUT
+22/11/2025 09:07:08 - INFO     -         JoueurDao.lister_tous() - FIN
+22/11/2025 09:07:08 - INFO     -            └─> Sortie : [Joueur(a), Joueur(b), Joueur(c)]
+22/11/2025 09:07:08 - INFO     -     JoueurService.pseudo_deja_utilise('a') - FIN
+22/11/2025 09:07:08 - INFO     -        └─> Sortie : True
+22/11/2025 09:07:08 - INFO     - MenuJoueurVue
 ```
 
 
