@@ -34,14 +34,14 @@ class JoueurPartieDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO partie_joueur (id_partie, id_joueur, mise_joueur, solde_partie, statut, id_siege )"
-                        "VALUES (%(id_partie)s, %(id_joueur)s, %(mise_joueur)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
+                        "INSERT INTO partie_joueur (id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege )"
+                        "VALUES (%(id_partie)s, %(id_joueur)s, %(mise_tour)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
                         "RETURNING id_joueur;                                              ",
                         {
                             "id_partie": id_partie,
                             "id_joueur": joueur_partie.joueur.id_joueur,
-                            "mise_joueur": str(joueur_partie.mise_tour),
-                            "solde_partie": str(joueur_partie.solde_partie),
+                            "mise_tour": joueur_partie.mise_tour.valeur,
+                            "solde_partie": joueur_partie.solde_partie.valeur,
                             "statut": joueur_partie.statut,
                             "id_siege": joueur_partie.siege.id_siege,
                         },

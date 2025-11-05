@@ -101,7 +101,7 @@ CREATE TABLE partie (
 CREATE TABLE partie_joueur (
   id_partie INT NOT NULL,
   id_joueur INT NOT NULL,
-  mise_tour DECIMAL(10,2) DEFAULT 0.00,
+  mise_tour INT DEFAULT 0.00,
   solde_partie DECIMAL(10,2) DEFAULT 0.00,
   statut VARCHAR(50) DEFAULT 'en attente',
   id_siege INT NULL,
