@@ -24,6 +24,7 @@ entity "Joueurs" as T_JOUEURS {
   * mail : VARCHAR(100) <<UNIQUE>>
   * credit : DECIMAL(10, 2)
   * date_creation : TIMESTAMP
+  * age : INTEGER
 }
 
 ' Table pour les tables de jeu physiques
@@ -44,7 +45,7 @@ entity "Parties" as T_PARTIES {
   * date_debut : TIMESTAMP
   * date_fin : TIMESTAMP
   * pot : DECIMAL(10, 2)
-  * cartes_communes : VARCHAR(20) ' Flop, Turn, River (ex: "AS,KD,5C,8S,JD")
+  * cartes_communes : VARCHAR(20) '
 }
 
 'Tables pour les sièges des joueurs
@@ -52,8 +53,8 @@ entity "Siege" as T_SIEGE {
   * **id_siege** : INTEGER <<PK>> <<AI>>
   --
   * id_table : INTEGER <<FK>>
-  * numero_siege : INTEGER
-  * est_occupe : BOOLEAN
+  * numero : INTEGER
+  * occupe : BOOLEAN
 }
 
 ' Table de jonction pour la relation N-M entre Joueurs et Parties
@@ -115,12 +116,13 @@ T_TABLES ||--o{ T_PARTIES
 T_JOUEURS }|--|| T_JOUEURS_PARTIES
 
 ' Relation entre parties et sièges
-T_PARTIES ||--o{ T_SIEGE
+T_TABLES ||--o{ T_SIEGE
 
-'Relation entre joueurs et sièges (via Joueurs_Parties)
+'Relation entre joueurs et Joueurs_Parties
 T_JOUEURS ||--o{ T_JOUEURS_PARTIES
 
 'Relation entre joueur et sièges (via Joueurs_Parties)
-T_SIEGE }|--|| T_JOUEURS_PARTIES
-
+T_SIEGE }|--o{ T_JOUEURS_PARTIES
+' Relation entre parties et joueurs_parties
+T_PARTIES ||--o{ T_JOUEURS_PARTIES
 @enduml

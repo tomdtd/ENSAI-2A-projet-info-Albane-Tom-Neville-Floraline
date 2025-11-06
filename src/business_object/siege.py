@@ -13,7 +13,7 @@ class Siege:
         est_occupe() -> bool: Retourne l'état d'occupation du siège.    
     
     """
-    def __init__(self, id_siege=None, id_table):
+    def __init__(self, id_siege, id_table):
         self.id_siege = id_siege
         self.occupe = False
         self.id_joueur = None

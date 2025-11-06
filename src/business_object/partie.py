@@ -19,6 +19,18 @@ class Partie :
     id_partie : int 
     Identifiant unique de la partie            
 
+    id_table : int      
+    Identifiant de la table où se déroule la partie
+
+    date_debut : str
+    Date de début de la partie  
+
+    date_fin : str
+    Date de fin de la partie    
+
+    carte_communes : list[str]
+    Cartes communes sur la table
+
     Methodes:
     ------- 
     repartition_blind() : 
@@ -29,20 +41,27 @@ class Partie :
     
     gérer_blind() :
         Gère les blinds pour chaque tour de la partie
+
     """
-    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], jour : int, pot : Pot, id_table : int, date_debut : str) :
+    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], jour : int, pot : Pot, id_table : int, date_debut : str, carte_communes : liste_cartes ) :
         self.id_partie = id_partie
         self.joueurs = joueurs  
         self.pot = pot 
         self.id_table = id_table
         self.date_debut = date_debut
         self.date_fin = None
+        self.carte_communes = carte_communes
     def __str__(self):
         return f"Partie(id_partie={self.id_partie}, joueurs={self.joueurs}, jour={self.jour}, pot={self.pot})"  
 
-    def repartition_blind() : 
+    # def repartition_blind() : # Attribuer les blinds aux joueurs au début
+    #    pass 
+    def finir_partie() : # Mettre fin à la partie et déterminer le gagnant
         pass 
-    def finir_partie() : 
-        pass 
-    def gérer_blind() : 
-        pass
+    def gérer_blind() : # Sortie c'est le joueur qui doit poser la blind
+        n = len(self.joueurs)
+        b = self.joueurs[-1]
+        for i in range(n):
+            self.joueurs[i+1] = self.joueurs[i]
+            # Logique pour gérer les blinds pour chaque joueur
+        self.joueurs[0] = b
