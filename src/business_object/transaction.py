@@ -12,21 +12,19 @@ class Transaction:
         Montant de la transaction (positif pour un crédit, négatif pour un débit).
     date : datetime
         Date et heure de la transaction.
-
-
     """
 
-    def __init__(self, id_transaction: int, joueur_id: str, solde: int, date: datetime):
+    def __init__(self, solde: int, date: datetime, id_joueur: int=None, id_transaction: int=None):
         if not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
-        if not isinstance(joueur_id, str):
-            raise TypeError("joueur_id doit être une chaîne de caractères.")
+        if not isinstance(id_joueur, int):
+            raise TypeError("id_joueur doit être une chaîne de caractères.")
         if not isinstance(solde, int):
             raise TypeError("solde doit être un entier.")
         if not isinstance(date, datetime):
             raise TypeError("date doit être un objet datetime.")
         self.__id_transaction = id_transaction
-        self.__id_joueur = joueur_id
+        self.__id_joueur = id_joueur
         self.__solde = solde
         self.__date = date
 
@@ -52,3 +50,10 @@ class Transaction:
     def __repr__(self):
         return (f"Transaction(id_transaction={self.__id_transaction!r}, "
                 f"joueur_id={self.__id_joueur!r}, solde={self.__solde!r}, date={self.__date!r})")
+
+    @id_transaction.setter
+    def id_transaction(self, value):
+        """Setter pour permettre à la DAO d'assigner l'ID généré par la base."""
+        if not isinstance(value, int):
+            raise TypeError("id_transaction doit être un entier.")
+        self.__id_transaction = value

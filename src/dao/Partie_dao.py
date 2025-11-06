@@ -5,7 +5,7 @@ from src.business_object.partie import Partie
 from src.business_object.pot import Pot
 from src.business_object.carte import Carte
 
-class PartieDAO:
+class PartieDao:
     def __init__(self):
         self.connection = DBConnection()
 

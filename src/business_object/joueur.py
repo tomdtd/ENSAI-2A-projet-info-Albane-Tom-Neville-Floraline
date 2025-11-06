@@ -20,7 +20,7 @@ class Joueur:
         solde du joueur 
     """
 
-    def __init__(self, pseudo, mail, credit, mdp, id_joueur, age, date_creation):
+    def __init__(self, pseudo, mail, credit, mdp, age, id_joueur=None):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
