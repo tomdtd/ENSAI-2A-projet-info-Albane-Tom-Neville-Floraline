@@ -56,14 +56,19 @@ class JoueurService:
         return JoueurDao().trouver_par_id(id_joueur)
 
     @log
-    def lister_tous(self) -> List[Joueur]:
+    def lister_tous(self, inclure_mdp=False) -> List[Joueur]:
         """Liste tous les joueurs.
+        Si tous les mots de passe sont à True, ils sont renvoyés également
         Returns
         -------
         joueurs : List[Joueur]
             Liste de tous les joueurs.
         """
-        return JoueurDao().lister_tous()
+        joueurs = JoueurDao().lister_tous()
+        if not inclure_mdp:
+            for j in joueurs:
+                j.mdp = None
+        return joueurs
 
     @log
     def modifier(self, joueur: Joueur) -> Optional[Joueur]:
