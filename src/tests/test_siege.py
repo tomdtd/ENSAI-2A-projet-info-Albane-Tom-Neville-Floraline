@@ -24,10 +24,8 @@ class TestSiegePytest:
         assert siege_vide.est_occupe() == True
         assert siege_vide.id_joueur == "JoueurTest"
     
-    @pytest.mark.parametrize("id_siege", [1, 2, 3, 5]
-
-    ])
-    def test_differents_ids(self, id_siege, id_table):
+    @pytest.mark.parametrize("id_siege", [1, 2, 3, 5])
+    def test_differents_ids(self, id_siege):
         siege = Siege(id_siege=id_siege)
         assert siege.id_siege == id_siege
         

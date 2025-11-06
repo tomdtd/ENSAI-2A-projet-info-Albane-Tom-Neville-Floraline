@@ -16,7 +16,6 @@ skinparam arrow {
 entity "Joueurs" as T_JOUEURS {
   * **id_joueur** : INTEGER <<PK>> <<AI>>
   --
-  * pseudo : VARCHAR(50) <<UNIQUE>>
   * mdp_hash : VARCHAR(255)
   * mail : VARCHAR(100) <<UNIQUE>>
   * credit : DECIMAL(10, 2)
@@ -52,7 +51,7 @@ entity "Parties" as T_PARTIES {
 entity "Cartes_Communes" as T_CARTES_COMMUNES {
   * **id_carte_commune** : INTEGER <<PK>> <<AI>>
   --
-  * id_partie : INTEGER <<FK>>
+  * id_partie : INTEGER <<FK>> 
   * valeur : VARCHAR(10)
   * couleur : VARCHAR(10)
   * ordre : INTEGER
