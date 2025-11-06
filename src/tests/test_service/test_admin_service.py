@@ -41,7 +41,7 @@ def mock_admin_dao():
 def test_trouver_par_id(mock_admin_dao):
     # GIVEN
     admin_id = 1
-    mock_admin = Admin(admin_id=admin_id, name="AdminTest", mdp="hash", mail="admin@example.com")
+    mock_admin = Admin(admin_id=admin_id, nom="AdminTest", mdp="hash", mail="admin@example.com")
     mock_admin_dao["trouver_par_id"].return_value = mock_admin
 
     # WHEN
@@ -55,7 +55,7 @@ def test_trouver_par_id(mock_admin_dao):
 def test_trouver_par_nom(mock_admin_dao):
     # GIVEN
     nom_admin = "AdminTest"
-    mock_admin = Admin(admin_id=1, name=nom_admin, mdp="hash", mail="admin@example.com")
+    mock_admin = Admin(admin_id=1, nom=nom_admin, mdp="hash", mail="admin@example.com")
     mock_admin_dao["trouver_par_nom"].return_value = mock_admin
 
     # WHEN
@@ -71,7 +71,7 @@ def test_verifier_identifiants_ok(mock_admin_dao):
     nom_admin = "AdminTest"
     mot_de_passe = "motdepasse"
     mot_de_passe_hash = hash_password(mot_de_passe, nom_admin)
-    mock_admin = Admin(admin_id=1, name=nom_admin, mdp=mot_de_passe_hash, mail="admin@example.com")
+    mock_admin = Admin(admin_id=1, nom=nom_admin, mdp=mot_de_passe_hash, mail="admin@example.com")
     mock_admin_dao["trouver_par_nom"].return_value = mock_admin
 
     # WHEN
@@ -87,7 +87,7 @@ def test_verifier_identifiants_ko(mock_admin_dao):
     nom_admin = "AdminTest"
     mot_de_passe = "wrongpassword"
     mot_de_passe_hash = hash_password("correctpassword", nom_admin)
-    mock_admin = Admin(admin_id=1, name=nom_admin, mdp=mot_de_passe_hash, mail="admin@example.com")
+    mock_admin = Admin(admin_id=1, nom=nom_admin, mdp=mot_de_passe_hash, mail="admin@example.com")
     mock_admin_dao["trouver_par_nom"].return_value = mock_admin
 
     # WHEN
@@ -105,7 +105,7 @@ def test_changer_mot_de_passe_ok(mock_admin_dao):
     nouveau_mot_de_passe = "newpassword"
     nom_admin = "AdminTest"
     ancien_mot_de_passe_hash = hash_password(ancien_mot_de_passe, nom_admin)
-    mock_admin = Admin(admin_id=admin_id, name=nom_admin, mdp=ancien_mot_de_passe_hash, mail="admin@example.com")
+    mock_admin = Admin(admin_id=admin_id, nom=nom_admin, mdp=ancien_mot_de_passe_hash, mail="admin@example.com")
     mock_admin_dao["trouver_par_id"].return_value = mock_admin
     mock_admin_dao["changer_mot_de_passe"].return_value = True
 
@@ -126,7 +126,7 @@ def test_changer_mot_de_passe_ancien_mot_de_passe_incorrect(mock_admin_dao):
     nouveau_mot_de_passe = "newpassword"
     nom_admin = "AdminTest"
     ancien_mot_de_passe_hash = hash_password("correctoldpassword", nom_admin)
-    mock_admin = Admin(admin_id=admin_id, name=nom_admin, mdp=ancien_mot_de_passe_hash, mail="admin@example.com")
+    mock_admin = Admin(admin_id=admin_id, nom=nom_admin, mdp=ancien_mot_de_passe_hash, mail="admin@example.com")
     mock_admin_dao["trouver_par_id"].return_value = mock_admin
 
     # WHEN

@@ -32,10 +32,10 @@ class AdminService:
         if not admin:
             return False
 
-        if not verify_password(ancien_mot_de_passe, admin.mdp, admin.name):
+        if not verify_password(ancien_mot_de_passe, admin.mdp, admin.nom):
             return False
 
-        nouveau_mot_de_passe_hash = hash_password(nouveau_mot_de_passe, admin.name)
+        nouveau_mot_de_passe_hash = hash_password(nouveau_mot_de_passe, admin.nom)
         return AdminDao().changer_mot_de_passe(admin_id, nouveau_mot_de_passe_hash)
 
     @log
