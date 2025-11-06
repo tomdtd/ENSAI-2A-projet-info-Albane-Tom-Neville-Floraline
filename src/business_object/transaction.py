@@ -15,9 +15,9 @@ class Transaction:
     """
 
     def __init__(self, solde: int, date: datetime, id_joueur: int=None, id_transaction: int=None):
-        if not isinstance(id_transaction, int):
+        if not id_transaction is None and not isinstance(id_transaction, int):
             raise TypeError("id_transaction doit être un entier.")
-        if not isinstance(id_joueur, int):
+        if not id_joueur is None and not isinstance(id_joueur, int):
             raise TypeError("id_joueur doit être une chaîne de caractères.")
         if not isinstance(solde, int):
             raise TypeError("solde doit être un entier.")
