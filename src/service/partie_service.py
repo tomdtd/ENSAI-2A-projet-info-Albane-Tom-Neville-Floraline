@@ -16,25 +16,37 @@ class PartieService:
 
     @log
     def lancer_partie(self, joueurs: list[Joueur], dealer_id: int) -> str:
-        """Instancie une Partie, répartit les blinds, joue un tour et affiche le résumé"""
+        """Instancie une Partie, affecte les joueurs à une table, répartit les blinds, joue un tour et affiche le résumé"""
         try:
-            # Initialiser les JoueurPartie avec Monnaie et statut par défaut
+            # Créer une table via AccessPartie
+            access = AccessPartie()
+            table = access.creer_table(nb_sieges=len(joueurs), blind_initial=Monnaie(10))
+
+            # Affecter les joueurs aux sièges
             joueurs_partie = []
-            for j in joueurs:
+            for joueur in joueurs:
+                success = access.rejoindre_table(joueur)
+                if not success:
+                    raise RuntimeError(f"Impossible d'affecter le joueur {joueur.pseudo} à une table.")
+
+                # Récupérer le siège occupé
+                siege = next((s for s in table.sieges if s.id_joueur == joueur.id_joueur), None)
+                if siege is None:
+                    raise RuntimeError(f"Siège introuvable pour le joueur {joueur.pseudo}.")
+
+                # Créer l'objet JoueurPartie
                 jp = JoueurPartie(
-                    joueur=j,
-                    solde_partie=Monnaie(valeur=int(j.credit)),
+                    joueur=joueur,
+                    solde_partie=Monnaie(valeur=int(joueur.credit)),
                     statut="actif",
                     mise_tour=Monnaie(valeur=0),
-                    siege=None,
+                    siege=siege,
                     main=None
                 )
                 joueurs_partie.append(jp)
 
-            # Créer le pot initial
+            # Créer le pot et la partie
             pot = Pot()
-
-            # Créer la partie
             partie = Partie(
                 joueurs=joueurs_partie,
                 jour=1,
@@ -43,16 +55,12 @@ class PartieService:
             )
             self.id_compteur += 1
 
-            # Répartition des blinds
+            # Répartition des blinds et déroulement du tour
             partie.repartition_blind()
-
-            # Gérer les blinds du tour
             partie.gérer_blind()
-
-            # Fin de partie
             partie.finir_partie()
 
-            # Affichage du résumé avec tabulate
+            # Affichage du résumé
             resume = [
                 [jp.joueur.pseudo, jp.solde_partie.get(), jp.statut]
                 for jp in partie.joueurs
@@ -60,5 +68,6 @@ class PartieService:
             print(tabulate(resume, headers=["Pseudo", "Crédit", "Statut"], tablefmt="grid"))
 
             return f"Partie {partie.id_partie} terminée avec succès."
+
         except Exception as e:
             return f"Erreur lors du lancement de la partie : {str(e)}"
