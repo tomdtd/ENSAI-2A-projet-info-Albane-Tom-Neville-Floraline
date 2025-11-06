@@ -34,9 +34,9 @@ class MenuJoueurVue(VueAbstraite):
         choix = inquirer.select(
             message="Faites votre choix : ",
             choices=[
-                "Afficher les joueurs de la base de données",
-                "Afficher des pokemons (par appel à un Webservice)",
-                "Infos de session",
+                "Rejoindre une partie",
+                "Consulter ses statistiques",
+                "Gerer son solde",
                 "Se déconnecter",
             ],
         ).execute()
@@ -48,14 +48,14 @@ class MenuJoueurVue(VueAbstraite):
 
                 return AccueilVue()
 
-            case "Infos de session":
+            case "Rejoindre une partie":
                 return MenuJoueurVue(Session().afficher())
 
-            case "Afficher les joueurs de la base de données":
-                joueurs_str = JoueurService().afficher_tous()
-                return MenuJoueurVue(joueurs_str)
+            case "Consulter ses statistiques":
+                joueurs_str = JoueurService().afficher_tous() # a changer
+                return MenuJoueurVue(joueurs_str) # a changer
 
-            case "Afficher des pokemons (par appel à un Webservice)":
+            case "Gerer son solde":
                 from view.pokemon_vue import PokemonVue
 
                 return PokemonVue()

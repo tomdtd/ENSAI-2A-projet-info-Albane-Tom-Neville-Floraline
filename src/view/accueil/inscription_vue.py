@@ -23,10 +23,10 @@ class InscriptionVue(VueAbstraite):
         mdp = inquirer.secret(
             message="Entrez votre mot de passe : ",
             validate=PasswordValidator(
-                length=os.environ["PASSWORD_LENGTH"],
+                length=int(os.getenv("PASSWORD_LENGTH", "8")), #avec ca ca marche, code de base : length=os.environ["PASSWORD_LENGTH"]
                 cap=True,
                 number=True,
-                message="Au moins 35 caractères, incluant une majuscule et un chiffre",
+                message="Au moins 8 caractères, incluant une majuscule et un chiffre",
             ),
         ).execute()
 

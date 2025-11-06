@@ -18,8 +18,6 @@ class Joueur:
         adresse mail du joueur 
     age : int
         age du joueur
-    solde : Monnaie
-        solde du joueur 
     """
 
     def __init__(self, pseudo, mail, mdp, age, credit=Monnaie(0), id_joueur=None):
