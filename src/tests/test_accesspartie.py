@@ -1,7 +1,7 @@
-import sqlite3
+import pytest
 from src.business_object.accesspartie import AccessPartie
 from src.business_object.joueur import Joueur
-from src.business_object.joueur_partie import JoueurPartie
+from src.business_object.JoueurPartie import JoueurPartie
 from src.business_object.monnaie import Monnaie
 
 
@@ -74,6 +74,8 @@ def test_access_partie_depuis_sql(capfd):
             f"- Sièges occupés : {occupes}/{len(table.sieges)}"
         )
 
-    out, _ = capfd.readouterr()
-    assert "rejoint une table" in out
-    assert "Table" in out
+        out, _ = capfd.readouterr()
+        assert results[0][1] is True
+        assert results[1][1] is True
+        assert results[2][1] is False
+        assert "charlie n'a pas pu rejoindre la table." in out

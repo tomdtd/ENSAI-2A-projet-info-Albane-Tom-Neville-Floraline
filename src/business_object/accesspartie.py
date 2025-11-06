@@ -33,12 +33,12 @@ class AccessPartie:
         """
         for table in self.tables:
             if not table.table_remplie():
-                for siege in table.sieges:
-                    if not siege.est_occupe():
-                        siege.occupe = True
-                        siege.id_joueur = joueur.id_joueur
-                        joueur.jouer_partie()
-                        return True
+                siege_libre = next((s for s in table.sieges if not s.est_occupe()), None)
+                if siege_libre:
+                    siege_libre.occupe = True
+                    siege_libre.id_joueur = joueur.id_joueur
+                    joueur.jouer_partie()
+                    return True
         return False
 
     def creer_table(self, nb_sieges: int, blind_initial: Monnaie) -> Table:
