@@ -34,15 +34,15 @@ class Joueur:
         return f"Joueur({self.pseudo}, {self.mail} ans)"
     
     def __repr__(self) -> str:
-        return f"Joueur(id={self.id_joueur}, pseudo='{self.pseudo}', solde={self.solde.get()})"
+        return f"Joueur(id={self.id_joueur}, pseudo='{self.pseudo}', credit={self.credit.get()})"
 
     def crediter(self, montant: int):
         """Crédite le solde du joueur."""
-        self.solde.crediter(montant)
+        self.credit.crediter(montant)
 
     def debiter(self, montant: int):
         """Débite le solde du joueur."""
-        self.solde.debiter(montant)
+        self.credit.debiter(montant)
 
     def jouer_partie(self):
         """Action pour qu'un joueur rejoigne ou démarre une partie."""
