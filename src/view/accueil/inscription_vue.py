@@ -14,7 +14,7 @@ class InscriptionVue(VueAbstraite):
     def choisir_menu(self):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
-
+        
         if JoueurService().pseudo_deja_utilise(pseudo):
             from view.accueil.accueil_vue import AccueilVue
 
@@ -23,7 +23,7 @@ class InscriptionVue(VueAbstraite):
         mdp = inquirer.secret(
             message="Entrez votre mot de passe : ",
             validate=PasswordValidator(
-                length=int(os.getenv("PASSWORD_LENGTH", "8")), #avec ca ca marche, code de base : length=os.environ["PASSWORD_LENGTH"]
+                length=os.environ["PASSWORD_LENGTH"],
                 cap=True,
                 number=True,
                 message="Au moins 8 caractères, incluant une majuscule et un chiffre",
