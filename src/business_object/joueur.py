@@ -1,3 +1,5 @@
+from business_object.monnaie import Monnaie
+
 class Joueur:
     """
     Classe représentant un Joueur
@@ -20,7 +22,7 @@ class Joueur:
         solde du joueur 
     """
 
-    def __init__(self, pseudo, mail, credit, mdp, age, id_joueur=None):
+    def __init__(self, pseudo, mail, mdp, age, credit=Monnaie(0), id_joueur=None):
         """Constructeur"""
         self.id_joueur = id_joueur
         self.pseudo = pseudo
