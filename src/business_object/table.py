@@ -16,7 +16,7 @@ class Table:
         table_remplie() -> bool: Vérifie si la table est entièrement occupée.
         get_joueurs() -> list[int]: Retourne la liste des IDs des joueurs assis à la table.
     """
-    
+     
     def __init__(self, id_table: int, nb_sieges: int, blind_initial: Monnaie):
         self.id_table = id_table
         self.nb_sieges = nb_sieges
