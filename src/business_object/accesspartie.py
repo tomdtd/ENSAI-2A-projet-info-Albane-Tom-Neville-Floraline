@@ -1,12 +1,11 @@
 from src.business_object.table import Table
 from src.business_object.joueur import Joueur
 from src.business_object.monnaie import Monnaie
-from src.business_object.siege import Siege
+
 
 class AccessPartie:
     """
     Classe d'accès aux tables de poker.
-    
     Attributs:
     ----------
      tables : list[Table]
@@ -22,7 +21,7 @@ class AccessPartie:
         Met à jour le siège avec l'identifiant du joueur.
         Retourne True si l'affectation a réussi, False sinon.
     """
-    
+
     def __init__(self):
         self.tables: list[Table] = []
 
