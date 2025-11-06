@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict
-from src.business_object.Partie import Partie
+from src.business_object.partie import Partie
 from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.pot import Pot
 from src.business_object.joueur import Joueur

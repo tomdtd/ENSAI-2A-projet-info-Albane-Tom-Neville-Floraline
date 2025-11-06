@@ -1,8 +1,6 @@
 import pytest
-from datetime import datetime
 from src.dao.partie_dao import PartieDAO
-from src.business_object.partie import Partie
-from src.business_object.joueur_partie import JoueurPartie
+from src.business_object.partie import Partie, JoueurPartie
 from src.business_object.pot import Pot
 from src.business_object.joueur import Joueur
 from src.business_object.siege import Siege
@@ -17,7 +15,7 @@ class TestPartieDAO:
     
     @pytest.fixture
     def joueur_test(self):
-        return Joueur(id_joueur=1, pseudo="TestJoueur")
+        return Joueur(id_joueur=1, pseudo="TestJoueur", mail="test@test.com", mdp="password", age=25)
     
     @pytest.fixture
     def siege_test(self):
@@ -119,7 +117,7 @@ class TestPartieDAO:
         partie = dao.creer_partie([joueur_partie1], pot_test, 1, "2024-01-01 10:00:00")
         
         # Ajouter un joueur
-        joueur2 = Joueur(id_joueur=2, pseudo="Joueur2")
+        joueur2 = Joueur(id_joueur=2, pseudo="Joueur2", mail="joueur2@test.com", mdp="password", age=30)
         joueur_partie2 = JoueurPartie(joueur2, siege_test, 1000)
         result_ajout = dao.ajouter_joueur_partie(1, joueur_partie2)
         
