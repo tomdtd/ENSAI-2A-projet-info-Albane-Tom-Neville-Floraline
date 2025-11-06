@@ -1,6 +1,6 @@
 from src.business_object.siege import Siege
 from src.business_object.monnaie import Monnaie
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
  
 class Table:
     """

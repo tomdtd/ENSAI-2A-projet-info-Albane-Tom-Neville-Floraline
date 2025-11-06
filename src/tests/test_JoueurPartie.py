@@ -2,7 +2,7 @@ import pytest
 from src.business_object.joueur import Joueur
 from src.business_object.siege import Siege
 from src.business_object.monnaie import Monnaie
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
 
 # Mocks pour les dépendances
 class MockJoueur:

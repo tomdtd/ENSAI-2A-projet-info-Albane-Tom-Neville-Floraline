@@ -1,4 +1,4 @@
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.pot import Pot
 from src.business_object.carte import Carte
 
@@ -26,8 +26,6 @@ class Partie :
     date_fin : str
     Date de fin de la partie    
 
-    carte_communes : list[str]
-    Cartes communes sur la table
 
     Methodes:
     ------- 

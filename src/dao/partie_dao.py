@@ -1,189 +1,104 @@
-from typing import List, Optional
-from datetime import datetime
-from dao.db_connection import DBConnection
-from src.business_object.partie import Partie
+from typing import List, Optional, Dict
+from src.business_object.Partie import Partie
+from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.pot import Pot
-from src.business_object.carte import Carte
+from src.business_object.joueur import Joueur
+from src.business_object.siege import Siege
+from src.business_object.monnaie import Monnaie
 
-class PartieDao:
+
+class PartieDAO:
+    """
+    Data Access Object pour la gestion des parties de poker
+    """
+    
     def __init__(self):
-        self.connection = DBConnection()
-
-    def creer(self, partie: Partie) -> Partie:
-        """Crée une nouvelle partie dans la base de données"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        INSERT INTO Parties (id_table, date_debut, pot_total)
-                        VALUES (%s, %s, %s)
-                        RETURNING id_partie
-                    """, (partie.id_table, partie.date_debut, partie.pot.get_montant()))
-                    
-                    result = cursor.fetchone()
-                    partie.id_partie = result[0]
-                    
-                    # Sauvegarder les cartes communes
-                    for i, carte in enumerate(partie.carte_communes):
-                        cursor.execute("""
-                            INSERT INTO Cartes_Communes (id_partie, valeur, couleur, ordre)
-                            VALUES (%s, %s, %s, %s)
-                        """, (partie.id_partie, carte.valeur, carte.couleur, i))
-                    
-                    return partie
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la création de la partie: {e}")
-
-    def trouver_par_id(self, id_partie: int) -> Optional[Partie]:
+        self._parties: Dict[int, Partie] = {}  # Dictionnaire pour stocker les parties en mémoire
+        self._next_id = 1  # Compteur pour les IDs
+    
+    def creer_partie(self, joueurs: List[JoueurPartie], pot: Pot, id_table: int, date_debut: str) -> Partie:
+        """Crée une nouvelle partie et la sauvegarde"""
+        partie = Partie(
+            id_partie=self._next_id,
+            joueurs=joueurs,
+            pot=pot,
+            id_table=id_table,
+            date_debut=date_debut
+        )
+        
+        self._parties[self._next_id] = partie
+        self._next_id += 1
+        
+        return partie
+    
+    def get_partie_par_id(self, id_partie: int) -> Optional[Partie]:
         """Récupère une partie par son ID"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    # Récupérer la partie
-                    cursor.execute("""
-                        SELECT id_partie, id_table, date_debut, date_fin, pot_total
-                        FROM Parties WHERE id_partie = %s
-                    """, (id_partie,))
-                    
-                    row = cursor.fetchone()
-                    if not row:
-                        return None
-                    
-                    partie = Partie(
-                        id_partie=row[0],
-                        joueurs=[],  # À charger séparément
-                        pot=Pot(),
-                        id_table=row[1],
-                        date_debut=row[2],
-                        carte_communes=[]
-                    )
-                    
-                    if row[3]:
-                        partie.date_fin = row[3]
-                    
-                    partie.pot.ajouter_mise(row[4])
-                    
-                    # Récupérer les cartes communes
-                    cursor.execute("""
-                        SELECT valeur, couleur FROM Cartes_Communes
-                        WHERE id_partie = %s ORDER BY ordre
-                    """, (id_partie,))
-                    
-                    for carte_row in cursor.fetchall():
-                        partie.carte_communes.append(Carte(carte_row[0], carte_row[1]))
-                    
+        return self._parties.get(id_partie)
+    
+    def get_toutes_parties(self) -> List[Partie]:
+        """Récupère toutes les parties"""
+        return list(self._parties.values())
+    
+    def get_parties_par_table(self, id_table: int) -> List[Partie]:
+        """Récupère toutes les parties d'une table spécifique"""
+        return [partie for partie in self._parties.values() if partie.id_table == id_table]
+    
+    def get_parties_actives(self) -> List[Partie]:
+        """Récupère les parties qui ne sont pas terminées (date_fin est None)"""
+        return [partie for partie in self._parties.values() if partie.date_fin is None]
+    
+    def terminer_partie(self, id_partie: int, date_fin: str) -> bool:
+        """Termine une partie en définissant sa date de fin"""
+        partie = self.get_partie_par_id(id_partie)
+        if partie:
+            partie.date_fin = date_fin
+            return True
+        return False
+    
+    def supprimer_partie(self, id_partie: int) -> bool:
+        """Supprime une partie par son ID"""
+        if id_partie in self._parties:
+            del self._parties[id_partie]
+            return True
+        return False
+    
+    def get_partie_par_joueur(self, id_joueur: int) -> Optional[Partie]:
+        """Trouve la partie active où un joueur participe"""
+        for partie in self._parties.values():
+            for joueur_partie in partie.joueurs:
+                if joueur_partie.joueur.id_joueur == id_joueur and partie.date_fin is None:
                     return partie
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la recherche de la partie: {e}")
-
-    def mettre_a_jour(self, partie: Partie) -> bool:
-        """Met à jour les informations d'une partie"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        UPDATE Parties 
-                        SET date_fin = %s, pot_total = %s
-                        WHERE id_partie = %s
-                    """, (partie.date_fin, partie.pot.get_montant(), partie.id_partie))
-                    
-                    # Mettre à jour les cartes communes
-                    cursor.execute("DELETE FROM Cartes_Communes WHERE id_partie = %s", (partie.id_partie,))
-                    
-                    for i, carte in enumerate(partie.carte_communes):
-                        cursor.execute("""
-                            INSERT INTO Cartes_Communes (id_partie, valeur, couleur, ordre)
-                            VALUES (%s, %s, %s, %s)
-                        """, (partie.id_partie, carte.valeur, carte.couleur, i))
-                    
-                    return cursor.rowcount > 0
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la mise à jour de la partie: {e}")
-
-    def trouver_parties_par_statut(self, statut: str) -> List[Partie]:
-        """Récupère les parties par statut"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    if statut == "en_cours":
-                        cursor.execute("SELECT id_partie FROM Parties WHERE date_fin IS NULL")
-                    elif statut == "terminee":
-                        cursor.execute("SELECT id_partie FROM Parties WHERE date_fin IS NOT NULL")
-                    
-                    parties = []
-                    for row in cursor.fetchall():
-                        partie = self.trouver_par_id(row[0])
-                        if partie:
-                            parties.append(partie)
-                    
-                    return parties
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la recherche des parties par statut: {e}")
-
-    def trouver_parties_par_joueur(self, id_joueur: int) -> List[Partie]:
-        """Récupère l'historique des parties d'un joueur"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        SELECT DISTINCT p.id_partie
-                        FROM Parties p
-                        JOIN Joueurs_Parties jp ON p.id_partie = jp.id_partie
-                        WHERE jp.id_joueur = %s
-                    """, (id_joueur,))
-                    
-                    parties = []
-                    for row in cursor.fetchall():
-                        partie = self.trouver_par_id(row[0])
-                        if partie:
-                            parties.append(partie)
-                    
-                    return parties
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la recherche des parties du joueur: {e}")
-
-    def trouver_derniere_partie_sur_table(self, id_table: int) -> Optional[Partie]:
-        """Récupère la dernière partie sur une table"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        SELECT id_partie FROM Parties 
-                        WHERE id_table = %s 
-                        ORDER BY date_debut DESC 
-                        LIMIT 1
-                    """, (id_table,))
-                    
-                    row = cursor.fetchone()
-                    if row:
-                        return self.trouver_par_id(row[0])
-                    return None
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors de la recherche de la dernière partie: {e}")
-
-    def lister_parties_par_periode(self, debut: datetime, fin: datetime) -> List[Partie]:
-        """Récupère les parties dans une période donnée"""
-        try:
-            with self.connection as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute("""
-                        SELECT id_partie FROM Parties 
-                        WHERE date_debut BETWEEN %s AND %s
-                    """, (debut, fin))
-                    
-                    parties = []
-                    for row in cursor.fetchall():
-                        partie = self.trouver_par_id(row[0])
-                        if partie:
-                            parties.append(partie)
-                    
-                    return parties
-                    
-        except Exception as e:
-            raise ValueError(f"Erreur lors du listage des parties par période: {e}")
+        return None
+    
+    def ajouter_joueur_partie(self, id_partie: int, joueur_partie: JoueurPartie) -> bool:
+        """Ajoute un joueur à une partie"""
+        partie = self.get_partie_par_id(id_partie)
+        if partie and partie.date_fin is None:
+            partie.joueurs.append(joueur_partie)
+            return True
+        return False
+    
+    def retirer_joueur_partie(self, id_partie: int, id_joueur: int) -> bool:
+        """Retire un joueur d'une partie"""
+        partie = self.get_partie_par_id(id_partie)
+        if partie and partie.date_fin is None:
+            for i, joueur_partie in enumerate(partie.joueurs):
+                if joueur_partie.joueur.id_joueur == id_joueur:
+                    partie.joueurs.pop(i)
+                    return True
+        return False
+    
+    def get_nombre_parties(self) -> int:
+        """Retourne le nombre total de parties"""
+        return len(self._parties)
+    
+    def partie_existe(self, id_partie: int) -> bool:
+        """Vérifie si une partie existe"""
+        return id_partie in self._parties
+    
+    def get_joueurs_partie(self, id_partie: int) -> List[JoueurPartie]:
+        """Récupère tous les joueurs d'une partie"""
+        partie = self.get_partie_par_id(id_partie)
+        if partie:
+            return partie.joueurs
+        return []
