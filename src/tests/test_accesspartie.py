@@ -1,7 +1,7 @@
 import pytest
 from src.business_object.accesspartie import AccessPartie
 from src.business_object.joueur import Joueur
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.monnaie import Monnaie
 
 
