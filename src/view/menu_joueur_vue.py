@@ -56,6 +56,6 @@ class MenuJoueurVue(VueAbstraite):
                 return MenuJoueurVue(joueurs_str) # a changer
 
             case "Gerer son solde":
-                from view.pokemon_vue import PokemonVue
+                from view.solde_vue import SoldeVue
 
-                return PokemonVue()
+                return SoldeVue()
