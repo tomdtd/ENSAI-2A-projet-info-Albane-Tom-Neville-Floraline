@@ -9,9 +9,9 @@ from utils.securite import hash_password
 from dao.db_connection import DBConnection
 from dao.joueur_partie_dao import JoueurPartieDao
 from dao.joueur_dao import JoueurDao
-from dao.Partie_dao import PartieDao
+from dao.partie_dao import PartieDao
 
-from business_object.JoueurPartie import JoueurPartie
+from business_object.joueur_partie import JoueurPartie
 from business_object.joueur import Joueur
 from business_object.siege import Siege
 from business_object.partie import Partie
