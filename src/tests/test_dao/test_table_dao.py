@@ -1,13 +1,13 @@
 import pytest
 from src.business_object.monnaie import Monnaie
-from src.dao.table_dao import TableDAO
+from src.dao.table_dao import TableDao
 
 
-class TestTableDAO:
+class TestTableDao:
     
     @pytest.fixture
     def dao(self):
-        return TableDAO()
+        return TableDao()
     
     @pytest.fixture
     def monnaie_100(self):

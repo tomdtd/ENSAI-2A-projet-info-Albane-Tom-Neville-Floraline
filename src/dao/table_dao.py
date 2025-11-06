@@ -3,7 +3,7 @@ from src.business_object.table import Table
 from src.business_object.monnaie import Monnaie
 
 
-class TableDAO:
+class TableDao:
     """
     Data Access Object pour la gestion des tables de poker
     """

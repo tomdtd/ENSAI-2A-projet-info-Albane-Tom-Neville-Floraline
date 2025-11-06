@@ -7,7 +7,7 @@ from src.business_object.siege import Siege
 from src.business_object.monnaie import Monnaie
 
 
-class PartieDAO:
+class PartieDao:
     """
     Data Access Object pour la gestion des parties de poker
     """

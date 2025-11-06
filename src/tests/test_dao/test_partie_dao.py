@@ -1,5 +1,5 @@
 import pytest
-from src.dao.partie_dao import PartieDAO
+from src.dao.partie_dao import PartieDao
 from src.business_object.partie import Partie, JoueurPartie
 from src.business_object.pot import Pot
 from src.business_object.joueur import Joueur
@@ -7,11 +7,11 @@ from src.business_object.siege import Siege
 from src.business_object.monnaie import Monnaie
 
 
-class TestPartieDAO:
+class TestPartieDao:
     
     @pytest.fixture
     def dao(self):
-        return PartieDAO()
+        return PartieDao()
     
     @pytest.fixture
     def joueur_test(self):
