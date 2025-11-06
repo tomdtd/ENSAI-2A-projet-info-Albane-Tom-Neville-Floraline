@@ -83,12 +83,8 @@ class JoueurService:
             Le joueur modifié si la modification est un succès.
             None sinon.
         """
-        if not joueur or not joueur.id_joueur:
-            raise ValueError("Le joueur ou son identifiant ne peut pas être vide.")
-
-        if JoueurDao().modifier(joueur):
-            return joueur
-        return None
+        joueur.mdp = hash_password(joueur.mdp, joueur.pseudo)
+        return joueur if JoueurDao().modifier(joueur) else None
 
     @log
     def supprimer(self, joueur: Joueur) -> bool:
