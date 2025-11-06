@@ -35,7 +35,7 @@ def test_creer_ok():
                                  siege= Siege(), 
                                  solde_partie=100)
     partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
-    PartieDao().creer(partie)
+    PartieDao().creer_partie(partie)
     id_partie = 1
 
     # WHEN
@@ -73,7 +73,7 @@ def test_supprimer_ok():
                                  siege= Siege(), 
                                  solde_partie=100)
     partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
-    PartieDao().creer(partie)
+    PartieDao().creer_partie(partie)
     JoueurPartieDao().creer(joueur_partie, 1)
 
     # WHEN
@@ -93,7 +93,7 @@ def test_modifier_ok():
                                  siege= Siege(), 
                                  solde_partie=new_solde_partie)
     partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
-    PartieDao().creer(partie)
+    PartieDao().creer_partie(partie)
     JoueurPartieDao().creer(joueur_partie, 1)
 
     # WHEN

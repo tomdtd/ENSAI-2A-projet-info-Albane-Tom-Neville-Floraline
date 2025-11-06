@@ -1,3 +1,6 @@
+from business_object.liste_cartes import ListeCartes
+from business_object.joueur_partie import JoueurPartie 
+
 class Croupier:
     """
     Représente le croupier, qui gère le déroulement du jeu.
@@ -12,8 +15,8 @@ class Croupier:
         Distribue un nombre de cartes à chaque joueur.
 
     """
-    def __init__(self):
-        self.pioche = Pioche()
+    def __init__(self, pioche):
+        self.pioche = pioche
 
     def distribuer(self, joueurs_partie: List[JoueurPartie], nb_cartes: int):
         """Distribue un nombre de cartes à chaque joueur."""
