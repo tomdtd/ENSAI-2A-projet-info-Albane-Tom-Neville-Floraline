@@ -19,4 +19,6 @@ class Siege:
         self.id_joueur = None
 
     def est_occupe(self) -> bool:
+        if self.id_joueur is not None :
+            self.occupe = True
         return self.occupe

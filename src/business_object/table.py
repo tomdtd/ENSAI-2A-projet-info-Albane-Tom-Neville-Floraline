@@ -29,4 +29,4 @@ class Table:
 
     def get_joueurs(self) -> list[int]:
         """Retourne la liste des IDs des joueurs assis à cette table."""
-        return [siege.id_joueur for siege in self.sieges if siege.est_occupe() and siege.id_joueur is not None]
+        return [siege.id_joueur for siege in self.sieges if siege.est_occupe() and siege.id_joueur is not None] 
