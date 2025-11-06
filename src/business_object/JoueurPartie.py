@@ -29,8 +29,6 @@ class JoueurPartie:
         Permet au joueur de miser un certain montant.       
     se_coucher() -> None
         Permet au joueur de se coucher.
-
-
     """
     def __init__(self, joueur: Joueur, siege: Siege, solde_partie: int):
         self.joueur = joueur
@@ -42,6 +40,13 @@ class JoueurPartie:
 
     def miser(self, montant: int):
         """Le joueur mise un certain montant"""
+        if montant <= 0:
+            return  # Ne rien faire si montant négatif ou nul
+        
+        if montant > self.solde_partie.valeur  :
+            # Ajuster au solde maximum disponible
+            montant = self.solde_partie.valeur
+        
         self.solde_partie.debiter(montant)
         self.mise_tour.crediter(montant)
         print(f"{self.joueur.pseudo} mise {montant}.")
@@ -50,4 +55,3 @@ class JoueurPartie:
         """Le joueur se couche."""
         self.statut = "couché"
         print(f"{self.joueur.pseudo} se couche.")
-

@@ -1,5 +1,6 @@
 from src.business_object.JoueurPartie import JoueurPartie
 from src.business_object.pot import Pot
+from src.business_object.carte import Carte
 
 class Partie : 
     """
@@ -10,9 +11,6 @@ class Partie :
 
     Liste des joueurs dans la partie
 
-    jour : int
-    Jour actuel de la partie            
-    
     pot : Pot 
     Pot de la partie     
 
@@ -43,7 +41,7 @@ class Partie :
         Gère les blinds pour chaque tour de la partie
 
     """
-    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], jour : int, pot : Pot, id_table : int, date_debut : str, carte_communes : liste_cartes ) :
+    def __init__(self, id_partie : int, joueurs : list[JoueurPartie], pot : Pot, id_table : int, date_debut : str, carte_communes : list[Carte] ) :
         self.id_partie = id_partie
         self.joueurs = joueurs  
         self.pot = pot 
@@ -52,16 +50,18 @@ class Partie :
         self.date_fin = None
         self.carte_communes = carte_communes
     def __str__(self):
-        return f"Partie(id_partie={self.id_partie}, joueurs={self.joueurs}, jour={self.jour}, pot={self.pot})"  
+        return f"Partie(id_partie={self.id_partie}, joueurs={self.joueurs}, pot={self.pot})"  
 
     # def repartition_blind() : # Attribuer les blinds aux joueurs au début
     #    pass 
     def finir_partie() : # Mettre fin à la partie et déterminer le gagnant
         pass 
-    def gérer_blind() : # Sortie c'est le joueur qui doit poser la blind
+    def gerer_blind(self) : # Sortie c'est le joueur qui doit poser la blind
         n = len(self.joueurs)
-        b = self.joueurs[-1]
-        for i in range(n):
-            self.joueurs[i+1] = self.joueurs[i]
-            # Logique pour gérer les blinds pour chaque joueur
-        self.joueurs[0] = b
+        if n >=1 :
+            b = self.joueurs[-1]
+            for i in range(0,n-1):
+                self.joueurs[i+1] = self.joueurs[i]
+                # Logique pour gérer les blinds pour chaque joueur
+            self.joueurs[0] = b
+            
