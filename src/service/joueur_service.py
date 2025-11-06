@@ -1,92 +1,155 @@
-from tabulate import tabulate
-
+from typing import List, Optional
 from utils.log_decorator import log
+from dao.joueur_dao import JoueurDao
+from business_object.joueur import Joueur
 from utils.securite import hash_password
 
-from business_object.joueur import Joueur
-from dao.joueur_dao import JoueurDao
-
-
 class JoueurService:
-    """Classe contenant les méthodes de service des Joueurs"""
+    """Classe contenant les méthodes de service pour les joueurs."""
 
     @log
-    def creer(self, pseudo, mdp, age, mail, credit) -> Joueur:
-        """Création d'un joueur à partir de ses attributs"""
-
-        nouveau_joueur = Joueur(
-            pseudo=pseudo,
-            mdp=hash_password(mdp, pseudo),
-            age=age,
-            mail=mail,
-            credit=credit,
-        )
-
-        return nouveau_joueur if JoueurDao().creer(nouveau_joueur) else None
-
-    @log
-    def lister_tous(self, inclure_mdp=False) -> list[Joueur]:
-        """Lister tous les joueurs
-        Si inclure_mdp=True, les mots de passe seront inclus
-        Par défaut, tous les mdp des joueurs sont à None
+    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: int) -> Optional[Joueur]:
+        """Crée un nouveau joueur.
+        Parameters
+        ----------
+        pseudo : str
+            Pseudo du joueur.
+        mdp : str
+            Mot de passe du joueur.
+        mail : str
+            Adresse mail du joueur.
+        age : int
+            Âge du joueur.
+        credit : int
+            Crédit initial du joueur.
+        Returns
+        -------
+        joueur : Joueur
+            Le joueur créé si la création est un succès.
+            None sinon.
         """
-        joueurs = JoueurDao().lister_tous()
-        if not inclure_mdp:
-            for j in joueurs:
-                j.mdp = None
-        return joueurs
+        if not pseudo or not mdp or not mail or age < 0 or credit < 0:
+            raise ValueError("Les paramètres ne sont pas valides.")
+
+        mdp_hashe = hash_password(mdp, pseudo)
+        joueur = Joueur(pseudo=pseudo, mail=mail, credit=credit, mdp=mdp_hashe, age=age)
+        if JoueurDao().creer(joueur):
+            return joueur
+        return None
 
     @log
-    def trouver_par_id(self, id_joueur) -> Joueur:
-        """Trouver un joueur à partir de son id"""
+    def trouver_par_id(self, id_joueur: int) -> Optional[Joueur]:
+        """Trouve un joueur par son identifiant.
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+        Returns
+        -------
+        joueur : Joueur
+            Le joueur trouvé si l'identifiant est valide.
+            None sinon.
+        """
+        if not id_joueur:
+            raise ValueError("L'identifiant du joueur ne peut pas être vide.")
+
         return JoueurDao().trouver_par_id(id_joueur)
 
     @log
-    def modifier(self, joueur) -> Joueur:
-        """Modification d'un joueur"""
-
-        joueur.mdp = hash_password(joueur.mdp, joueur.pseudo)
-        return joueur if JoueurDao().modifier(joueur) else None
+    def lister_tous(self) -> List[Joueur]:
+        """Liste tous les joueurs.
+        Returns
+        -------
+        joueurs : List[Joueur]
+            Liste de tous les joueurs.
+        """
+        return JoueurDao().lister_tous()
 
     @log
-    def supprimer(self, joueur) -> bool:
-        """Supprimer le compte d'un joueur"""
+    def modifier(self, joueur: Joueur) -> Optional[Joueur]:
+        """Modifie les informations d'un joueur.
+        Parameters
+        ----------
+        joueur : Joueur
+            Le joueur à modifier.
+        Returns
+        -------
+        joueur : Joueur
+            Le joueur modifié si la modification est un succès.
+            None sinon.
+        """
+        if not joueur or not joueur.id_joueur:
+            raise ValueError("Le joueur ou son identifiant ne peut pas être vide.")
+
+        if JoueurDao().modifier(joueur):
+            return joueur
+        return None
+
+    @log
+    def supprimer(self, joueur: Joueur) -> bool:
+        """Supprime un joueur.
+        Parameters
+        ----------
+        joueur : Joueur
+            Le joueur à supprimer.
+        Returns
+        -------
+        success : bool
+            True si la suppression est un succès.
+            False sinon.
+        """
+        if not joueur or not joueur.id_joueur:
+            raise ValueError("Le joueur ou son identifiant ne peut pas être vide.")
+
         return JoueurDao().supprimer(joueur)
 
     @log
-    def afficher_tous(self) -> str:
-        """Afficher tous les joueurs
-        Sortie : Une chaine de caractères mise sous forme de tableau
+    def se_connecter(self, pseudo: str, mdp: str) -> Optional[Joueur]:
+        """Connecte un joueur avec son pseudo et son mot de passe.
+        Parameters
+        ----------
+        pseudo : str
+            Pseudo du joueur.
+        mdp : str
+            Mot de passe du joueur.
+        Returns
+        -------
+        joueur : Joueur
+            Le joueur connecté si les identifiants sont corrects.
+            None sinon.
         """
-        entetes = ["pseudo", "age", "mail", "credit"]
+        if not pseudo or not mdp:
+            raise ValueError("Le pseudo et le mot de passe ne peuvent pas être vides.")
 
-        joueurs = JoueurDao().lister_tous()
-
-        for j in joueurs:
-            if j.pseudo == "admin":
-                joueurs.remove(j)
-
-        joueurs_as_list = [j.as_list() for j in joueurs]
-
-        str_joueurs = "-" * 100
-        str_joueurs += "\nListe des joueurs \n"
-        str_joueurs += "-" * 100
-        str_joueurs += "\n"
-        str_joueurs += tabulate(
-            tabular_data=joueurs_as_list,
-            headers=entetes,
-            tablefmt="psql",
-            floatfmt=".2f",
-        )
-        str_joueurs += "\n"
-
-        return str_joueurs
+        mdp_hashe = hash_password(mdp, pseudo)
+        return JoueurDao().se_connecter(pseudo, mdp_hashe)
 
     @log
-    def se_connecter(self, pseudo, mdp) -> Joueur:
-        """Se connecter à partir de pseudo et mdp"""
-        return JoueurDao().se_connecter(pseudo, hash_password(mdp, pseudo))
+    def changer_mot_de_passe(self, joueur: Joueur, ancien_mdp: str, nouveau_mdp: str) -> bool:
+        """Change le mot de passe d'un joueur.
+        Parameters
+        ----------
+        joueur : Joueur
+            Le joueur dont le mot de passe doit être changé.
+        ancien_mdp : str
+            L'ancien mot de passe.
+        nouveau_mdp : str
+            Le nouveau mot de passe.
+        Returns
+        -------
+        success : bool
+            True si le changement de mot de passe est un succès.
+            False sinon.
+        """
+        if not joueur or not ancien_mdp or not nouveau_mdp:
+            raise ValueError("Le joueur, l'ancien mot de passe et le nouveau mot de passe ne peuvent pas être vides.")
 
+        if joueur.mdp != hash_password(ancien_mdp, joueur.pseudo):
+            raise ValueError("L'ancien mot de passe est incorrect.")
+
+        joueur.mdp = hash_password(nouveau_mdp, joueur.pseudo)
+        return JoueurDao().modifier(joueur)
+    
     @log
     def pseudo_deja_utilise(self, pseudo) -> bool:
         """Vérifie si le pseudo est déjà utilisé

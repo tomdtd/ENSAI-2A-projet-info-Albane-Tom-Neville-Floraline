@@ -6,6 +6,7 @@ from InquirerPy.validator import EmptyInputValidator, PasswordValidator
 from prompt_toolkit.validation import ValidationError, Validator
 
 from service.joueur_service import JoueurService
+from business_object.monnaie import Monnaie
 from view.vue_abstraite import VueAbstraite
 
 
@@ -38,14 +39,8 @@ class InscriptionVue(VueAbstraite):
 
         mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
 
-        fan_pokemon = inquirer.confirm(
-            message="Etes-vous fan de pokemons : ",
-            confirm_letter="o",
-            reject_letter="n",
-        ).execute()
-
         # Appel du service pour créer le joueur
-        joueur = JoueurService().creer(pseudo, mdp, age, mail, fan_pokemon)
+        joueur = JoueurService().creer(pseudo, mdp, age, mail, credit=Monnaie(0))
 
         # Si le joueur a été créé
         if joueur:
@@ -61,12 +56,12 @@ class InscriptionVue(VueAbstraite):
 
 
 class MailValidator(Validator):
-    """la classe MailValidator verifie si la chaine de caractères
+    """La classe MailValidator verifie si la chaine de caractères
     que l'on entre correspond au format de l'email"""
 
     def validate(self, document) -> None:
         ok = regex.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", document.text)
         if not ok:
             raise ValidationError(
-                message="Please enter a valid mail", cursor_position=len(document.text)
+                message="Entrez un mail valide", cursor_position=len(document.text)
             )

@@ -169,16 +169,19 @@ Documentation :
 Examples of endpoints (to be tested, for example, with *Insomnia* or a browser):
 
 
-- `GET http://localhost/joueur`
-- `GET http://localhost/joueur/1`
+- `GET http://localhost:8000/joueur`
+- `GET http://localhost:8000/joueur/997`
 - ```
-  POST http://localhost/joueur/
-  JSON body :
-    {
-      "pseudo": "jean.dupont",
-      "mdp": "9999",
-      "credit": "150.00"
-    }
+POST http://localhost:8000/joueur
+Content-Type: application/json
+
+{
+  "pseudo": "charlotte",
+  "mdp": "azerty",
+  "mail": "charlotte@ensai.fr",
+  "age": 28,
+  "credit": 100.00
+}
   ```
 - ```
   PUT http://localhost/joueur/3
