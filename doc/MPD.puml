@@ -1,8 +1,6 @@
 @startuml
-' Titre du diagramme
 title Modèle Physique de Données (MPD) - Serveur de Poker
 
-' --- Paramètres d'affichage ---
 hide circle
 skinparam linetype ortho
 skinparam table {
@@ -15,7 +13,6 @@ skinparam arrow {
 
 ' --- Définition des Tables ---
 
-' Table pour les utilisateurs (Joueurs )
 entity "Joueurs" as T_JOUEURS {
   * **id_joueur** : INTEGER <<PK>> <<AI>>
   --
@@ -27,58 +24,61 @@ entity "Joueurs" as T_JOUEURS {
   * age : INTEGER
 }
 
-' Table pour les tables de jeu physiques
 entity "Tables" as T_TABLES {
   * **id_table** : INTEGER <<PK>> <<AI>>
   --
   * nb_sieges : INTEGER
-  * siege : list[Siege]
   * blind_initial : DECIMAL(10, 2)
-  * table_remplie : BOOLEAN
 }
 
-' Table pour les parties qui ont lieu sur les tables
-entity "Parties" as T_PARTIES {
-  * **id_partie** : INTEGER <<PK>> <<AI>>
-  --
-  * id_table : INTEGER <<FK>>
-  * date_debut : TIMESTAMP
-  * date_fin : TIMESTAMP
-  * pot : DECIMAL(10, 2)
-  * cartes_communes : VARCHAR(20) '
-}
-
-'Tables pour les sièges des joueurs
-entity "Siege" as T_SIEGE {
+entity "Sieges" as T_SIEGES {
   * **id_siege** : INTEGER <<PK>> <<AI>>
   --
   * id_table : INTEGER <<FK>>
   * numero : INTEGER
   * occupe : BOOLEAN
+  * id_joueur : INTEGER <<FK>> <<NULL>>
 }
 
-' Table de jonction pour la relation N-M entre Joueurs et Parties
-entity "Joueurs_Parties" as T_JOUEURS_PARTIES {
-  * **id_joueur** : INTEGER <<PK>> <<FK>>
-  * **id_partie** : INTEGER <<PK>> <<FK>>
+entity "Parties" as T_PARTIES {
+  * **id_partie** : INTEGER <<PK>> <<AI>>
   --
-  * main_joueur : VARCHAR(10) ' ex: "AC,KH"
-  * montant_mise_total : DECIMAL(10, 2)
-  * numero_siege : INTEGER
-  * gain_perte : DECIMAL(10, 2)
-  * combinaison : VARCHAR(50) ' 
+  * id_table : INTEGER <<FK>>
+  * date_debut : TIMESTAMP
+  * date_fin : TIMESTAMP <<NULL>>
+  * pot_total : DECIMAL(10, 2)
 }
 
-' Table pour l'historique des transactions financières
+entity "Cartes_Communes" as T_CARTES_COMMUNES {
+  * **id_carte_commune** : INTEGER <<PK>> <<AI>>
+  --
+  * id_partie : INTEGER <<FK>>
+  * valeur : VARCHAR(10)
+  * couleur : VARCHAR(10)
+  * ordre : INTEGER
+}
+
+entity "Joueurs_Parties" as T_JOUEURS_PARTIES {
+  * **id_joueur_partie** : INTEGER <<PK>> <<AI>>
+  --
+  * id_joueur : INTEGER <<FK>>
+  * id_partie : INTEGER <<FK>>
+  * id_siege : INTEGER <<FK>>
+  * solde_partie : DECIMAL(10, 2)
+  * statut : VARCHAR(20)
+  * mise_tour : DECIMAL(10, 2)
+  * main_joueur : VARCHAR(20)
+}
+
 entity "Transactions" as T_TRANSACTIONS {
   * **id_transaction** : INTEGER <<PK>> <<AI>>
   --
   * id_joueur : INTEGER <<FK>>
-  * type_transaction : VARCHAR(50) ' ex: "depot", "retrait", "gain_partie"
+  * type_transaction : VARCHAR(50)
   * montant : DECIMAL(10, 2)
   * date_transaction : TIMESTAMP
 }
-' Table des administrateurs 
+
 entity "Administrateurs" as T_ADMINISTRATEURS {
   * **id_admin** : INTEGER <<PK>> <<AI>>
   --
@@ -86,43 +86,24 @@ entity "Administrateurs" as T_ADMINISTRATEURS {
   * mot_de_passe_hash : VARCHAR(255)
   * email : VARCHAR(100) <<UNIQUE>>
 }
-' Table pour les utilisateurs banis (Joueurs )
 
-entity "Joueurs_banis" as T_JOUEURS_B {
+entity "Joueurs_Bannis" as T_JOUEURS_BANNIS {
+  * **id_ban** : INTEGER <<PK>> <<AI>>
   --
-  * id_admin : INTEGER  <<FK>>
-  * pseudo : VARCHAR(50) <<UNIQUE>>
-  * mot_de_passe_hash : VARCHAR(255)
-  * email : VARCHAR(100) <<UNIQUE>>
-  * credit : DECIMAL(10, 2)
-  * date_banis : Date de banissement
+  * id_admin : INTEGER <<FK>>
+  * id_joueur : INTEGER <<FK>>
+  * date_ban : TIMESTAMP
   * raison_ban : VARCHAR(255)
-
 }
 
 ' --- Définition des Relations ---
-' Admins et joueurs banis
-T_ADMINISTRATEURS ||--o{ T_JOUEURS_B
-' Un joueur peut avoir plusieurs transactions
+T_ADMINISTRATEURS ||--o{ T_JOUEURS_BANNIS
 T_JOUEURS ||--o{ T_TRANSACTIONS
-
-'Admin et Transactions 
-T_ADMINISTRATEURS ||--o{ T_TRANSACTIONS
-
-'Une table de jeu peut accueillir plusieurs parties (dans le temps)
-T_TABLES ||--o{ T_PARTIES
-
-' Relation N-M entre Joueurs et Parties, via la table de jonction
-T_JOUEURS }|--|| T_JOUEURS_PARTIES
-
-' Relation entre parties et sièges
-T_TABLES ||--o{ T_SIEGE
-
-'Relation entre joueurs et Joueurs_Parties
 T_JOUEURS ||--o{ T_JOUEURS_PARTIES
-
-'Relation entre joueur et sièges (via Joueurs_Parties)
-T_SIEGE }|--o{ T_JOUEURS_PARTIES
-' Relation entre parties et joueurs_parties
+T_TABLES ||--o{ T_PARTIES
+T_TABLES ||--o{ T_SIEGES
 T_PARTIES ||--o{ T_JOUEURS_PARTIES
+T_PARTIES ||--o{ T_CARTES_COMMUNES
+T_SIEGES ||--o{ T_JOUEURS_PARTIES
+T_JOUEURS_BANNIS }|--|| T_JOUEURS
 @enduml

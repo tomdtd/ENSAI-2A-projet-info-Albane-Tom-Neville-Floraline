@@ -6,7 +6,7 @@ class Admin:
     ----------
     admin_id : int
         L'identifiant unique de l'administrateur.               
-    name : str
+    nom : str
         Le nom de l'administrateur.
     mdp : str
         Le mot de passe de l'administrateur.
@@ -15,10 +15,10 @@ class Admin:
     Méthodes:
     ---------       
     """
-    def __init__(self, admin_id, name, mdp, mail):
+    def __init__(self, admin_id, nom, mdp, mail):
 
         self.admin_id = admin_id
-        self.name = name
+        self.nom = nom
         self.mdp = mdp
         self.mail = mail
 
