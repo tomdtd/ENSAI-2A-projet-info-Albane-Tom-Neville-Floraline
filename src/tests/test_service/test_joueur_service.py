@@ -207,3 +207,38 @@ def test_changer_mot_de_passe_invalid_ancien_mdp():
     # THEN
     with pytest.raises(ValueError):
         joueur_service.changer_mot_de_passe(mock_joueur, ancien_mdp, nouveau_mdp)
+
+def test_pseudo_deja_utilise_oui():
+    """Le pseudo est déjà utilisé dans liste_joueurs"""
+    mock_joueurs = [
+        Joueur(pseudo="jp", age="10", mail="jp@mail.fr", mdp="1234"),
+        Joueur(pseudo="lea", age="10", mail="lea@mail.fr", mdp="0000"),
+        Joueur(pseudo="gg", age="10", mail="gg@mail.fr", mdp="abcd"),
+    ]
+    # GIVEN
+    pseudo = "lea"
+
+    # WHEN
+    JoueurDao().lister_tous = MagicMock(return_value=mock_joueurs)
+    res = JoueurService().pseudo_deja_utilise(pseudo)
+
+    # THEN
+    assert res
+
+
+def test_pseudo_deja_utilise_non():
+    """Le pseudo n'est pas utilisé dans liste_joueurs"""
+    mock_joueurs = [
+        Joueur(pseudo="joueur1", age="45", mail="joueur1@mail.fr", mdp="1234"),
+        Joueur(pseudo="joueur2", age="75", mail="joueur2@mail.fr", mdp="0000"),
+        Joueur(pseudo="joueur3", age="32", mail="joueur3@mail.fr", mdp="abcd"),
+    ]
+    # GIVEN
+    pseudo = "chaton"
+
+    # WHEN
+    JoueurDao().lister_tous = MagicMock(return_value=mock_joueurs)
+    res = JoueurService().pseudo_deja_utilise(pseudo)
+
+    # THEN
+    assert not res

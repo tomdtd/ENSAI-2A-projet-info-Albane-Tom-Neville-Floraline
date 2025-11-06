@@ -149,3 +149,10 @@ class JoueurService:
 
         joueur.mdp = hash_password(nouveau_mdp, joueur.pseudo)
         return JoueurDao().modifier(joueur)
+    
+    @log
+    def pseudo_deja_utilise(self, pseudo) -> bool:
+        """Vérifie si le pseudo est déjà utilisé
+        Retourne True si le pseudo existe déjà en BDD"""
+        joueurs = JoueurDao().lister_tous()
+        return pseudo in [j.pseudo for j in joueurs]
