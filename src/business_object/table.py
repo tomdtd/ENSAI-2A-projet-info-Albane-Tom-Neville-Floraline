@@ -21,7 +21,7 @@ class Table:
         self.id_table = id_table
         self.nb_sieges = nb_sieges
         self.blind_initial = blind_initial
-        self.sieges = [Siege(id_siege=i, id_table=id_table) for i in range(nb_sieges)]
+        self.sieges = [Siege(id_siege=i) for i in range(nb_sieges)]
 
     def table_remplie(self) -> bool:
         """Renvoie un booléen selon si la table est remplie ou non"""
