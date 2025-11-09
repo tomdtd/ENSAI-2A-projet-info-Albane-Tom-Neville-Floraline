@@ -6,6 +6,24 @@ from src.business_object.table import Table
 
 app = FastAPI(title="pickpoker")
 
+
+# --- ✅ Page d'accueil ---
+@app.get("/")
+def accueil():
+    return {
+        "message": "Bienvenue sur l’API PickPoker 🎲",
+        "endpoints_disponibles": [
+            "/joueurs/ (GET, POST)",
+            "/joueurs/{id_joueur} (GET)",
+            "/joueurs/connexion (POST)",
+            "/tables/ (GET, POST)",
+            "/tables/{id_table}/rejoindre (POST)",
+            "/tables/{id_table}/quitter (POST)",
+            "/docs (Swagger UI)"
+        ]
+    }
+
+
 # Instancie tes services
 joueur_service = JoueurService()
 table_service = TableService()
@@ -77,3 +95,11 @@ def quitter_table(id_table: int, joueur_id: int):
     if success:
         return {"message": f"Joueur {joueur.pseudo} a quitté la table {id_table}"}
     raise HTTPException(status_code=400, detail="Impossible de quitter la table")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=9876)
+
+    logging.info("Arret du Webservice")

@@ -1,6 +1,6 @@
 from utils.log_decorator import log
 from business_object.joueur import Joueur
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.pot import Pot
 from src.business_object.partie import Partie
 from src.business_object.accesspartie import AccessPartie

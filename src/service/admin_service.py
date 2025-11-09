@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict
 from utils.log_decorator import log
-from dao.Admin_dao import AdminDao
+from dao.admin_dao import AdminDao
 from business_object.admin import Admin
 from utils.securite import hash_password, verify_password
 

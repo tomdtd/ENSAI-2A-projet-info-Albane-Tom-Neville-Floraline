@@ -1,7 +1,7 @@
 from typing import Optional, List
 from utils.log_decorator import log
 from dao.joueur_partie_dao import JoueurPartieDao
-from business_object.JoueurPartie import JoueurPartie
+from business_object.joueur_partie import JoueurPartie
 from business_object.joueur import Joueur
 from business_object.siege import Siege
 from business_object.monnaie import Monnaie
