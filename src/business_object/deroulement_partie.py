@@ -1,25 +1,20 @@
 from datetime import datetime
 from src.business_object.joueur import Joueur
-from src.business_object.JoueurPartie import JoueurPartie
+from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.transaction import Transaction
 from src.business_object.partie import Partie
 from src.business_object.pot import Pot
 from src.business_object.croupier import Croupier
-from src.business_object.siege import Siege
-from src.business_object.table import Table
 from src.business_object.accesspartie import AccessPartie
-from src.business_object.main import Main
 from src.business_object.monnaie import Monnaie
 from src.business_object.main_joueur_complete import MainJoueurComplete
-from src.business_object.flop import Flop
 from src.business_object.combinaison import Combinaison
+from src.business_object.liste_cartes import ListeCartes
 
 
 class DeroulementPartie:
     """
-    Super-classe orchestrant une partie de poker Texas Hold'em.
-    Elle coordonne les joueurs, la table, le croupier, les blinds,
-    les transactions et le déroulement des mains (pré-flop, flop, turn, river).
+    Orchestration d'une partie de poker Texas Hold'em.
     """
 
     def __init__(self, joueurs: list[Joueur], big_blind: int, small_blind: int, logger=None):
@@ -28,7 +23,11 @@ class DeroulementPartie:
         self.small_blind = Monnaie(small_blind)
         self.access_partie = AccessPartie()
         self.table = self.access_partie.creer_table(nb_sieges=len(joueurs), blind_initial=self.small_blind)
-        self.croupier = Croupier()
+
+        # ✅ Correction : création explicite de la pioche
+        self.pioche = ListeCartes()
+        self.croupier = Croupier(self.pioche)
+
         self.pot = Pot()
         self.transactions: list[Transaction] = []
         self.partie = None
@@ -38,7 +37,7 @@ class DeroulementPartie:
         for joueur in joueurs:
             self.access_partie.rejoindre_table(joueur)
             siege = next(s for s in self.table.sieges if s.id_joueur == joueur.id_joueur)
-            jp = JoueurPartie(joueur=joueur, siege=siege, solde_partie=joueur.credit)
+            jp = JoueurPartie(joueur=joueur, siege=siege, solde_partie=joueur.credit.get())
             self.joueurs_partie.append(jp)
 
     def lancer_partie(self):
@@ -54,25 +53,33 @@ class DeroulementPartie:
         self.partie.repartition_blind()
         self._collecter_blinds()
 
-        # Distribution des cartes par le croupier (2 cartes par joueur)
-        for jp in self.joueurs_partie:
-            jp.main = self.croupier.distribuer_main(nb_cartes=2)
+        # Pré-flop
+        self.croupier.distribuer(self.joueurs_partie, nb_cartes=2)
+        self._tour_de_table("Pré-flop")
 
-        # Flop : 3 cartes communes
-        flop = Flop(self.croupier.distribuer_cartes(nb_cartes=3))
+        # Flop
+        flop = self.croupier.distribuer_flop()
+        self._tour_de_table("Flop")
 
-        # Déroulement simplifié d'une main
-        self._tour_de_mise()
-        self._showdown(flop)
+        # Turn
+        turn = self.croupier.distribuer_turn()
+        self._tour_de_table("Turn")
 
-        # Fin de partie
+        # River
+        river = self.croupier.distribuer_river()
+        self._tour_de_table("River")
+
+        cartes_communes = flop.get_cartes() + [turn] + [river]
+
+        # Showdown
+        self._showdown(cartes_communes)
+
         self.partie.finir_partie()
 
         if self.logger:
             self.logger.info(f"Partie {self.partie.id_partie} terminée.")
 
     def _collecter_blinds(self):
-        """Collecte small blind et big blind et enregistre les transactions"""
         actifs = [jp for jp in self.joueurs_partie if jp.statut == "en attente"]
 
         if len(actifs) < 2:
@@ -90,32 +97,29 @@ class DeroulementPartie:
         self.pot.ajouter_mise(sb.mise_tour.get())
         self.pot.ajouter_mise(bb.mise_tour.get())
 
-    def _tour_de_mise(self):
-        """Simule un tour de mise simplifié"""
+    def _tour_de_table(self, phase: str):
+        print(f"--- Tour de table ({phase}) ---")
         for jp in self.joueurs_partie:
             if jp.statut == "en attente":
                 jp.miser(10)
                 self.transactions.append(Transaction(solde=-10, date=datetime.now(), id_joueur=jp.joueur.id_joueur))
                 self.pot.ajouter_mise(10)
+                print(f"{jp.joueur.pseudo} mise 10.")
 
-    def _showdown(self, flop: Flop):
-        """Compare les combinaisons des joueurs et détermine le vrai gagnant"""
+    def _showdown(self, cartes_communes: list):
         resultats = []
-
         for jp in self.joueurs_partie:
             if jp.statut == "en attente":
-                main_complete = MainJoueurComplete.recuperer_main_et_flop(jp.main, flop)
+                main_complete = MainJoueurComplete(list(jp.main.get_cartes()) + cartes_communes)
                 combinaison = main_complete.combinaison()
                 resultats.append((jp, combinaison))
 
                 if self.logger:
                     self.logger.info(f"{jp.joueur.pseudo} a {combinaison.name}")
 
-        # Déterminer le gagnant : joueur avec la meilleure combinaison
-        gagnant, meilleure_combinaison = max(resultats, key=lambda x: x[1])
+        gagnant, meilleure_combinaison = max(resultats, key=lambda x: x[1].value)
+        gagnant.solde_partie.crediter(self.pot.get_montant().get())
+        self.transactions.append(Transaction(solde=self.pot.get_montant().get(), date=datetime.now(), id_joueur=gagnant.joueur.id_joueur))
 
-        # Créditer le pot au gagnant
-        gagnant.solde_partie.crediter(self.pot.get_montant())
-        self.transactions.append(Transaction(solde=self.pot.get_montant(), date=datetime.now(), id_joueur=gagnant.joueur.id_joueur))
-
-        print(f"Le gagnant est {gagnant.joueur.pseudo} avec la combinaison {meilleure_combinaison.name} et remporte {self.pot.get_montant()} jetons.")
+        print(f"Le gagnant est {gagnant.joueur.pseudo} avec la combinaison {meilleure_combinaison.name} "
+              f"(score {meilleure_combinaison.value}) et remporte {self.pot.get_montant().get()} jetons.")
