@@ -164,6 +164,24 @@ classDiagram
       + ajouter_carte(carte : Carte)
     }
 
+    class DeroulementPartie {
+      + big_blind : Monnaie
+      + small_blind : Monnaie
+      + access_partie : AccessPartie
+      + table : Table
+      + pioche : ListeCartes
+      + croupier : Croupier
+      + pot : Pot
+      + transactions : list[Transaction]
+      + partie : Partie
+      + joueurs_partie : list[JoueurPartie]
+      «Create» __init__(joueurs : list[Joueur], big_blind : int, small_blind : int, logger=None)
+      + lancer_partie() void
+      - _collecter_blinds() void
+      - _tour_de_table(phase : str) void
+      - _showdown(cartes_communes : list[Carte]) void
+    }
+
     Joueur <|-- JoueurPartie
     ListeDeCartes <|-- Flop
     ListeDeCartes <|-- Combinaison
@@ -188,4 +206,8 @@ classDiagram
     Transaction "1" o-- "1..*" Monnaie : contient
     Joueur "1" --> "1" Transaction : débite
     Transaction "1" --> "1" Joueur : crédite
+    DeroulementPartie "1" o-- "1" Pot : possède
+    DeroulementPartie "1" --> "0..*" JoueurPartie : interagit_avec
+    DeroulementPartie "1" --> "1" Table : se_deroule_sur
+    DeroulementPartie "1" o-- "1" Croupier : gère
 ```
