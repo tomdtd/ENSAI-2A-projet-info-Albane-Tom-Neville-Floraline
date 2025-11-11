@@ -22,7 +22,7 @@ class DBConnection(metaclass=Singleton):
             database=os.environ["POSTGRES_DATABASE"],
             user=os.environ["POSTGRES_USER"],
             password=os.environ["POSTGRES_PASSWORD"],
-            options=f"-c search_path={os.environ['POSTGRES_SCHEMA']}",
+            options=f"-c search_path={os.environ['POSTGRES_SCHEMA']}", #resoudre le pb
             cursor_factory=RealDictCursor,
         )
 

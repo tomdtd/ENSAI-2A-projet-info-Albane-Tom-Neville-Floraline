@@ -9,13 +9,16 @@ from service.joueur_service import JoueurService
 from business_object.monnaie import Monnaie
 from view.vue_abstraite import VueAbstraite
 
+import requests
+API_URL = "https://user-arouille-170474-0.user.lab.sspcloud.fr/proxy/9876" #a changer...
 
 class InscriptionVue(VueAbstraite):
     def choisir_menu(self):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
-        
-        if JoueurService().pseudo_deja_utilise(pseudo):
+        joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
+        if pseudo in [j["pseudo"] for j in joueur]: 
+        #if JoueurService().pseudo_deja_utilise(pseudo): #ne plus utiliser les services et passer par l'api...
             from view.accueil.accueil_vue import AccueilVue
 
             return AccueilVue(f"Le pseudo {pseudo} est déjà utilisé.")
