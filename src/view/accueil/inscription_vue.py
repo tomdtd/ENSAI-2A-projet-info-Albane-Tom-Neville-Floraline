@@ -48,7 +48,6 @@ class InscriptionVue(VueAbstraite):
             max_allowed=120,
             validate=EmptyInputValidator(),
         ).execute())
-        print(type(age))
 
         mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
 

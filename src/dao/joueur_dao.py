@@ -171,11 +171,12 @@ class JoueurDao(metaclass=Singleton):
                             "mdp": joueur.mdp,
                             "mail": joueur.mail,
                             "age": joueur.age,
-                            "credit": joueur.credit,
+                            "credit": joueur.credit.get(),
                             "id_joueur": joueur.id_joueur,
                         },
                     )
                     res = cursor.rowcount
+                connection.commit() 
         except Exception as e:
             logging.info(e)
 

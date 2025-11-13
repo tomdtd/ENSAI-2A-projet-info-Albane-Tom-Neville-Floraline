@@ -2,7 +2,8 @@ from InquirerPy import inquirer
 
 from view.vue_abstraite import VueAbstraite
 from client.poker_client import PokerClient
-
+from view.session import Session
+from service.joueur_service import JoueurService
 
 class SoldeVue(VueAbstraite):
     """Vue pour consulter et gérer le solde du joueur connecté."""
@@ -34,7 +35,6 @@ class SoldeVue(VueAbstraite):
             montant = inquirer.number(
                 message="Montant à ajouter :",
                 min_allowed=0,
-                validate=NumberValidator(),
             ).execute()
 
             joueur.credit = (solde or 0) + float(montant)
@@ -52,7 +52,6 @@ class SoldeVue(VueAbstraite):
             montant = inquirer.number(
                 message="Montant à retirer : ",
                 min_allowed=0,
-                validate=NumberValidator(),
             ).execute()
 
             if solde is None or solde < float(montant):
