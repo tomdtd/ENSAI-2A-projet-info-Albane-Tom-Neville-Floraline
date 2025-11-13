@@ -11,19 +11,18 @@ from dao.joueur_dao import JoueurDao
 
 from business_object.joueur import Joueur
 
+from pathlib import Path
+from dotenv import load_dotenv
 
-# @pytest.fixture(scope="session", autouse=True)
-# def setup_test_environment():
-#     """Initialisation des données de test"""
-#     with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
-#         ResetDatabase().lancer(test_dao=True)
-#         yield
-
-
-
-def conn_info
-
-
+@pytest.fixture(scope="session", autouse=True)
+def conn_info():
+    chemin = Path(__file__).parent / ".env_test"
+    load_dotenv(dotenv_path=chemin, override=True)
+    try:
+        ResetDatabase().lancer(test_dao=True)
+    except Exception as e:
+        pytest.exit(f"Impossible d'initialiser la base de test : {e}")
+    yield
 
 def test_trouver_par_id_existant(conn_info):
     """Recherche par id d'un joueur existant"""

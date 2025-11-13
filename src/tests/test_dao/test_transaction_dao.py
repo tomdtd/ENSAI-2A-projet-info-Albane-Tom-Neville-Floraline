@@ -12,12 +12,18 @@ from dao.transaction_dao import TransactionDao
 from business_object.transaction import Transaction
 from datetime import datetime
 
+from pathlib import Path
+from dotenv import load_dotenv
+
 @pytest.fixture(scope="session", autouse=True)
-def setup_test_environment():
-    """Initialisation des données de test"""
-    with patch.dict(os.environ, {"SCHEMA": "projet_test_dao"}):
+def conn_info():
+    chemin = Path(__file__).parent / ".env_test"
+    load_dotenv(dotenv_path=chemin, override=True)
+    try:
         ResetDatabase().lancer(test_dao=True)
-        yield
+    except Exception as e:
+        pytest.exit(f"Impossible d'initialiser la base de test : {e}")
+    yield
 
 def test_creer_ok():
     """Création d'une Transaction' réussie"""
