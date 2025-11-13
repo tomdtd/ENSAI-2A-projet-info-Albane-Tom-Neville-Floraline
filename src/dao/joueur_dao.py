@@ -40,7 +40,7 @@ class JoueurDao(metaclass=Singleton):
                             "mdp": joueur.mdp,
                             "mail": joueur.mail,
                             "age": joueur.age,
-                            "credit": joueur.credit,
+                            "credit": joueur.credit.get(),
                         },
                     )
                     res = cursor.fetchone()

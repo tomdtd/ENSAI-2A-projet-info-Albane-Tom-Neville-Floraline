@@ -26,6 +26,23 @@ class DBConnection(metaclass=Singleton):
             cursor_factory=RealDictCursor,
         )
 
+    # @property
+    # def connection(self):
+    #     return self.__connection
     @property
     def connection(self):
+        try:
+            # Test rapide pour voir si la connexion est encore valide
+            self.__connection.cursor().execute("SELECT 1")
+        except (psycopg2.InterfaceError, psycopg2.OperationalError):
+            # Reconnecte si la connexion est fermée ou perdue
+            self.__connection = psycopg2.connect(
+                host=os.environ["POSTGRES_HOST"],
+                port=os.environ["POSTGRES_PORT"],
+                database=os.environ["POSTGRES_DATABASE"],
+                user=os.environ["POSTGRES_USER"],
+                password=os.environ["POSTGRES_PASSWORD"],
+                options=f"-c search_path={os.environ['POSTGRES_SCHEMA']}",
+                cursor_factory=RealDictCursor,
+            )
         return self.__connection

@@ -16,8 +16,17 @@ class InscriptionVue(VueAbstraite):
     def choisir_menu(self):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
-        joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
-        if pseudo in [j["pseudo"] for j in joueur]: 
+
+        VAULT_TOKEN = os.environ.get("VAULT_TOKEN")  # récupère le token depuis ton .env
+
+        headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
+
+        response = requests.get(f"{API_URL}/joueurs/", headers=headers)
+
+        # Ensuite tu récupères la liste des joueurs
+        joueurs = response.json().get("joueurs", [])
+        #joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
+        if pseudo in [j["pseudo"] for j in joueurs]: 
         #if JoueurService().pseudo_deja_utilise(pseudo): #ne plus utiliser les services et passer par l'api...
             from view.accueil.accueil_vue import AccueilVue
 
@@ -26,24 +35,25 @@ class InscriptionVue(VueAbstraite):
         mdp = inquirer.secret(
             message="Entrez votre mot de passe : ",
             validate=PasswordValidator(
-                length=os.environ["PASSWORD_LENGTH"],
+                length=8, #os.environ["PASSWORD_LENGTH"],
                 cap=True,
                 number=True,
                 message="Au moins 8 caractères, incluant une majuscule et un chiffre",
             ),
         ).execute()
 
-        age = inquirer.number(
+        age = int(inquirer.number(
             message="Entrez votre age : ",
             min_allowed=0,
             max_allowed=120,
             validate=EmptyInputValidator(),
-        ).execute()
+        ).execute())
+        print(type(age))
 
         mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
 
         # Appel du service pour créer le joueur
-        joueur = JoueurService().creer(pseudo, mdp, age, mail, credit=Monnaie(0))
+        joueur = JoueurService().creer(pseudo, mdp, mail, age, credit=Monnaie(0))
 
         # Si le joueur a été créé
         if joueur:

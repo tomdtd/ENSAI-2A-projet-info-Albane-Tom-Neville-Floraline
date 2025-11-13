@@ -3,12 +3,13 @@ from utils.log_decorator import log
 from dao.joueur_dao import JoueurDao
 from business_object.joueur import Joueur
 from utils.securite import hash_password
+from business_object.monnaie import Monnaie
 
 class JoueurService:
     """Classe contenant les méthodes de service pour les joueurs."""
 
     @log
-    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: int) -> Optional[Joueur]:
+    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: Monnaie()) -> Optional[Joueur]:
         """Crée un nouveau joueur.
         Parameters
         ----------
@@ -28,7 +29,8 @@ class JoueurService:
             Le joueur créé si la création est un succès.
             None sinon.
         """
-        if not pseudo or not mdp or not mail or age < 0 or credit < 0:
+
+        if not pseudo or not mdp or not mail or age < 0 or credit.get() < 0:
             raise ValueError("Les paramètres ne sont pas valides.")
 
         mdp_hashe = hash_password(mdp, pseudo)

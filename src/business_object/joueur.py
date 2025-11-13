@@ -12,7 +12,7 @@ class Joueur:
         pseudo du joueur
     mdp : str
         le mot de passe du joueur
-    credit : int
+    credit : Monnaie()
         nombre de crédits du joueur
     mail : str
         adresse mail du joueur 
