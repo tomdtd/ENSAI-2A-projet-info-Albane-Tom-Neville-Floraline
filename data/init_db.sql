@@ -66,11 +66,11 @@ CREATE TABLE table_joueur (
   date_arrivee TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   -- Clé primaire composite pour s'assurer qu'un joueur n'est assis qu'une fois à la même table.
   PRIMARY KEY (id_table, id_joueur),
-  CONSTRAINT fk_tablejoueur_table
+  CONSTRAINT fk_table_joueur_table
     FOREIGN KEY (id_table)
     REFERENCES table_poker(id_table)
     ON DELETE CASCADE, -- Si la table est supprimée, les joueurs sont retirés.
-  CONSTRAINT fk_tablejoueur_joueur
+  CONSTRAINT fk_table_joueur_joueur
     FOREIGN KEY (id_joueur)
     REFERENCES joueur(id_joueur)
     ON DELETE CASCADE -- Si le joueur est supprimé, il est retiré de la table.
@@ -106,7 +106,7 @@ CREATE TABLE partie_joueur (
   statut VARCHAR(50) DEFAULT 'en attente',
   id_siege INT NULL,
   PRIMARY KEY (id_partie, id_joueur),
-  CONSTRAINT fk_partiejoueur_partie
+  CONSTRAINT fk_partie_joueur_partie
     FOREIGN KEY (id_partie)
     REFERENCES partie(id_partie)
     ON DELETE CASCADE,
