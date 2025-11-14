@@ -48,7 +48,7 @@ CREATE TABLE portefeuille (
 -- Décrit les tables de jeu disponibles.
 -- -----------------------------------------------------
 CREATE TABLE table_poker (
-  id_table INT PRIMARY KEY,
+  id_table INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nb_sieges INT NOT NULL,
   blind_initial DECIMAL(10, 2) NOT NULL,
   -- nb_joueurs est une donnée dénormalisée pour un accès rapide.

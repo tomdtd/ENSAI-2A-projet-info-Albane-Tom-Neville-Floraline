@@ -34,17 +34,13 @@ class TableDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO table_poker (id_table, nb_sieges, blind_initial)"
-                        "VALUES (%(id_table)s, %(nb_sieges)s, %(blind_initial)s)"
+                        "INSERT INTO table_poker (nb_sieges, blind_initial) "
+                        "VALUES (%(nb_sieges)s, %(blind_initial)s) "
                         "RETURNING id_table;",
-                        {
-                            "id_table": table.id_table,
-                            "nb_sieges": table.nb_sieges,
-                            "blind_initial": table.blind_initial.get(),
-    
-                        },
+                     {"nb_sieges": table.nb_sieges, "blind_initial": table.blind_initial.get()},
                     )
                     res = cursor.fetchone()
+                    table.id_table = res["id_table"]
                 connection.commit()
         except Exception as e:
             logging.exception("Erreur lors de la création de la table")

@@ -30,8 +30,8 @@ class JoueurPartieService:
         """
         if not joueur or not joueur.id_joueur:
             raise ValueError("Le joueur doit avoir un identifiant valide.")
-        if not siege or not siege.id_siege:
-            raise ValueError("Le siège doit avoir un identifiant valide.")
+        # if not siege or not siege.id_siege:
+        #     raise ValueError("Le siège doit avoir un identifiant valide.")
         if solde_partie < 0:
             raise ValueError("Le solde de la partie ne peut pas être négatif.")
 
