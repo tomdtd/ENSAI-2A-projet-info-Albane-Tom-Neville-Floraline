@@ -5,8 +5,8 @@ from utils.log_decorator import log
 
 from dao.db_connection import DBConnection
 
-from business_object.table import Table
-from business_object.monnaie import Monnaie
+from src.business_object.table import Table
+from src.business_object.monnaie import Monnaie
 
 
 class TableDao(metaclass=Singleton):
@@ -149,13 +149,13 @@ class TableDao(metaclass=Singleton):
                     cursor.execute(
                         "UPDATE table_poker                             "
                         "   SET nb_sieges      = %(nb_sieges)s,        "
-                        "       blind_initial  = %(blind_initial)s,    "
+                        "       blind_initial  = %(blind_initial)s    "
                         " WHERE id_table = %(id_table)s;               ",
                         {
                             "nb_sieges": table.nb_sieges,
                             "blind_initial": table.blind_initial.get(),
                             "id_table": table.id_table,
-                        },
+                        }
                     )
                     res = cursor.rowcount
                 connection.commit()
@@ -232,5 +232,3 @@ class TableDao(metaclass=Singleton):
                 liste_tables.append(table)
 
         return liste_tables
-
-        joueur
