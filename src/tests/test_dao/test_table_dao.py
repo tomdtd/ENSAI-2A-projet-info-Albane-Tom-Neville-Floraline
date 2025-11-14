@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 
 @pytest.fixture(scope="session", autouse=True)
 def conn_info():
-    chemin = Path(__file__).parent / ".env"
+    chemin = Path(__file__).parent / ".env_test"
     load_dotenv(dotenv_path=chemin, override=True)
     try:
         ResetDatabase().lancer(test_dao=True)
