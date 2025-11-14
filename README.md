@@ -48,7 +48,7 @@ This very simple application includes a few elements that may help with our info
 
 This repository contains a large number of configuration files for setting the parameters of the various tools used.
 
-Normally, for the purposes of your project, you won't need to modify these files, except for `.env` and `requirements.txt`.
+Normally, for the purposes of your project, you won't need to modify these files, except for `.env`, `.env_test` and `requirements.txt`.
 
 
 | Item                       | Description                                                              |
@@ -78,7 +78,7 @@ You will also need a `.env` file. See below.
 
 This repository contains a large number of configuration files for setting the parameters of the various tools used.
 
-Normally, for the purposes of your project, you won't need to modify these files, except for `.env` and `requirements.txt`.
+Normally, for the purposes of your project, you won't need to modify these files, except for `.env`, `.env_test` and `requirements.txt`.
 
 
 ## :arrow_forward: Install required packages
@@ -107,12 +107,38 @@ WEBSERVICE_HOST=https://pickpoker.com/api
 
 POSTGRES_HOST=sgbd-eleves.domensai.ecole
 POSTGRES_PORT=5432
+POSTGRES_DATABASE=prod_poker
+POSTGRES_USER=idxxxx
+POSTGRES_PASSWORD=idxxxx
+POSTGRES_SCHEMA=projet
+POSTGRES_SCHEMA=public
+
+export VAULT_ADDR=https://vault.lab.sspcloud.fr #voir pour changer l'endroit
+export VAULT_TOKEN=********
+
+API_URL = "url_de_l'api"
+```
+
+
+At the root of the project :
+
+- [ ] Create a file called `.env_test`
+- [ ] Paste in and complete the elements below
+
+```default
+WEBSERVICE_HOST=https://pickpoker.com/api
+
+POSTGRES_HOST=sgbd-eleves.domensai.ecole
+POSTGRES_PORT=5432
 POSTGRES_DATABASE=idxxxx
 POSTGRES_USER=idxxxx
 POSTGRES_PASSWORD=idxxxx
 POSTGRES_SCHEMA=projet
 ```
 
+## Création de la base de donnée prod_poker et des tables associées
+
+Executer le script creation_db_pord_poker.py
 
 ## :arrow_forward: Unit tests
 
@@ -157,7 +183,7 @@ This application provides a very basic graphical interface for navigating betwee
 
 This application can also be used to create a webservice.
 
-- [ ] `python src/app.py`
+- [ ] `python src/api.py`
 
 Documentation :
 
