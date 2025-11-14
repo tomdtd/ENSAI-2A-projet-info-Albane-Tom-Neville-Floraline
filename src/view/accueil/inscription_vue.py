@@ -10,7 +10,8 @@ from business_object.monnaie import Monnaie
 from view.vue_abstraite import VueAbstraite
 
 import requests
-API_URL = "https://user-arouille-170474-0.user.lab.sspcloud.fr/proxy/9876" #a changer...
+API_URL = os.environ.get("API_URL")
+#"https://user-arouille-170474-0.user.lab.sspcloud.fr/proxy/9876" #a changer...
 
 class InscriptionVue(VueAbstraite):
     def choisir_menu(self):
