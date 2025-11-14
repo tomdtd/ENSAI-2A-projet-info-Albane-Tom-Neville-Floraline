@@ -1,6 +1,7 @@
 from InquirerPy import inquirer
 from view.vue_abstraite import VueAbstraite
 from view.session import Session
+from service.table_service import TableService
 
 class RejoindrePartie(VueAbstraite):
     """Vue pour rejoindre une partie en tant que joueur connecté."""
