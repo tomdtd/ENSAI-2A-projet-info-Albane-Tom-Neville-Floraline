@@ -10,7 +10,6 @@ from dao.db_connection import DBConnection
 
 from service.joueur_service import JoueurService
 
-
 class ResetDatabase(metaclass=Singleton):
     """
     Reinitialisation de la base de données

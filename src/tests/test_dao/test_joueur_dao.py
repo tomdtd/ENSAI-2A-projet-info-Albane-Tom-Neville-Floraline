@@ -175,5 +175,5 @@ def test_se_connecter_ko():
     assert not joueur
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     pytest.main([__file__])

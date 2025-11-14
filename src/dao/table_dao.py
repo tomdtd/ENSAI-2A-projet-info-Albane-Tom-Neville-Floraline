@@ -150,12 +150,10 @@ class TableDao(metaclass=Singleton):
                         "UPDATE table_poker                             "
                         "   SET nb_sieges      = %(nb_sieges)s,        "
                         "       blind_initial  = %(blind_initial)s,    "
-                        "       nb_joueurs     = %(nb_joueurs)s        "
                         " WHERE id_table = %(id_table)s;               ",
                         {
                             "nb_sieges": table.nb_sieges,
                             "blind_initial": table.blind_initial.get(),
-                            "nb_joueurs": 0,  # Par défaut à 0 puisque non géré dans Table
                             "id_table": table.id_table,
                         },
                     )
@@ -234,3 +232,5 @@ class TableDao(metaclass=Singleton):
                 liste_tables.append(table)
 
         return liste_tables
+
+        joueur
