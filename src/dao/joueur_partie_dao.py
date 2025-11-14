@@ -130,3 +130,20 @@ class JoueurPartieDao(metaclass=Singleton):
             logging.info(e)
 
         return res == 1
+    
+    @log
+    def trouver_par_table(self, id_table) -> list:
+        """Trouver tous les JoueurPartie appartenant à une table.
+
+        Parameters
+        ----------
+        id_table : int
+
+        Returns
+        -------
+        joueurs_partie_table : list
+            Joueurs appartenant à la table.
+        """
+        
+
+
