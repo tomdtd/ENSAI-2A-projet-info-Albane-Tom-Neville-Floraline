@@ -3,12 +3,13 @@
 -- =====================================================================
 
 -- Pour faciliter les tests, on supprime les tables si elles existent déjà.
-DROP TABLE IF EXISTS partie_joueur;
-DROP TABLE IF EXISTS partie;
-DROP TABLE IF EXISTS table_joueur;
-DROP TABLE IF EXISTS table_poker;
-DROP TABLE IF EXISTS portefeuille;
-DROP TABLE IF EXISTS joueur;
+DROP TABLE IF EXISTS partie_joueur CASCADE;;
+DROP TABLE IF EXISTS partie  CASCADE;
+DROP TABLE IF EXISTS table_joueur CASCADE;
+DROP TABLE IF EXISTS table_poker CASCADE;
+DROP TABLE IF EXISTS portefeuille CASCADE;
+DROP TABLE IF EXISTS joueur CASCADE;
+DROP TABLE IF EXISTS transaction CASCADE;
 
 
 -- -----------------------------------------------------

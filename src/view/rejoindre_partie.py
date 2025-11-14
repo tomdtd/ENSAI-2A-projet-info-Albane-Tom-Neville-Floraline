@@ -21,7 +21,7 @@ class RejoindrePartie(VueAbstraite):
             choices=[f"Table {t.id_table}" for t in tables_disponibles] + ["Retour au menu"],
         ).execute()
 
-        if choix_partie == "Retour au menu":
+        if choix_table == "Retour au menu":
             from view.menu_joueur_vue import MenuJoueurVue
             return MenuJoueurVue()
         
