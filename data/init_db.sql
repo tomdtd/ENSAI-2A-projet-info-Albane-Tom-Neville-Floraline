@@ -48,7 +48,6 @@ CREATE TABLE portefeuille (
 -- -----------------------------------------------------
 CREATE TABLE table_poker (
   id_table INT PRIMARY KEY,
-  nom_table VARCHAR(100) NOT NULL,
   nb_sieges INT NOT NULL,
   blind_initial DECIMAL(10, 2) NOT NULL,
   -- nb_joueurs est une donnée dénormalisée pour un accès rapide.
@@ -63,7 +62,7 @@ CREATE TABLE table_poker (
 CREATE TABLE table_joueur (
   id_table INT NOT NULL,
   id_joueur INT NOT NULL,
-  date_arrivee TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  date_arrive TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   -- Clé primaire composite pour s'assurer qu'un joueur n'est assis qu'une fois à la même table.
   PRIMARY KEY (id_table, id_joueur),
   CONSTRAINT fk_table_joueur_table
@@ -110,7 +109,7 @@ CREATE TABLE partie_joueur (
     FOREIGN KEY (id_partie)
     REFERENCES partie(id_partie)
     ON DELETE CASCADE,
-  CONSTRAINT fk_partiejoueur_joueur
+  CONSTRAINT fk_partie_joueur
     FOREIGN KEY (id_joueur)
     REFERENCES joueur(id_joueur)
     ON DELETE CASCADE

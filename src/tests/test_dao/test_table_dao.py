@@ -1,89 +1,232 @@
+import os
 import pytest
-from src.business_object.monnaie import Monnaie
+
+from unittest.mock import patch
+
+from utils.reset_database import ResetDatabase
+from src.dao.db_connection import DBConnection
 from src.dao.table_dao import TableDao
 
+from src.business_object.table import Table
+from src.business_object.monnaie import Monnaie
 
-class TestTableDao:
+from pathlib import Path
+from dotenv import load_dotenv
+
+
+@pytest.fixture(scope="session", autouse=True)
+def conn_info():
+    chemin = Path(__file__).parent / ".env"
+    load_dotenv(dotenv_path=chemin, override=True)
+    try:
+        ResetDatabase().lancer(test_dao=True)
+    except Exception as e:
+        pytest.exit(f"Impossible d'initialiser la base de test : {e}")
+    yield
+
+
+def test_trouver_par_id_existant():
+    """Recherche par id d'une table existante"""
+
+    # GIVEN
+    id_table = 1
+
+    # WHEN
+    table = TableDao().trouver_par_id(id_table)
+
+    # THEN
+    assert table is not None
+    assert table.id_table == id_table
+    assert isinstance(table, Table)
+
+
+def test_trouver_par_id_non_existant():
+    """Recherche par id d'une table n'existant pas"""
+
+    # GIVEN
+    id_table = 9999999999999
+
+    # WHEN
+    table = TableDao().trouver_par_id(id_table)
+
+    # THEN
+    assert table is None
+
+
+def test_lister_toutes():
+    """Vérifie que la méthode renvoie une liste de Table"""
+
+    # GIVEN
+
+    # WHEN
+    tables = TableDao().lister_toutes()
+
+    # THEN
+    assert isinstance(tables, list)
+    for table in tables:
+        assert isinstance(table, Table)
+    assert len(tables) >= 1
+
+
+def test_creer_ok():
+    """Création de Table réussie"""
+
+    # GIVEN
+    table = Table(
+        id_table=100,
+        nb_sieges=6,
+        blind_initial=Monnaie(10.0)
+    )
+
+    # WHEN
+    creation_ok = TableDao().creer(table)
+
+    # THEN
+    assert creation_ok
+
+
+def test_creer_ko():
+    """Création de Table échouée (données incorrectes)"""
+
+    # GIVEN
+    # Table avec des données invalides (id_table déjà existant)
+    table = Table(
+        id_table=1,  # ID déjà existant
+        nb_sieges=6,
+        blind_initial=Monnaie(10.0)
+    )
+
+    # WHEN
+    creation_ok = TableDao().creer(table)
+
+    # THEN
+    # La création devrait échouer à cause de la violation de clé primaire
+    assert not creation_ok
+
+
+def test_modifier_ok():
+    """Modification de Table réussie"""
+
+    # GIVEN
+    # Créer d'abord une table à modifier
+    table = Table(
+        id_table=102,
+        nb_sieges=4,
+        blind_initial=Monnaie(5.0)
+    )
+    TableDao().creer(table)
     
-    @pytest.fixture
-    def dao(self):
-        return TableDao()
+    # Modifier la table
+    table.nb_sieges = 8
+    table.blind_initial = Monnaie(20.0)
+
+    # WHEN
+    modification_ok = TableDao().modifier(table)
+
+    # THEN
+    assert modification_ok
     
-    @pytest.fixture
-    def monnaie_100(self):
-        return Monnaie(100)
+    # Vérifier que les modifications ont bien été enregistrées
+    table_modifiee = TableDao().trouver_par_id(102)
+    assert table_modifiee.nb_sieges == 8
+    assert table_modifiee.blind_initial.get() == 20.0
+
+
+def test_modifier_ko():
+    """Modification de Table échouée (id inconnu)"""
+
+    # GIVEN
+    table = Table(
+        id_table=999999,
+        nb_sieges=4,
+        blind_initial=Monnaie(5.0)
+    )
+
+    # WHEN
+    modification_ok = TableDao().modifier(table)
+
+    # THEN
+    assert not modification_ok
+
+
+def test_supprimer_ok():
+    """Suppression de Table réussie"""
+
+    # GIVEN
+    # Créer d'abord une table à supprimer
+    table = Table(
+        id_table=103,
+        nb_sieges=4,
+        blind_initial=Monnaie(5.0)
+    )
+    TableDao().creer(table)
     
-    def test_creer_table(self, dao, monnaie_100):
-        table = dao.creer_table(6, monnaie_100)
-        
-        assert table.id_table == 1
-        assert table.nb_sieges == 6
-        assert table.blind_initial.valeur == 100
-        assert dao.get_nombre_tables() == 1
+    # Vérifier que la table existe
+    table_existante = TableDao().trouver_par_id(103)
+    assert table_existante is not None
+
+    # WHEN
+    suppression_ok = TableDao().supprimer(103)
+
+    # THEN
+    assert suppression_ok
     
-    def test_get_table_par_id(self, dao, monnaie_100):
-        table = dao.creer_table(4, monnaie_100)
-        table_recuperee = dao.get_table_par_id(1)
-        
-        assert table_recuperee == table
-        assert dao.get_table_par_id(999) is None
+    # Vérifier que la table n'existe plus
+    table_supprimee = TableDao().trouver_par_id(103)
+    assert table_supprimee is None
+
+
+def test_supprimer_ko():
+    """Suppression de Table échouée (id inconnu)"""
+
+    # GIVEN
+    id_table_inexistant = 999999
+
+    # WHEN
+    suppression_ok = TableDao().supprimer(id_table_inexistant)
+
+    # THEN
+    assert not suppression_ok
+
+
+def test_lister_tables_avec_sieges_disponibles():
+    """Test de la liste des tables avec sièges disponibles"""
+
+    # GIVEN
+    # S'assurer qu'il y a des tables avec des sièges disponibles
+    # (la base de test devrait déjà en contenir)
+
+    # WHEN
+    tables_disponibles = TableDao().lister_tables_avec_sieges_disponibles()
+
+    # THEN
+    assert isinstance(tables_disponibles, list)
     
-    def test_get_toutes_tables(self, dao, monnaie_100):
-        table1 = dao.creer_table(4, monnaie_100)
-        table2 = dao.creer_table(6, Monnaie(200))
-        
-        tables = dao.get_toutes_tables()
-        
-        assert len(tables) == 2
-        assert table1 in tables
-        assert table2 in tables
-    
-    def test_get_tables_disponibles(self, dao, monnaie_100):
-        table1 = dao.creer_table(2, monnaie_100)
-        table2 = dao.creer_table(2, monnaie_100)
-        
-        # Remplir la première table
-        for siege in table1.sieges:
-            siege.occupe = True
-            siege.id_joueur = 1
-        
-        tables_disponibles = dao.get_tables_disponibles()
-        
-        assert len(tables_disponibles) == 1
-        assert table2 in tables_disponibles
-        assert table1 not in tables_disponibles
-    
-    def test_supprimer_table(self, dao, monnaie_100):
-        dao.creer_table(4, monnaie_100)
-        
-        assert dao.get_nombre_tables() == 1
-        assert dao.supprimer_table(1) == True
-        assert dao.get_nombre_tables() == 0
-        assert dao.supprimer_table(999) == False
-    
-    def test_get_table_par_joueur(self, dao, monnaie_100):
-        table = dao.creer_table(4, monnaie_100)
-        
-        # Ajouter un joueur à la table
-        table.sieges[0].occupe = True
-        table.sieges[0].id_joueur = 101
-        
-        table_trouvee = dao.get_table_par_joueur(101)
-        
-        assert table_trouvee == table
-        assert dao.get_table_par_joueur(999) is None
-    
-    def test_table_existe(self, dao, monnaie_100):
-        dao.creer_table(4, monnaie_100)
-        
-        assert dao.table_existe(1) == True
-        assert dao.table_existe(999) == False
-    
-    def test_ids_incrementaux(self, dao, monnaie_100):
-        table1 = dao.creer_table(4, monnaie_100)
-        table2 = dao.creer_table(6, monnaie_100)
-        table3 = dao.creer_table(8, monnaie_100)
-        
-        assert table1.id_table == 1
-        assert table2.id_table == 2
-        assert table3.id_table == 3
+    # Vérifier que tous les éléments sont des Tables
+    for table in tables_disponibles:
+        assert isinstance(table, Table)
+
+
+def test_table_avec_monnaie():
+    """Test que l'objet Monnaie est correctement géré"""
+
+    # GIVEN
+    table = Table(
+        id_table=106,
+        nb_sieges=4,
+        blind_initial=Monnaie(15.50)
+    )
+
+    # WHEN
+    creation_ok = TableDao().creer(table)
+    table_recuperee = TableDao().trouver_par_id(106)
+
+    # THEN
+    assert creation_ok
+    assert table_recuperee is not None
+    assert isinstance(table_recuperee.blind_initial, Monnaie)
+    assert table_recuperee.blind_initial.get() == 15.50
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])

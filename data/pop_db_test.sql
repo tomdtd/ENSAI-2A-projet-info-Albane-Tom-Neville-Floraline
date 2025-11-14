@@ -9,9 +9,10 @@ VALUES
 (994, 'gilbert',  '968356512a7c3c61686eaabe4e6bce327a4f3937bcc7dd7f97498b505a1d4119', 'gilbert@projet.fr',21, 40),
 (993, 'junior',   '9d6ecb35e514a49d7ea1df9dca7ac74d05fae531081f5860153697957fa66bc4', 'junior@projet.fr', 15, 20);
 
-INSERT INTO table_poker(id_table, nom_table, nb_sieges, blind_initial, nb_joueurs)
+INSERT INTO table_poker(id_table, nb_sieges, blind_initial, nb_joueurs)
 OVERRIDING SYSTEM VALUE
-VALUES (1, 'Table 1', 9, 10.00, 0);
+VALUES (1, 9, 10.00, 0);
+
 
 INSERT INTO partie(id_partie, id_table, pot, date_debut)
 OVERRIDING SYSTEM VALUE

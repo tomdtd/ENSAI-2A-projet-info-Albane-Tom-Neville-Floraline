@@ -1,60 +1,236 @@
-from typing import List, Optional
-from src.business_object.table import Table
-from src.business_object.monnaie import Monnaie
+import logging
+
+from utils.singleton import Singleton
+from utils.log_decorator import log
+
+from dao.db_connection import DBConnection
+
+from business_object.table import Table
+from business_object.monnaie import Monnaie
 
 
-class TableDao:
-    """
-    Data Access Object pour la gestion des tables de poker
-    """
+class TableDao(metaclass=Singleton):
+    """Classe contenant les méthodes pour accéder aux Tables de poker de la base de données"""
+
+    @log
+    def creer(self, table: Table) -> bool:
+        """Création d'une table de poker dans la base de données
+
+        Parameters
+        ----------
+        table : Table
+            La table à créer
+
+        Returns
+        -------
+        created : bool
+            True si la création est un succès
+            False sinon
+        """
+
+        res = None
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "INSERT INTO table_poker (id_table, nb_sieges, blind_initial)"
+                        "VALUES (%(id_table)s, %(nb_sieges)s, %(blind_initial)s)"
+                        "RETURNING id_table;",
+                        {
+                            "id_table": table.id_table,
+                            "nb_sieges": table.nb_sieges,
+                            "blind_initial": table.blind_initial.get(),
     
-    def __init__(self):
-        self._tables = {}  # Dictionnaire pour stocker les tables en mémoire
-        self._next_id = 1  # Compteur pour les IDs
-    
-    def creer_table(self, nb_sieges: int, blind_initial: Monnaie) -> Table:
-        """Crée une nouvelle table et la sauvegarde"""
-        table = Table(
-            id_table=self._next_id,
-            nb_sieges=nb_sieges,
-            blind_initial=blind_initial
-        )
-        
-        self._tables[self._next_id] = table
-        self._next_id += 1
-        
+                        },
+                    )
+                    res = cursor.fetchone()
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la création de la table")
+            return False
+
+        return res is not None
+
+    @log
+    def trouver_par_id(self, id_table: int) -> Table:
+        """Trouver une table grâce à son id
+
+        Parameters
+        ----------
+        id_table : int
+            numéro id de la table que l'on souhaite trouver
+
+        Returns
+        -------
+        table : Table
+            renvoie la table que l'on cherche par id
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT *                           "
+                        "  FROM table_poker                 "
+                        " WHERE id_table = %(id_table)s;    ",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la recherche de la table par id")
+            return None
+
+        table = None
+        if res:
+            table = Table(
+                id_table=res["id_table"],
+                nb_sieges=res["nb_sieges"],
+                blind_initial=Monnaie(res["blind_initial"]),
+
+            )
+            # Note: nb_joueurs n'est pas un attribut de Table, donc on ne le set pas
+
         return table
-    
-    def get_table_par_id(self, id_table: int) -> Optional[Table]:
-        """Récupère une table par son ID"""
-        return self._tables.get(id_table)
-    
-    def get_toutes_tables(self) -> List[Table]:
-        """Récupère toutes les tables"""
-        return list(self._tables.values())
-    
-    def get_tables_disponibles(self) -> List[Table]:
-        """Récupère les tables qui ne sont pas pleines"""
-        return [table for table in self._tables.values() if not table.table_remplie()]
-    
-    def supprimer_table(self, id_table: int) -> bool:
-        """Supprime une table par son ID"""
-        if id_table in self._tables:
-            del self._tables[id_table]
-            return True
-        return False
-    
-    def get_table_par_joueur(self, id_joueur: int) -> Optional[Table]:
-        """Trouve la table où un joueur est assis"""
-        for table in self._tables.values():
-            if id_joueur in table.get_joueurs():
-                return table
-        return None
-    
-    def get_nombre_tables(self) -> int:
-        """Retourne le nombre total de tables"""
-        return len(self._tables)
-    
-    def table_existe(self, id_table: int) -> bool:
-        """Vérifie si une table existe"""
-        return id_table in self._tables
+
+    @log
+    def lister_toutes(self) -> list[Table]:
+        """Lister toutes les tables de poker
+
+        Returns
+        -------
+        liste_tables : list[Table]
+            renvoie la liste de toutes les tables dans la base de données
+        """
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT *                              "
+                        "  FROM table_poker;                   "
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.exception("Erreur lors du listage de toutes les tables")
+            return []
+
+        liste_tables = []
+
+        if res:
+            for row in res:
+                table = Table(
+                    id_table=row["id_table"],
+                    nb_sieges=row["nb_sieges"],
+                    blind_initial=Monnaie(row["blind_initial"]),
+                )
+                liste_tables.append(table)
+
+        return liste_tables
+
+    @log
+    def modifier(self, table: Table) -> bool:
+        """Modification d'une table dans la base de données
+
+        Parameters
+        ----------
+        table : Table
+            La table à modifier
+
+        Returns
+        -------
+        modified : bool
+            True si la modification est un succès
+            False sinon
+        """
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker                             "
+                        "   SET nb_sieges      = %(nb_sieges)s,        "
+                        "       blind_initial  = %(blind_initial)s,    "
+                        "       nb_joueurs     = %(nb_joueurs)s        "
+                        " WHERE id_table = %(id_table)s;               ",
+                        {
+                            "nb_sieges": table.nb_sieges,
+                            "blind_initial": table.blind_initial.get(),
+                            "nb_joueurs": 0,  # Par défaut à 0 puisque non géré dans Table
+                            "id_table": table.id_table,
+                        },
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la modification de la table")
+            return False
+
+        return res == 1
+
+    @log
+    def supprimer(self, id_table: int) -> bool:
+        """Suppression d'une table dans la base de données
+
+        Parameters
+        ----------
+        id_table : int
+            ID de la table à supprimer
+
+        Returns
+        -------
+        deleted : bool
+            True si la table a bien été supprimée
+            False sinon
+        """
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "DELETE FROM table_poker             "
+                        " WHERE id_table = %(id_table)s      ",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la suppression de la table")
+            return False
+
+        return res > 0
+
+    @log
+    def lister_tables_avec_sieges_disponibles(self) -> list[Table]:
+        """Lister les tables avec des sièges disponibles
+
+        Returns
+        -------
+        liste_tables : list[Table]
+            renvoie la liste des tables ayant des sièges disponibles
+        """
+
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT *                              "
+                        "  FROM table_poker                    "
+                        " WHERE nb_joueurs < nb_sieges;        "
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.exception("Erreur lors du listage des tables avec sièges disponibles")
+            return []
+
+        liste_tables = []
+
+        if res:
+            for row in res:
+                table = Table(
+                    id_table=row["id_table"],
+                    nb_sieges=row["nb_sieges"],
+                    blind_initial=Monnaie(row["blind_initial"]),
+                )
+                liste_tables.append(table)
+
+        return liste_tables
