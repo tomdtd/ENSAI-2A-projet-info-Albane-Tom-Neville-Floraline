@@ -4,6 +4,7 @@ from view.vue_abstraite import VueAbstraite
 from client.poker_client import PokerClient
 from view.session import Session
 from service.joueur_service import JoueurService
+from business_object.monnaie import Monnaie
 
 class SoldeVue(VueAbstraite):
     """Vue pour consulter et gérer le solde du joueur connecté."""
@@ -20,7 +21,7 @@ class SoldeVue(VueAbstraite):
         solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
         print("\n" + "-" * 50 + "\nGestion du solde\n" + "-" * 50 + "\n")
         print(f"Pseudo : {joueur.pseudo}")
-        print(f"Solde actuel : {solde:.2f}" if solde is not None else "Solde non disponible")
+        print(f"Solde actuel : {solde.get():.2f}" if solde is not None else "Solde non disponible")
 
         choix = inquirer.select(
             message="Que souhaitez-vous faire ?",
@@ -36,11 +37,12 @@ class SoldeVue(VueAbstraite):
                 message="Montant à ajouter :",
                 min_allowed=0,
             ).execute()
-
-            joueur.credit = (solde or 0) + float(montant)
+            valeur_solde = solde.get() if solde else 0
+            nouveau_solde = valeur_solde + int(montant)
+            joueur.credit = Monnaie(nouveau_solde)
             try:
                 JoueurService().modifier(joueur)
-                print(f"Crédit ajouté avec succès. Nouveau solde : {joueur.credit:.2f}")
+                print(f"Crédit ajouté avec succès. Nouveau solde : {joueur.credit.get():.2f}")
             except Exception as e:
                 logging.exception(e)
                 print("Erreur lors de la mise à jour du solde.")
@@ -54,13 +56,15 @@ class SoldeVue(VueAbstraite):
                 min_allowed=0,
             ).execute()
 
-            if solde is None or solde < float(montant):
+            valeur_solde = solde.get() if solde else 0
+
+            if valeur_solde is None or valeur_solde < int(montant):
                 print("Solde insuffisant.")
             else:
-                joueur.credit = solde - float(montant)
+                joueur.credit = Monnaie(valeur_solde - int(montant))
                 try:
                     JoueurService().modifier(joueur)
-                    print(f"Crédit retiré avec succès. Nouveau solde : {joueur.credit:.2f}")
+                    print(f"Crédit retiré avec succès. Nouveau solde : {joueur.credit.get():.2f}")
                 except Exception as e:
                     logging.exception(e)
                     print("Erreur lors de la mise à jour du solde.")

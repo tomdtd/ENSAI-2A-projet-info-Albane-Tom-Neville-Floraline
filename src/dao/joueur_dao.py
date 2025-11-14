@@ -6,6 +6,7 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.joueur import Joueur
+from business_object.monnaie import Monnaie
 
 
 class JoueurDao(metaclass=Singleton):
@@ -152,7 +153,7 @@ class JoueurDao(metaclass=Singleton):
             True si la modification est un succès
             False sinon
         """
-
+        
         res = None
 
         try:
@@ -171,7 +172,7 @@ class JoueurDao(metaclass=Singleton):
                             "mdp": joueur.mdp,
                             "mail": joueur.mail,
                             "age": joueur.age,
-                            "credit": joueur.credit,
+                            "credit": joueur.credit.get(),
                             "id_joueur": joueur.id_joueur,
                         },
                     )
@@ -206,6 +207,7 @@ class JoueurDao(metaclass=Singleton):
                         {"id_joueur": joueur.id_joueur},
                     )
                     res = cursor.rowcount
+                connection.commit()
         except Exception as e:
             logging.info(e)
             raise
@@ -250,7 +252,8 @@ class JoueurDao(metaclass=Singleton):
                 mdp=res["mdp"],
                 mail=res["mail"],
                 age=res["age"],
-                credit=res["credit"],
+                credit=Monnaie(res["credit"]),
+                id_joueur=res["id_joueur"] 
             )
 
         return joueur

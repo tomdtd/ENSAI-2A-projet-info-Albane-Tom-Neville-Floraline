@@ -9,7 +9,7 @@ class JoueurService:
     """Classe contenant les méthodes de service pour les joueurs."""
 
     @log
-    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: Monnaie()) -> Optional[Joueur]:
+    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: Monnaie) -> Optional[Joueur]:
         """Crée un nouveau joueur.
         Parameters
         ----------
@@ -21,7 +21,7 @@ class JoueurService:
             Adresse mail du joueur.
         age : int
             Âge du joueur.
-        credit : int
+        credit : Monnaie
             Crédit initial du joueur.
         Returns
         -------
@@ -29,10 +29,8 @@ class JoueurService:
             Le joueur créé si la création est un succès.
             None sinon.
         """
-
         if not pseudo or not mdp or not mail or age < 0 or credit.get() < 0:
             raise ValueError("Les paramètres ne sont pas valides.")
-
         mdp_hashe = hash_password(mdp, pseudo)
         joueur = Joueur(pseudo=pseudo, mail=mail, credit=credit, mdp=mdp_hashe, age=age)
         if JoueurDao().creer(joueur):
@@ -85,27 +83,19 @@ class JoueurService:
             Le joueur modifié si la modification est un succès.
             None sinon.
         """
+        if joueur is None or not joueur.id_joueur:
+            raise ValueError("Le joueur ou son identifiant ne peut pas être vide.")
+
         joueur.mdp = hash_password(joueur.mdp, joueur.pseudo)
         return joueur if JoueurDao().modifier(joueur) else None
 
+     
     @log
     def supprimer(self, joueur: Joueur) -> bool:
-        """Supprime un joueur.
-        Parameters
-        ----------
-        joueur : Joueur
-            Le joueur à supprimer.
-        Returns
-        -------
-        success : bool
-            True si la suppression est un succès.
-            False sinon.
-        """
-        if not joueur or not joueur.id_joueur:
+        if joueur is None or not joueur.id_joueur:
             raise ValueError("Le joueur ou son identifiant ne peut pas être vide.")
-
         return JoueurDao().supprimer(joueur)
-
+        
     @log
     def se_connecter(self, pseudo: str, mdp: str) -> Optional[Joueur]:
         """Connecte un joueur avec son pseudo et son mot de passe.

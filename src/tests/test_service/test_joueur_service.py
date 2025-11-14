@@ -4,6 +4,7 @@ from datetime import datetime
 from src.service.joueur_service import JoueurService
 from dao.joueur_dao import JoueurDao
 from business_object.joueur import Joueur
+from business_object.monnaie import Monnaie
 from utils.securite import hash_password
 
 @pytest.fixture
@@ -29,7 +30,8 @@ def test_creer_ok(mock_joueur_dao):
     mdp = "test_mdp"
     mail = "test@example.com"
     age = 25
-    credit = 1000
+    credit = Monnaie(1000)
+    mock_joueur = Joueur(pseudo=pseudo, mail=mail, credit=credit, mdp=hash_password(mdp, pseudo), age=age)
     mock_joueur_dao["creer"].return_value = True
 
     # WHEN

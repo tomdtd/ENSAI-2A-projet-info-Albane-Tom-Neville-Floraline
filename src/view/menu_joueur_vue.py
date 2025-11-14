@@ -2,6 +2,7 @@ from InquirerPy import inquirer
 
 from view.vue_abstraite import VueAbstraite
 from view.session import Session
+from view.rejoindre_partie import RejoindrePartie
 
 from service.joueur_service import JoueurService
 
@@ -49,7 +50,7 @@ class MenuJoueurVue(VueAbstraite):
                 return AccueilVue()
 
             case "Rejoindre une partie":
-                return MenuJoueurVue(Session().afficher())
+                return MenuJoueurVue(RejoindrePartie().choisir_menu())
 
             case "Consulter ses statistiques":
                 joueurs_str = JoueurService().afficher_tous() # a changer
