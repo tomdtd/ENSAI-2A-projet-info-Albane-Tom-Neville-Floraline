@@ -10,7 +10,7 @@ class JoueurPartieService:
     """Classe contenant les méthodes de service pour les joueurs dans une partie."""
 
     @log
-    def ajouter_joueur_a_partie(self, joueur: Joueur, siege: Siege, solde_partie: int, id_partie: int) -> Optional[JoueurPartie]:
+    def ajouter_joueur_a_partie(self, joueur: Joueur, siege: Siege, solde_partie: int, id_table: int) -> Optional[JoueurPartie]:
         """Ajoute un joueur à une partie.
         Parameters
         ----------
@@ -20,7 +20,7 @@ class JoueurPartieService:
             Le siège occupé par le joueur dans la partie.
         solde_partie : int
             Le solde initial du joueur pour cette partie.
-        id_partie : int
+        id_table : int
             L'identifiant de la partie.
         Returns
         -------
@@ -36,7 +36,7 @@ class JoueurPartieService:
             raise ValueError("Le solde de la partie ne peut pas être négatif.")
 
         joueur_partie = JoueurPartie(joueur=joueur, siege=siege, solde_partie=solde_partie)
-        if JoueurPartieDao().creer(joueur_partie, id_partie):
+        if JoueurPartieDao().creer(joueur_partie, id_table):
             return joueur_partie
         return None
 

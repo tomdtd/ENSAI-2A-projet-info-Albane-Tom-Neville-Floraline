@@ -3,12 +3,13 @@
 -- =====================================================================
 
 -- Pour faciliter les tests, on supprime les tables si elles existent déjà.
-DROP TABLE IF EXISTS partie_joueur;
-DROP TABLE IF EXISTS partie;
-DROP TABLE IF EXISTS table_joueur;
-DROP TABLE IF EXISTS table_poker;
-DROP TABLE IF EXISTS portefeuille;
-DROP TABLE IF EXISTS joueur;
+DROP TABLE IF EXISTS partie_joueur CASCADE;;
+DROP TABLE IF EXISTS partie  CASCADE;
+DROP TABLE IF EXISTS table_joueur CASCADE;
+DROP TABLE IF EXISTS table_poker CASCADE;
+DROP TABLE IF EXISTS portefeuille CASCADE;
+DROP TABLE IF EXISTS joueur CASCADE;
+DROP TABLE IF EXISTS transaction CASCADE;
 
 
 -- -----------------------------------------------------
@@ -98,21 +99,21 @@ CREATE TABLE partie (
 -- Lie les joueurs aux parties auxquelles ils ont participé. Relation N-N.
 -- -----------------------------------------------------
 CREATE TABLE partie_joueur (
-  id_partie INT NOT NULL,
-  id_joueur INT NOT NULL,
-  mise_tour INT DEFAULT 0,
-  solde_partie DECIMAL(10,2) DEFAULT 0.00,
-  statut VARCHAR(50) DEFAULT 'en attente',
-  id_siege INT NULL,
-  PRIMARY KEY (id_partie, id_joueur),
-  CONSTRAINT fk_partie_joueur_partie
-    FOREIGN KEY (id_partie)
-    REFERENCES partie(id_partie)
-    ON DELETE CASCADE,
-  CONSTRAINT fk_partie_joueur
-    FOREIGN KEY (id_joueur)
-    REFERENCES joueur(id_joueur)
-    ON DELETE CASCADE
+    id_table INT NOT NULL,
+    id_joueur INT NOT NULL,
+    mise_tour INT DEFAULT 0,
+    solde_partie DECIMAL(10,2) DEFAULT 0.00,
+    statut VARCHAR(50) DEFAULT 'en attente',
+    id_siege INT NULL,
+    PRIMARY KEY (id_table, id_joueur),
+    CONSTRAINT fk_partie_joueur_table
+        FOREIGN KEY (id_table)
+        REFERENCES table_poker(id_table)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_partie_joueur_joueur
+        FOREIGN KEY (id_joueur)
+        REFERENCES joueur(id_joueur)
+        ON DELETE CASCADE
 );
 
 

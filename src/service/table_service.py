@@ -5,7 +5,9 @@ from utils.securite import hash_password
 
 from business_object.table import Table
 from business_object.joueur import Joueur
+from business_object.accesspartie import AccessPartie
 from dao.table_dao import TableDao
+
 class TableService :
     """Classe contenant les méthodes de service des tables"""
 
@@ -32,7 +34,7 @@ class TableService :
     @log
     def lister_tables_disponibles(self) -> list[Table]:
         """Liste toutes les tables qui ont au moins un siège disponible."""
-        tables = TableDao().lister_tous()
+        tables = TableDao().lister_toutes()
         return [table for table in tables if not table.table_remplie()]
 
     @log

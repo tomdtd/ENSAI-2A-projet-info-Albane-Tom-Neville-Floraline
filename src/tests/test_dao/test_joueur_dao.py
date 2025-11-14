@@ -10,6 +10,7 @@ from dao.db_connection import DBConnection
 from dao.joueur_dao import JoueurDao
 
 from business_object.joueur import Joueur
+from business_object.monnaie import Monnaie
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -24,14 +25,14 @@ def conn_info():
         pytest.exit(f"Impossible d'initialiser la base de test : {e}")
     yield
 
-def test_trouver_par_id_existant(conn_info):
+def test_trouver_par_id_existant():
     """Recherche par id d'un joueur existant"""
 
     # GIVEN
     id_joueur = 998
 
     # WHEN
-    joueur = JoueurDao(conn_info).trouver_par_id(id_joueur)
+    joueur = JoueurDao().trouver_par_id(id_joueur)
 
     # THEN
     assert joueur is not None
@@ -71,7 +72,7 @@ def test_creer_ok():
     """Création de Joueur réussie"""
 
     # GIVEN
-    joueur = Joueur(pseudo="gg", age=44, mail="gg@ensai.fr", mdp="123abc", credit=0)
+    joueur = Joueur(pseudo="gg", age=44, mail="gg@ensai.fr", mdp="123abc", credit=Monnaie(0))
 
     # WHEN
     creation_ok = JoueurDao().creer(joueur)
@@ -85,7 +86,7 @@ def test_creer_ko():
     """Création de Joueur échouée (age et mail incorrects)"""
 
     # GIVEN
-    joueur = Joueur(pseudo="gg", age="chaine de caractere", mdp="123abc", mail=12, credit=0)
+    joueur = Joueur(pseudo="gg", age="chaine de caractere", mdp="123abc", mail=12, credit=Monnaie(0))
 
     # WHEN
     creation_ok = JoueurDao().creer(joueur)
@@ -99,7 +100,7 @@ def test_modifier_ok():
 
     # GIVEN
     new_mail = "maurice@mail.com"
-    joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mdp="123abc", mail=new_mail, credit=0)
+    joueur = Joueur(id_joueur=997, pseudo="maurice", age=20, mdp="123abc", mail=new_mail, credit=Monnaie(0))
 
     # WHEN
     modification_ok = JoueurDao().modifier(joueur)
@@ -112,7 +113,7 @@ def test_modifier_ko():
     """Modification de Joueur échouée (id inconnu)"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", mail="no@mail.com", credit=0)
+    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", mail="no@mail.com", credit=Monnaie(0))
 
     # WHEN
     modification_ok = JoueurDao().modifier(joueur)
@@ -125,7 +126,7 @@ def test_supprimer_ok():
     """Suppression de Joueur réussie"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mdp="123abc", mail="miguel@projet.fr", credit=0)
+    joueur = Joueur(id_joueur=995, pseudo="miguel", age=1, mdp="123abc", mail="miguel@projet.fr", credit=Monnaie(0))
 
     # WHEN
     suppression_ok = JoueurDao().supprimer(joueur)
@@ -138,7 +139,7 @@ def test_supprimer_ko():
     """Suppression de Joueur échouée (id inconnu)"""
 
     # GIVEN
-    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", mail="no@z.fr", credit=0)
+    joueur = Joueur(id_joueur=8888, pseudo="id inconnu", age=1, mdp="123abc", mail="no@z.fr", credit=Monnaie(0))
 
     # WHEN
     suppression_ok = JoueurDao().supprimer(joueur)

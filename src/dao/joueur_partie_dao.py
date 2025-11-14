@@ -11,14 +11,14 @@ from business_object.joueur import Joueur
 class JoueurPartieDao(metaclass=Singleton):
     """Classe contenant les méthodes pour accéder aux Joueurs lors d'une partie dans la base de données"""
     @log
-    def creer(self, joueur_partie, id_partie) -> bool:
+    def creer(self, joueur_partie, id_table) -> bool:
         """Creation d'un joueur_partie dans la base de données
 
         Parameters
         ----------
         joueur_partie : JoueurPartie
             Objet contenant les informations du joueur, son siège, son solde, etc.
-        id_partie : int
+        id_table : int
             L'identifiant de la partie
 
         Returns
@@ -34,11 +34,11 @@ class JoueurPartieDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO partie_joueur (id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege)"
-                        "VALUES (%(id_partie)s, %(id_joueur)s, %(mise_tour)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
+                        "INSERT INTO partie_joueur (id_table, id_joueur, mise_tour, solde_partie, statut, id_siege)"
+                        "VALUES (%(id_table)s, %(id_joueur)s, %(mise_tour)s, %(solde_partie)s, %(statut)s, %(id_siege)s)"
                         "RETURNING id_joueur;                                              ",
                         {
-                            "id_partie": id_partie,
+                            "id_table": id_table,
                             "id_joueur": joueur_partie.joueur.id_joueur,
                             "mise_tour": joueur_partie.mise_tour.valeur,
                             "solde_partie": joueur_partie.solde_partie.valeur,
@@ -90,7 +90,7 @@ class JoueurPartieDao(metaclass=Singleton):
     
     
     @log
-    def modifier(self, joueur_partie, id_partie) -> bool:
+    def modifier(self, joueur_partie, id_table) -> bool:
         """Modification d'un joueur partie dans la base de données
 
         Parameters
@@ -115,9 +115,9 @@ class JoueurPartieDao(metaclass=Singleton):
                         "       solde_partie  = %(solde_partie)s,           "
                         "       statut        = %(statut)s,                 "
                         "       id_siege      = %(id_siege)s                "
-                        " WHERE id_joueur = %(id_joueur)s AND id_partie = %(id_partie)s;                  ",
+                        " WHERE id_joueur = %(id_joueur)s AND id_table = %(id_table)s;                  ",
                         {
-                            "id_partie": id_partie,
+                            "id_table": id_table,
                             "id_joueur":joueur_partie.joueur.id_joueur,
                             "mise_tour": joueur_partie.mise_tour.valeur,
                             "solde_partie": joueur_partie.solde_partie.valeur,

@@ -1,8 +1,8 @@
 
-from src.business_object.main import Main
-from src.business_object.joueur import Joueur
-from src.business_object.siege import Siege
-from src.business_object.monnaie import Monnaie
+from business_object.main import Main
+from business_object.joueur import Joueur
+from business_object.siege import Siege
+from business_object.monnaie import Monnaie
 
 class JoueurPartie:
     """

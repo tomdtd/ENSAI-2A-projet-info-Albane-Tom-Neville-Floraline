@@ -22,13 +22,13 @@ def test_ajouter_joueur_a_partie_ok(mock_joueur_partie_dao):
     joueur = Joueur(pseudo="Joueur1", mail="joueur1@example.com", credit=1000, mdp="password", id_joueur=1, age=25)
     siege = Siege(id_siege=1)
     solde_partie = 1000
-    id_partie = 1
+    id_table = 1
     mock_joueur_partie = JoueurPartie(joueur=joueur, siege=siege, solde_partie=solde_partie)
     mock_joueur_partie_dao["creer"].return_value = mock_joueur_partie
 
     # WHEN
     joueur_partie_service = JoueurPartieService()
-    joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, solde_partie, id_partie)
+    joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, solde_partie, id_table)
 
     # THEN
     assert joueur_partie is not None
@@ -41,37 +41,37 @@ def test_ajouter_joueur_a_partie_invalid_joueur(mock_joueur_partie_dao):
     # GIVEN
     siege = Siege(id_siege=1)
     solde_partie = 1000
-    id_partie = 1
+    id_table = 1
 
     # WHEN
     joueur_partie_service = JoueurPartieService()
 
     # THEN
     with pytest.raises(ValueError):
-        joueur_partie_service.ajouter_joueur_a_partie(None, siege, solde_partie, id_partie)
+        joueur_partie_service.ajouter_joueur_a_partie(None, siege, solde_partie, id_table)
 
 def test_ajouter_joueur_a_partie_invalid_siege(mock_joueur_partie_dao):
     # GIVEN
     joueur = Joueur(pseudo="Joueur1", mail="joueur1@example.com", credit=1000, mdp="password", id_joueur=1, age=25)
     solde_partie = 1000
-    id_partie = 1
+    id_table = 1
     # WHEN
     joueur_partie_service = JoueurPartieService()
     # THEN
     with pytest.raises(ValueError):
-        joueur_partie_service.ajouter_joueur_a_partie(joueur, None, solde_partie, id_partie)
+        joueur_partie_service.ajouter_joueur_a_partie(joueur, None, solde_partie, id_table)
 
 def test_ajouter_joueur_a_partie_invalid_solde(mock_joueur_partie_dao):
     # GIVEN
     joueur = Joueur(pseudo="Joueur1", mail="joueur1@example.com", credit=1000, mdp="password", id_joueur=1, age=25)
     siege = Siege(id_siege=1)
     solde_partie = -1000
-    id_partie = 1
+    id_table = 1
     # WHEN
     joueur_partie_service = JoueurPartieService()
     # THEN
     with pytest.raises(ValueError):
-        joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, solde_partie, id_partie)
+        joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, solde_partie, id_table)
 
 def test_retirer_joueur_de_partie_ok(mock_joueur_partie_dao):
     # GIVEN
