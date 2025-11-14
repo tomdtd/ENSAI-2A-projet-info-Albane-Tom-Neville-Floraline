@@ -1,287 +1,298 @@
+import os
 import pytest
-from src.dao.partie_dao import PartieDao
-from src.business_object.partie import Partie, JoueurPartie
-from src.business_object.pot import Pot
-from src.business_object.joueur import Joueur
-from src.business_object.siege import Siege
-from src.business_object.monnaie import Monnaie
-
-# test/dao/test_partie_dao.py
-
-import unittest
-import logging
 from datetime import datetime, timedelta
+from unittest.mock import patch, MagicMock
 
-# Assurez-vous que les chemins d'importation sont corrects par rapport à la structure de votre projet
-from src.dao.partie_dao import PartieDao
-from src.dao.db_connection import DBConnection
+from utils.reset_database import ResetDatabase
+from dao.db_connection import DBConnection
+from dao.partie_dao import PartieDao
+from business_object.partie import Partie
+from business_object.joueur_partie import JoueurPartie
+from business_object.pot import Pot
+from business_object.joueur import Joueur
+from business_object.siege import Siege
+from business_object.monnaie import Monnaie
 
-from src.business_object.partie import Partie
-from src.business_object.joueur_partie import JoueurPartie
-from src.business_object.pot import Pot
-from src.business_object.joueur import Joueur
-from src.business_object.siege import Siege
-from src.business_object.monnaie import Monnaie
-
-# Désactiver les logs pendant les tests pour une sortie plus propre, sauf en cas d'erreur
-# Vous pouvez commenter cette ligne si vous souhaitez voir les logs de l'application
-logging.disable(logging.CRITICAL)
+from pathlib import Path
+from dotenv import load_dotenv
 
 
-class TestPartieDao(unittest.TestCase):
-    """Classe de test pour PartieDao"""
+@pytest.fixture(scope="session", autouse=True)
+def conn_info():
+    """Initialisation de la base de données de test"""
+    chemin = Path(__file__).parent / ".env_test"
+    load_dotenv(dotenv_path=chemin, override=True)
+    try:
+        ResetDatabase().lancer(test_dao=True)
+    except Exception as e:
+        pytest.exit(f"Impossible d'initialiser la base de test : {e}")
+    yield
 
-    def setUp(self):
-        """
-        Met en place l'environnement de test avant chaque test.
-        - Crée des joueurs et une table de poker de test directement dans la BDD.
-        - Crée deux parties via le DAO pour les tests de lecture, modification, suppression.
-        """
-        self.partie_dao = PartieDao()
-        self.joueur1 = Joueur(
-            id_joueur=1001, pseudo="TestPlayer1", mail="test1@example.com", mdp="pass", age=25
-        )
-        self.joueur2 = Joueur(
-            id_joueur=1002, pseudo="TestPlayer2", mail="test2@example.com", mdp="pass", age=30
-        )
-        self.id_table = 2001
 
-        # Nettoyage initial au cas où un test précédent aurait échoué avant son tearDown
-        self.tearDown()
-
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    # Créer une table de poker de test
-                    cursor.execute(
-                        "INSERT INTO table_poker (id_table, nom, nb_sieges, blind_initial) VALUES (%(id)s, 'Test Table', 6, 10) ON CONFLICT (id_table) DO NOTHING;",
-                        {"id": self.id_table},
-                    )
-                    # Créer des joueurs de test
-                    cursor.execute(
-                        "INSERT INTO joueur (id_joueur, pseudo, mail, mdp, age, credit) VALUES (%(id)s, %(pseudo)s, %(mail)s, 'hash', %(age)s, 1000) ON CONFLICT (id_joueur) DO NOTHING;",
-                        {
-                            "id": self.joueur1.id_joueur,
-                            "pseudo": self.joueur1.pseudo,
-                            "mail": self.joueur1.mail,
-                            "age": self.joueur1.age,
-                        },
-                    )
-                    cursor.execute(
-                        "INSERT INTO joueur (id_joueur, pseudo, mail, mdp, age, credit) VALUES (%(id)s, %(pseudo)s, %(mail)s, 'hash', %(age)s, 1000) ON CONFLICT (id_joueur) DO NOTHING;",
-                        {
-                            "id": self.joueur2.id_joueur,
-                            "pseudo": self.joueur2.pseudo,
-                            "mail": self.joueur2.mail,
-                            "age": self.joueur2.age,
-                        },
-                    )
-                connection.commit()
-        except Exception as e:
-            self.fail(f"La configuration de la base de données a échoué: {e}")
-
-        # Créer une première partie pour les tests
-        joueur_partie1 = JoueurPartie(
-            joueur=self.joueur1, siege=Siege(id_siege=1), solde_partie=500
-        )
-        self.partie1 = Partie(
-            joueurs=[joueur_partie1],
-            pot=Pot(100),
-            id_table=self.id_table,
-            date_debut=datetime.now(),
-        )
-        self.partie_dao.creer(self.partie1)
-
-        # Créer une deuxième partie (terminée) pour les tests de listing
-        joueur_partie2 = JoueurPartie(
-            joueur=self.joueur2, siege=Siege(id_siege=2), solde_partie=500
-        )
-        self.partie2 = Partie(
-            joueurs=[joueur_partie2],
-            pot=Pot(200),
-            id_table=self.id_table,
-            date_debut=datetime.now() - timedelta(days=1),
-        )
-        self.partie_dao.creer(self.partie2)
-        self.partie2.date_fin = datetime.now()
-        self.partie_dao.modifier(self.partie2)
-
-    def tearDown(self):
-        """Nettoie la base de données après chaque test."""
-        try:
-            with DBConnection().connection as connection:
-                with connection.cursor() as cursor:
-                    cursor.execute("DELETE FROM partie_joueur WHERE id_joueur IN (1001, 1002, 1003);")
-                    cursor.execute("DELETE FROM partie WHERE id_table = 2001;")
-                    cursor.execute("DELETE FROM joueur WHERE id_joueur IN (1001, 1002, 1003);")
-                    cursor.execute("DELETE FROM table_poker WHERE id_table = 2001;")
-                connection.commit()
-        except Exception as e:
-            # Ne pas faire échouer le test si le nettoyage échoue, mais l'afficher
-            print(f"Avertissement: Le nettoyage a échoué: {e}")
-
-    def test_creer(self):
-        """Teste la création d'une nouvelle partie."""
-        # Arrange
-        joueur3 = Joueur(
-            id_joueur=1003, pseudo="TestPlayer3", mail="test3@example.com", mdp="pass", age=40
-        )
+@pytest.fixture(scope="function", autouse=True)
+def clean_test_data():
+    """Nettoyage des données de test avant chaque test"""
+    # S'assurer que les tables existent en réinitialisant la base
+    try:
+        ResetDatabase().lancer(test_dao=True)
+    except Exception as e:
+        print(f"Erreur lors de la réinitialisation: {e}")
+    
+    # Maintenant créer les données de test de base
+    try:
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
+                # Créer une table de test
                 cursor.execute(
-                    "INSERT INTO joueur (id_joueur, pseudo, mail, mdp, age, credit) VALUES (%(id)s, %(pseudo)s, %(mail)s, 'hash', %(age)s, 1000) ON CONFLICT (id_joueur) DO NOTHING;",
-                    {
-                        "id": joueur3.id_joueur,
-                        "pseudo": joueur3.pseudo,
-                        "mail": joueur3.mail,
-                        "age": joueur3.age,
-                    },
+                    "INSERT INTO table_poker (id_table, nb_sieges, blind_initial, nb_joueurs) "
+                    "VALUES (999, 6, 10.00, 0) "
+                    "ON CONFLICT (id_table) DO NOTHING;"
                 )
-            connection.commit()
-            
-        jp = JoueurPartie(joueur=joueur3, siege=Siege(id_siege=3), solde_partie=1000)
-        jp.statut = "Actif"
-        jp.mise_tour = Monnaie(50)
+                connection.commit()
+    except Exception as e:
+        print(f"Erreur lors de la création de la table de test: {e}")
 
-        nouvelle_partie = Partie(
-            joueurs=[jp],
-            pot=Pot(50),
-            id_table=self.id_table,
-            date_debut=datetime.now(),
-        )
 
-        # Act
-        created = self.partie_dao.creer(nouvelle_partie)
-
-        # Assert
-        self.assertTrue(created)
-        self.assertIsNotNone(nouvelle_partie.id_partie)
-
-        # Vérifier en base
-        partie_trouvee = self.partie_dao.trouver_par_id(nouvelle_partie.id_partie)
-        self.assertIsNotNone(partie_trouvee)
-        self.assertEqual(len(partie_trouvee.joueurs), 1)
-        self.assertEqual(partie_trouvee.joueurs[0].joueur.id_joueur, joueur3.id_joueur)
-        self.assertEqual(partie_trouvee.pot.valeur, 50)
-
-    def test_trouver_par_id(self):
-        """Teste la recherche d'une partie par son ID."""
-        # Arrange
-        id_partie_existante = self.partie1.id_partie
-        id_partie_inexistante = 99999
-
-        # Act
-        partie_trouvee = self.partie_dao.trouver_par_id(id_partie_existante)
-        partie_non_trouvee = self.partie_dao.trouver_par_id(id_partie_inexistante)
-
-        # Assert
-        self.assertIsNotNone(partie_trouvee)
-        self.assertEqual(partie_trouvee.id_partie, id_partie_existante)
-        self.assertEqual(len(partie_trouvee.joueurs), 1)
-        self.assertEqual(partie_trouvee.joueurs[0].joueur.id_joueur, self.joueur1.id_joueur)
-        self.assertIsNone(partie_non_trouvee)
-
-    def test_lister_toutes(self):
-        """Teste la récupération de toutes les parties."""
-        # Act
-        liste_parties = self.partie_dao.lister_toutes()
-
-        # Assert
-        self.assertIsInstance(liste_parties, list)
-        # On s'attend à trouver les 2 parties créées dans setUp
-        self.assertGreaterEqual(len(liste_parties), 2)
-        ids_trouves = [p.id_partie for p in liste_parties]
-        self.assertIn(self.partie1.id_partie, ids_trouves)
-        self.assertIn(self.partie2.id_partie, ids_trouves)
-
-    def test_modifier(self):
-        """Teste la modification d'une partie existante."""
-        # Arrange
-        partie_a_modifier = self.partie_dao.trouver_par_id(self.partie1.id_partie)
-        nouveau_pot = 550
-        nouvelle_date_fin = datetime.now()
-        nouveau_statut_joueur = "Couché"
-        
-        partie_a_modifier.pot.valeur = nouveau_pot
-        partie_a_modifier.date_fin = nouvelle_date_fin
-        partie_a_modifier.joueurs[0].statut = nouveau_statut_joueur
-        partie_a_modifier.joueurs[0].solde_partie.valeur = 400
-
-        # Act
-        success = self.partie_dao.modifier(partie_a_modifier)
-
-        # Assert
-        self.assertTrue(success)
-        partie_modifiee_db = self.partie_dao.trouver_par_id(self.partie1.id_partie)
-        self.assertEqual(partie_modifiee_db.pot.valeur, nouveau_pot)
-        self.assertIsNotNone(partie_modifiee_db.date_fin)
-        self.assertEqual(partie_modifiee_db.joueurs[0].statut, nouveau_statut_joueur)
-        self.assertEqual(partie_modifiee_db.joueurs[0].solde_partie.valeur, 400)
-
-    def test_supprimer(self):
-        """Teste la suppression d'une partie."""
-        # Arrange
-        partie_a_supprimer = self.partie1
-
-        # Act
-        success = self.partie_dao.supprimer(partie_a_supprimer)
-
-        # Assert
-        self.assertTrue(success)
-        partie_supprimee = self.partie_dao.trouver_par_id(partie_a_supprimer.id_partie)
-        self.assertIsNone(partie_supprimee)
-
-    def test_lister_par_table(self):
-        """Teste la récupération des parties pour une table donnée."""
-        # Act
-        parties_table = self.partie_dao.lister_par_table(self.id_table)
-        parties_table_inexistante = self.partie_dao.lister_par_table(9999)
-
-        # Assert
-        self.assertIsInstance(parties_table, list)
-        self.assertEqual(len(parties_table), 2)
-        self.assertEqual(len(parties_table_inexistante), 0)
-
-    def test_lister_actives(self):
-        """Teste la récupération des parties actives (non terminées)."""
-        # Act
-        parties_actives = self.partie_dao.lister_actives()
-
-        # Assert
-        self.assertIsInstance(parties_actives, list)
-        # Seule partie1 doit être active
-        self.assertEqual(len(parties_actives), 1)
-        self.assertEqual(parties_actives[0].id_partie, self.partie1.id_partie)
-        self.assertIsNone(parties_actives[0].date_fin)
-
-    def test_trouver_par_joueur(self):
-        """Teste la recherche des parties auxquelles un joueur a participé."""
-        # Arrange
-        # Ajouter joueur1 à partie2 pour qu'il ait participé à 2 parties
-        partie2_mod = self.partie_dao.trouver_par_id(self.partie2.id_partie)
-        jp_supp = JoueurPartie(joueur=self.joueur1, siege=Siege(id_siege=3), solde_partie=200)
-        
+@pytest.fixture
+def setup_partie_test_data():
+    """Setup des données de test pour les parties"""
+    try:
         with DBConnection().connection as connection:
             with connection.cursor() as cursor:
+                # Créer des parties de test avec des dates contrôlées
                 cursor.execute(
-                    "INSERT INTO partie_joueur (id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege) "
-                    "VALUES (%(id_partie)s, %(id_joueur)s, 0, 200, 'Terminé', 3)",
-                    {
-                        "id_partie": partie2_mod.id_partie,
-                        "id_joueur": self.joueur1.id_joueur,
-                    },
+                    "INSERT INTO partie (id_partie, id_table, pot, date_debut) "
+                    "VALUES (998, 999, 100.00, NOW() - INTERVAL '2 hour');"
                 )
-            connection.commit()
+                cursor.execute(
+                    "INSERT INTO partie (id_partie, id_table, pot, date_debut) "
+                    "VALUES (999, 999, 200.00, NOW() - INTERVAL '1 hour');"
+                )
+                connection.commit()
+    except Exception as e:
+        print(f"Erreur lors du setup des parties: {e}")
 
-        # Act
-        parties_joueur1 = self.partie_dao.trouver_par_joueur(self.joueur1.id_joueur)
-        parties_joueur2 = self.partie_dao.trouver_par_joueur(self.joueur2.id_joueur)
 
-        # Assert
-        self.assertEqual(len(parties_joueur1), 2)
-        self.assertEqual(len(parties_joueur2), 1)
-        self.assertEqual(parties_joueur2[0].id_partie, self.partie2.id_partie)
+def test_trouver_par_id_existant(setup_partie_test_data):
+    """Recherche par id d'une partie existante"""
+
+    # GIVEN
+    id_partie = 998
+
+    # WHEN
+    partie = PartieDao().trouver_par_id(id_partie)
+
+    # THEN
+    assert partie is not None
+    assert partie.id_partie == id_partie
+    assert partie.id_table == 999
+    assert partie.pot.get_montant() == 100.00
+
+
+def test_trouver_par_id_non_existant():
+    """Recherche par id d'une partie n'existant pas"""
+
+    # GIVEN
+    id_partie = 9999999999999
+
+    # WHEN
+    partie = PartieDao().trouver_par_id(id_partie)
+
+    # THEN
+    assert partie is None
+
+
+def test_lister_toutes(setup_partie_test_data):
+    """Vérifie que la méthode renvoie une liste de Partie"""
+
+    # WHEN
+    parties = PartieDao().lister_toutes()
+
+    # THEN
+    assert isinstance(parties, list)
+    for p in parties:
+        assert isinstance(p, Partie)
+    # Au moins nos 2 parties de test
+    test_parties = [p for p in parties if p.id_partie in [998, 999]]
+    assert len(test_parties) >= 2
+
+
+def test_creer_ok():
+    """Création d'une partie réussie"""
+
+    # GIVEN
+    pot = Pot(150.00)
+    partie = Partie(
+        id_partie=1000,
+        joueurs=[],
+        pot=pot,
+        id_table=999,
+        date_debut=datetime.now()
+    )
+
+    # WHEN
+    creation_ok = PartieDao().creer(partie)
+
+    # THEN
+    assert creation_ok
+    
+    # Vérification que la partie a bien été créée
+    partie_cree = PartieDao().trouver_par_id(1000)
+    assert partie_cree is not None
+    assert partie_cree.id_partie == 1000
+
+
+def test_creer_ko():
+    """Création d'une partie échouée (données incorrectes)"""
+
+    # GIVEN
+    # Création d'une partie avec un ID null pour provoquer une erreur
+    # (selon le schéma, id_partie est PRIMARY KEY et ne peut pas être null)
+    pot = Pot(150.00)
+    partie = Partie(
+        id_partie=None,  # ID null pour provoquer une erreur
+        joueurs=[],
+        pot=pot,
+        id_table=999,
+        date_debut=datetime.now()
+    )
+
+    # WHEN
+    creation_ok = PartieDao().creer(partie)
+
+    # THEN
+    assert not creation_ok
+
+
+def test_modifier_ok(setup_partie_test_data):
+    """Modification d'une partie réussie"""
+
+    # GIVEN
+    partie = PartieDao().trouver_par_id(998)
+    assert partie is not None
+    nouveau_pot = 300.00
+    partie.pot = Pot(nouveau_pot)
+
+    # WHEN
+    modification_ok = PartieDao().modifier(partie)
+
+    # THEN
+    assert modification_ok
+    
+    # Vérification que la modification a bien été enregistrée
+    partie_modifiee = PartieDao().trouver_par_id(998)
+    assert partie_modifiee.pot.get_montant() == nouveau_pot
+
+
+def test_modifier_ko():
+    """Modification d'une partie échouée (id inconnu)"""
+
+    # GIVEN
+    pot = Pot(500.00)
+    partie = Partie(
+        id_partie=999999,
+        joueurs=[],
+        pot=pot,
+        id_table=999,
+        date_debut=datetime.now()
+    )
+
+    # WHEN
+    modification_ok = PartieDao().modifier(partie)
+
+    # THEN
+    assert not modification_ok
+
+
+def test_supprimer_ok():
+    """Suppression d'une partie réussie"""
+
+    # GIVEN
+    # Créer une partie temporaire pour la suppression
+    pot = Pot(100.00)
+    partie = Partie(
+        id_partie=1001,
+        joueurs=[],
+        pot=pot,
+        id_table=999,
+        date_debut=datetime.now()
+    )
+    creation_ok = PartieDao().creer(partie)
+    assert creation_ok, "La création doit réussir pour tester la suppression"
+
+    # Vérifier que la partie existe
+    assert PartieDao().trouver_par_id(1001) is not None
+
+    # WHEN
+    suppression_ok = PartieDao().supprimer(1001)
+
+    # THEN
+    assert suppression_ok
+    # Vérifier que la partie n'existe plus
+    assert PartieDao().trouver_par_id(1001) is None
+
+
+def test_supprimer_ko():
+    """Suppression d'une partie échouée (id inconnu)"""
+
+    # GIVEN
+    id_partie_inexistant = 999999
+
+    # WHEN
+    suppression_ok = PartieDao().supprimer(id_partie_inexistant)
+
+    # THEN
+    assert not suppression_ok
+
+
+def test_trouver_derniere_partie_sur_table(setup_partie_test_data):
+    """Trouver la dernière partie sur une table"""
+
+    # GIVEN
+    id_table = 999
+
+    # WHEN
+    derniere_partie = PartieDao().trouver_derniere_partie_sur_table(id_table)
+
+    # THEN
+    assert derniere_partie is not None
+    assert derniere_partie.id_table == id_table
+    # La dernière partie devrait être celle avec la date_debut la plus récente (id_partie=999)
+    assert derniere_partie.id_partie == 999
+
+
+def test_lister_parties_par_periode(setup_partie_test_data):
+    """Lister les parties dans une période donnée"""
+
+    # GIVEN
+    debut = datetime.now() - timedelta(days=1)
+    fin = datetime.now() + timedelta(days=1)
+
+    # WHEN
+    parties = PartieDao().lister_parties_par_periode(debut, fin)
+
+    # THEN
+    assert isinstance(parties, list)
+    # Nos 2 parties de test doivent être dans la période
+    test_parties = [p for p in parties if p.id_partie in [998, 999]]
+    assert len(test_parties) == 2
+
+
+def test_lister_parties_par_periode_aucune():
+    """Lister les parties dans une période sans résultats"""
+
+    # GIVEN
+    debut = datetime.now() + timedelta(days=10)
+    fin = datetime.now() + timedelta(days=20)
+
+    # WHEN
+    parties = PartieDao().lister_parties_par_periode(debut, fin)
+
+    # THEN
+    assert isinstance(parties, list)
+    # Aucune partie ne devrait être dans cette période future
+    assert len(parties) == 0
 
 
 if __name__ == "__main__":
-    unittest.main()
+    pytest.main([__file__])

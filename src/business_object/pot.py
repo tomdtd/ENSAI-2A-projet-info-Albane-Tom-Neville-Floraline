@@ -1,28 +1,19 @@
 """Implémentation de la classe Pot."""
 
-from src.business_object.transaction import Transaction
 from src.business_object.monnaie import Monnaie
-
-
 
 class Pot:
     """
     La classe Pot modélise la cagnotte commune d'une partie de poker.
-
-    Parameters
-    ----------
-    montant_pot : Monnaie
-    joueurs_contributeurs : list[JoueurPartie]
-
-    Attributes
-    ----------
-    __id_pot : int
-        Identifiant unique du pot.
-    __joueurs_contributeurs : list[JoueurPartie]
-        Liste des transactions ayant alimenté le pot.
     """
-    def __init__(self):
-        self.montant_pot = Monnaie(0)
+    def __init__(self, montant_initial: int = 0):
+        """
+        Parameters
+        ----------
+        montant_initial : int, optional
+            Montant initial du pot, par défaut 0
+        """
+        self.montant_pot = Monnaie(montant_initial)
 
     def ajouter_mise(self, montant: int):
         """Ajoute une mise au pot."""
@@ -35,3 +26,8 @@ class Pot:
     def get_montant(self) -> int:
         """Retourne le montant total du pot."""
         return self.montant_pot.get()
+
+    @property
+    def valeur(self) -> int:
+        """Propriété pour accéder à la valeur du pot (compatibilité avec les tests existants)."""
+        return self.get_montant()
