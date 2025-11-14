@@ -171,7 +171,7 @@ class JoueurDao(metaclass=Singleton):
                             "mdp": joueur.mdp,
                             "mail": joueur.mail,
                             "age": joueur.age,
-                            "credit": joueur.credit.get(),
+                            "credit": joueur.credit,
                             "id_joueur": joueur.id_joueur,
                         },
                     )
