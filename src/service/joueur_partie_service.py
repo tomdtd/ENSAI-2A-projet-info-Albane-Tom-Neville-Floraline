@@ -119,3 +119,18 @@ class JoueurPartieService:
         # pour récupérer le JoueurPartie correspondant à l'id_joueur.
         # Pour l'instant, on retourne None pour indiquer que cette méthode n'est pas implémentée.
         return None
+    
+    def lister_joueurs_selon_table(self, id_table: int) -> list[JoueurPartie]:
+        """Liste tous les JoueurPartie sur une table.
+        Parameters
+        ----------
+        id_table : int
+            L'identifiant de la table.
+        Returns
+        -------
+        joueur_table : lst[JoueurPartie]
+            Liste des JoueurPartie trouvé.
+            Liste vide sinon.
+        """
+        joueurs = JoueurPartieDao().trouver_par_table(id_table)
+        return joueurs if joueurs else []

@@ -29,3 +29,7 @@ class MenuPartie(VueAbstraite):
             print(f"{joueur.pseudo} a été ajouté à la table {self.table.id_table} sur le siège {siege_libre.id_siege}.")
         else:
             print("Impossible d'ajouter le joueur à la partie.")
+
+        
+        
+        #penser a retirer le joueur de joueur partie à la fin
