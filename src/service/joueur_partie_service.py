@@ -120,7 +120,7 @@ class JoueurPartieService:
         # Pour l'instant, on retourne None pour indiquer que cette méthode n'est pas implémentée.
         return None
     
-    def lister_joueurs_selon_table(self, id_table: int) -> list[JoueurPartie]:
+    def lister_joueurs_selon_table(self, id_table: int) -> list[int]:
         """Liste tous les JoueurPartie sur une table.
         Parameters
         ----------
@@ -128,8 +128,8 @@ class JoueurPartieService:
             L'identifiant de la table.
         Returns
         -------
-        joueur_table : lst[JoueurPartie]
-            Liste des JoueurPartie trouvé.
+        joueur_table : lst[int]
+            Liste des id des JoueurPartie trouvé.
             Liste vide sinon.
         """
         joueurs = JoueurPartieDao().trouver_par_table(id_table)

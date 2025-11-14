@@ -144,6 +144,24 @@ class JoueurPartieDao(metaclass=Singleton):
         joueurs_partie_table : list
             Joueurs appartenant à la table.
         """
-        
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT *                           "
+                        "  FROM partie_joueur                     "
+                        " WHERE id_table = %(id_table)s;  ",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.fetchall()
+        except Exception as e:
+            logging.info(e)
+            raise
+    
+        joueurs_partie_table = None
+        if res:
+            joueurs_partie_table = [row["id_joueur"] for row in res]
+
+        return joueurs_partie_table
 
 

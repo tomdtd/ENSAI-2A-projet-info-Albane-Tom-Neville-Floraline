@@ -31,5 +31,6 @@ class MenuPartie(VueAbstraite):
             print("Impossible d'ajouter le joueur à la partie.")
 
         
-        
+
         #penser a retirer le joueur de joueur partie à la fin
+        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur)
