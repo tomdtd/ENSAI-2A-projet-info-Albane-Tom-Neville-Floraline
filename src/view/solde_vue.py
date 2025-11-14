@@ -56,10 +56,12 @@ class SoldeVue(VueAbstraite):
                 min_allowed=0,
             ).execute()
 
-            if solde is None or solde < float(montant):
+            valeur_solde = solde.get() if solde else 0
+
+            if valeur_solde is None or valeur_solde < int(montant):
                 print("Solde insuffisant.")
             else:
-                joueur.credit = solde - float(montant)
+                joueur.credit = Monnaie(valeur_solde - int(montant))
                 try:
                     JoueurService().modifier(joueur)
                     print(f"Crédit retiré avec succès. Nouveau solde : {joueur.credit.get():.2f}")
