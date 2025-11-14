@@ -3,7 +3,7 @@ from view.vue_abstraite import VueAbstraite
 from view.session import Session
 from service.table_service import TableService
 from business_object.monnaie import Monnaie
-from view.menu_table import MenuTable
+from view.menu_partie import MenuPartie
 import traceback
 
 class RejoindrePartie(VueAbstraite):
@@ -56,7 +56,8 @@ class RejoindrePartie(VueAbstraite):
                         print(f"Nouvelle table créée ! Table {nouvelle_table.id_table}")
                         tables_disponibles.append(nouvelle_table)  # Ajouter à la liste locale
                         choix = f"Table {nouvelle_table.id_table}"
-                        return MenuTable()
+                        print(f"Vous avez rejoint la Table {nouvelle_table.id_table} !")
+                        return MenuPartie(table_choisie)
                     else:
                         print("Erreur lors de la création de la table.")
                         from view.menu_joueur_vue import MenuJoueurVue
@@ -76,6 +77,7 @@ class RejoindrePartie(VueAbstraite):
                     success = table_service.rejoindre_table(joueur, table_choisie.id_table)
                     if success:
                         print(f"Vous avez rejoint la Table {table_choisie.id_table} !")
+                        return MenuPartie(table_choisie)
                     else:
                         print("Impossible de rejoindre cette table, elle est peut-être pleine.")
                 except Exception as e:
