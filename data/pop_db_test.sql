@@ -19,7 +19,7 @@ OVERRIDING SYSTEM VALUE
 VALUES
 (1, 1, 500, '2025-11-05 14:32:10');
 
-INSERT INTO partie_joueur(id_partie, id_joueur, mise_tour, solde_partie, statut, id_siege)
+INSERT INTO partie_joueur(id_table, id_joueur, mise_tour, solde_partie, statut, id_siege)
 OVERRIDING SYSTEM VALUE
 VALUES
 (1, 999, 0, 0, 'en attente', 3);

@@ -24,7 +24,7 @@ class DeroulementPartie:
         self.access_partie = AccessPartie()
         self.table = self.access_partie.creer_table(nb_sieges=len(joueurs), blind_initial=self.small_blind)
 
-        # ✅ Correction : création explicite de la pioche
+        # Correction : création explicite de la pioche
         self.pioche = ListeCartes()
         self.croupier = Croupier(self.pioche)
 

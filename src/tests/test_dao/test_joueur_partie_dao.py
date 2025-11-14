@@ -41,7 +41,7 @@ def test_creer_ok():
                                  siege= Siege(), 
                                  solde_partie=100)
     partie = Partie(id_table=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
-    PartieDao().creer_partie(partie)
+    PartieDao().creer_partie(partie) #il faudrai plutot creer une table pour que le id_table existe mtn que ca a change
     id_table = 1
 
     # WHEN
