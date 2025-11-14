@@ -1,6 +1,6 @@
-from src.business_object.table import Table
-from src.business_object.joueur import Joueur
-from src.business_object.monnaie import Monnaie
+from business_object.table import Table
+from business_object.joueur import Joueur
+from business_object.monnaie import Monnaie
 
 
 class AccessPartie:

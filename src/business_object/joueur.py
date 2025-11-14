@@ -1,4 +1,4 @@
-from src.business_object.monnaie import Monnaie
+from business_object.monnaie import Monnaie
 
 class Joueur:
     """
