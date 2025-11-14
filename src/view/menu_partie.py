@@ -43,6 +43,18 @@ class MenuPartie(VueAbstraite):
 
         quitter_partie = False
         while not quitter_partie:
+
+            while not self.joueur_partie_service.est_ton_tour(joueur.id_joueur, self.table.id_table): #service a crer qui fait appel a statu = en attente
+                print("En attente du tour des autres joueurs...")
+                time.sleep(2) 
+                # peut etre mettre un break ou autre pour quitter la partie
+            
+            print("C'est ton tour")
+            liste_joueurs = self.joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+            print(f"Joueurs présents : {[j['pseudo'] for j in liste_joueurs]}")
+
+            #trouver un moyen de monter les cartes le flop si besoin ect
+
             action = inquirer.select(
                 message="Que voulez-vous faire ?",
                 choices=[
