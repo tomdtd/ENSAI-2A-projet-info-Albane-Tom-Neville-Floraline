@@ -17,9 +17,10 @@ class Table:
         get_joueurs() -> list[int]: Retourne la liste des IDs des joueurs assis à la table.
     """
      
-    def __init__(self, id_table: int, nb_sieges: int, blind_initial: Monnaie):
+    def __init__(self, id_table: int, nb_sieges: int, blind_initial: Monnaie, nb_joueurs: int=0):
         self.id_table = id_table
         self.nb_sieges = nb_sieges
+        self.nb_joueurs = nb_joueurs
         self.blind_initial = blind_initial
         self.sieges = [Siege(id_siege=i) for i in range(nb_sieges)]
 

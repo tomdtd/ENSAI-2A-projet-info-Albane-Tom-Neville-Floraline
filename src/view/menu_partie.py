@@ -14,12 +14,12 @@ class MenuPartie(VueAbstraite):
         session = Session()
         joueur = session.joueur
 
-        if self.table.nb_sieges >= self.table.nb_sieges:
+        if self.table.nb_joueurs >= self.table.nb_sieges:
             print("La table est pleine !")
             from view.rejoindre_partie import RejoindrePartie
             return RejoindrePartie().choisir_menu()
         
-        siege_libre = Siege(self.table.nb_sieges + 1)
+        siege_libre = Siege(self.table.nb_joueurs + 1)
         siege_libre.est_occupe()
         
         joueur_partie_service = JoueurPartieService()

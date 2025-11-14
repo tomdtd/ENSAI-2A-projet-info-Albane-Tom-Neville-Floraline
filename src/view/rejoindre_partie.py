@@ -57,7 +57,7 @@ class RejoindrePartie(VueAbstraite):
                         tables_disponibles.append(nouvelle_table)  # Ajouter à la liste locale
                         choix = f"Table {nouvelle_table.id_table}"
                         print(f"Vous avez rejoint la Table {nouvelle_table.id_table} !")
-                        return MenuPartie(table_choisie).choisir_menu()
+                        return MenuPartie(nouvelle_table).choisir_menu()
                     else:
                         print("Erreur lors de la création de la table.")
                         from view.menu_joueur_vue import MenuJoueurVue

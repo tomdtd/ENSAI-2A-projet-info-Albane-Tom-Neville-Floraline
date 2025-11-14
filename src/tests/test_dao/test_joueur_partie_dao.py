@@ -40,12 +40,12 @@ def test_creer_ok():
     joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=100)
-    partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
+    partie = Partie(id_table=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
     PartieDao().creer_partie(partie)
-    id_partie = 1
+    id_table = 1
 
     # WHEN
-    creation_ok = JoueurPartieDao().creer(joueur_partie, id_partie)
+    creation_ok = JoueurPartieDao().creer(joueur_partie, id_table)
 
     # THEN
     assert creation_ok
@@ -60,11 +60,11 @@ def test_creer_ko():
     joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=100)
-    id_partie = 1234 # n'existe pas
+    id_table = 1234 # n'existe pas
 
 
     # WHEN
-    creation_ok = JoueurPartieDao().creer(joueur_partie, id_partie)
+    creation_ok = JoueurPartieDao().creer(joueur_partie, id_table)
 
     # THEN
     assert not creation_ok
@@ -78,7 +78,7 @@ def test_supprimer_ok():
     joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=100)
-    partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
+    partie = Partie(id_table=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
     PartieDao().creer_partie(partie)
     JoueurPartieDao().creer(joueur_partie, 1)
 
@@ -98,7 +98,7 @@ def test_modifier_ok():
     joueur_partie = JoueurPartie(joueur= joueur,
                                  siege= Siege(), 
                                  solde_partie=new_solde_partie)
-    partie = Partie(id_partie=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
+    partie = Partie(id_table=1,joueurs=[],pot=Pot(), id_table= 1, date_debut="2025-11-05 14:32:10")
     PartieDao().creer_partie(partie)
     JoueurPartieDao().creer(joueur_partie, 1)
 
