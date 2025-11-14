@@ -48,5 +48,11 @@ class TableService :
                     siege.id_joueur = None
                     return TableDao().modifier(table)
         return False
+    
+    @log
+    def ajouter_joueur_table(self, id_table: int) -> bool:
+        """Incrémente le nb_joueurs de la table dans la DB"""
+        return TableDao().incrementer_nb_joueurs(id_table)
+
 
 

@@ -19,7 +19,7 @@ class MenuPartie(VueAbstraite):
             from view.rejoindre_partie import RejoindrePartie
             return RejoindrePartie().choisir_menu()
         
-        siege_libre = Siege(self.table.nb_joueurs + 1)
+        siege_libre = Siege(self.table.nb_joueurs)
         siege_libre.est_occupe()
         
         joueur_partie_service = JoueurPartieService()
@@ -27,10 +27,18 @@ class MenuPartie(VueAbstraite):
 
         if joueur_partie:
             print(f"{joueur.pseudo} a été ajouté à la table {self.table.id_table} sur le siège {siege_libre.id_siege}.")
+            self.table_service.ajouter_joueur_table(self.table.id_table)
+
         else:
             print("Impossible d'ajouter le joueur à la partie.")
-
+            from view.rejoindre_partie import RejoindrePartie
+            return RejoindrePartie().choisir_menu()
         
 
+        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+
+
+        #faire quitter la partie au joueur
+        # trouver un moyen de retirer le nb de joueurs dans la table table_poker -1
         #penser a retirer le joueur de joueur partie à la fin
         joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur)

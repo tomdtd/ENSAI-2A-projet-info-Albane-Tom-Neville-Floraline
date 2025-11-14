@@ -5,8 +5,8 @@ from utils.log_decorator import log
 
 from dao.db_connection import DBConnection
 
-from src.business_object.table import Table
-from src.business_object.monnaie import Monnaie
+from business_object.table import Table
+from business_object.monnaie import Monnaie
 
 
 class TableDao(metaclass=Singleton):
@@ -232,3 +232,23 @@ class TableDao(metaclass=Singleton):
                 liste_tables.append(table)
 
         return liste_tables
+
+    @log
+    def incrementer_nb_joueurs(self, id_table: int) -> bool:
+        """Incrémente le nombre de joueurs d'une table de 1"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker "
+                        "   SET nb_joueurs = nb_joueurs + 1 "
+                        " WHERE id_table = %(id_table)s;",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de l'incrémentation du nombre de joueurs de la table %s", id_table)
+            return False
+
+        return res == 1
