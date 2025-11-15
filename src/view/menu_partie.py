@@ -52,7 +52,6 @@ class MenuPartie(VueAbstraite):
         while not quitter_partie:
 
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
-            print(statut) # ça marche
             
             pioche = ListeCartes()
             croupier = Croupier(pioche)
@@ -133,7 +132,7 @@ class MenuPartie(VueAbstraite):
                     print(f'La turn est : {turn}')
                     print(f'La river est : {river}')
 
-                montant_pour_suivre = self.table.blind_initial + TableService().get_val_derniere_mise(self.table.id_table)
+                montant_pour_suivre = self.table.blind_initial.valeur + TableService().get_val_derniere_mise(self.table.id_table)
                 print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
                 action = inquirer.select(
@@ -149,7 +148,7 @@ class MenuPartie(VueAbstraite):
                 if action == "Miser":
                     montant = int(inquirer.text(message="Montant à miser : ").execute())
                     TableService().set_val_derniere_mise(self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table))
-                    valeur_totale_paye = montant + TableService().get_val_derniere_mise(self.table.id_table) #+blinde
+                    valeur_totale_paye = montant + TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
                     
                     #retirer le solde du joueur
                     solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
@@ -161,7 +160,7 @@ class MenuPartie(VueAbstraite):
                     print(f"{joueur.pseudo} a misé {montant}.")
 
                 elif action == "Suivre":
-                    valeur_totale_paye = TableService().get_val_derniere_mise(self.table.id_table) #+blinde
+                    valeur_totale_paye = TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
 
                     #retirer le solde du joueur
                     solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
@@ -173,11 +172,10 @@ class MenuPartie(VueAbstraite):
                     print(f"{joueur.pseudo} a suivi.")
 
                 elif action == "Se coucher":
-                    joueur_partie_service.mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
-                    self.joueur_partie_service.se_coucher(joueur.id_joueur)
+                    JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
                     print(f"{joueur.pseudo} s'est couché.")
 
-                    while joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "s'est couché":
+                    while JoueurPartieService().obtenir_statut(joueur.id_joueur, self.table.id_table) == "s'est couché":
                         print("En attente de la fin de la main des autres joueurs...")
                         time.sleep(2) 
 
