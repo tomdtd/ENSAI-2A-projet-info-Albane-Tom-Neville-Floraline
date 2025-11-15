@@ -74,18 +74,9 @@ class MenuPartie(VueAbstraite):
             id_joueur = joueur_partie.joueur.id_joueur 
             main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
             print(f'Ta main est : {main_joueur}')
-            cartes_communes = table_service.get_cartes_communes(id_table)
-            flop = cartes_communes["flop"]
-            turn = cartes_communes["turn"]
-            river = cartes_communes["river"]
-            print(f'Le flop est : {flop}')
-            print(f'La turn est : {turn}')
-            print(f'La river est : {river}')
-            
 
             tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River']
             for tour in tours_de_mise:
-
 
                 if num_tour_joueur >= len(liste_joueurs_dans_partie):
                     num_tour_joueur = 0
@@ -122,6 +113,23 @@ class MenuPartie(VueAbstraite):
 
                 print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
+                pot_actuel = TableService().get_pot(id_table)
+                print(f"Pot actuel : {pot_actuel}")
+
+                cartes_communes = table_service.get_cartes_communes(id_table)
+                flop = cartes_communes["flop"]
+                turn = cartes_communes["turn"]
+                river = cartes_communes["river"]
+                if tours_de_mise == 'Flop':
+                    print(f'Le flop est : {flop}')
+                elif tours_de_mise == 'Turn':
+                    print(f'Le flop est : {flop}')
+                    print(f'La turn est : {turn}')
+                elif tours_de_mise == 'River':
+                    print(f'Le flop est : {flop}')
+                    print(f'La turn est : {turn}')
+                    print(f'La river est : {river}')
+                    
 
                 action = inquirer.select(
                     message="Que voulez-vous faire ?",

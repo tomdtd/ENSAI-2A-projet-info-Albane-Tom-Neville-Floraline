@@ -359,3 +359,58 @@ class TableDao(metaclass=Singleton):
             }
         else:
             return {"flop": ListeCartes(), "turn": ListeCartes(), "river": ListeCartes()}
+    
+    @log
+    def alimenter_pot(self, id_table: int, montant: float) -> bool:
+        """Ajoute une somme au pot d'une table."""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker "
+                        "   SET pot = pot + %(montant)s "
+                        " WHERE id_table = %(id_table)s;",
+                        {"montant": montant, "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de l'alimentation du pot pour la table %s", id_table)
+            return False
+        return res == 1
+
+    @log
+    def retirer_pot(self, id_table: int, montant: float) -> bool:
+        """Retire une somme du pot d'une table (ex : gains distribués)."""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker "
+                        "   SET pot = GREATEST(pot - %(montant)s, 0) "
+                        " WHERE id_table = %(id_table)s;",
+                        {"montant": montant, "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors du retrait du pot pour la table %s", id_table)
+            return False
+        return res == 1
+
+    @log
+    def get_pot(self, id_table: int) -> float:
+        """Retourne le montant actuel du pot pour une table."""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT pot FROM table_poker WHERE id_table=%(id_table)s;",
+                        {"id_table": id_table}
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération du pot pour la table %s", id_table)
+            return 0.0
+        return float(res["pot"]) if res else 0.0
+

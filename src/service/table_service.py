@@ -99,5 +99,23 @@ class TableService :
         """
         return TableDao().get_cartes_communess(id_table)
 
+    @log
+    def alimenter_pot(self, id_table: int, montant: float) -> bool:
+        """Ajoute une somme au pot de la table."""
+        if montant <= 0:
+            raise ValueError("Le montant doit être positif pour alimenter le pot.")
+        return TableDao().alimenter_pot(id_table, montant)
+
+    @log
+    def retirer_pot(self, id_table: int, montant: float) -> bool:
+        """Retire une somme du pot de la table."""
+        if montant <= 0:
+            raise ValueError("Le montant doit être positif pour retirer du pot.")
+        return TableDao().retirer_pot(id_table, montant)
+
+    @log
+    def get_pot(self, id_table: int) -> float:
+        """Récupère le montant actuel du pot de la table."""
+        return TableDao().get_pot(id_table)
 
 
