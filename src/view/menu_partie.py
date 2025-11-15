@@ -265,11 +265,27 @@ class MenuPartie(VueAbstraite):
                 id_gagnant = id_max[0]
                 if not len(id_max) == 1:
                     pass
+                    # Cas ou toutes les cartes ne sont pas égales
+                    # Peut etre creer une nouvelle méthode dans main_complete
+                    # Cas ou toutes les cartes sont égales
+                    #id_gagnant = id_cartes_egales
 
-                print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
-                
+
                 #Créditer le gagnant
-            
+                if isinstance(id_gagnant, list):
+                    print(f"Les gagnants sont : {id_gagnant} avec une {combinaison_max}")
+
+                else:
+                    print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
+                    # marche pas car credite pas id_gagnant : creer une dao et service qui change le credit du joueur...
+                    # pot = TableService().get_pot(self.table.id_table)
+                    # print(f'Fin de la main : le gagnant remporte le pot : {pot}')
+                    # solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
+                    # valeur_solde = solde.get()
+                    # joueur.credit = Monnaie(float(valeur_solde) + float(pot))
+                    # TableService().retirer_pot(self.table.id_table, pot)
+                
+                    
             if quitter_partie:
                     break
 
