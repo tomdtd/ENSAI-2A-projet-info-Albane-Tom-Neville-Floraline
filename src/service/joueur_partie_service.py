@@ -171,3 +171,47 @@ class JoueurPartieService:
         if not isinstance(main, ListeCartes):
             raise ValueError("main doit être un objet ListeCartes.")
         return JoueurPartieDao().donner_cartes_main_joueur(id_table, id_joueur, main)
+    
+    @log
+    def mettre_a_jour_statut(self, id_joueur: int, id_table: int, statut: str) -> bool:
+        """Met à jour le statut d'un joueur dans une partie.
+
+        Parameters
+        ----------
+        id_joueur : int
+            L'identifiant du joueur.
+        id_table : int
+            L'identifiant de la table.
+        statut : str
+            Nouveau statut : 'en attente', 'tour de blinde', 'tour petite blinde', 'en jeu', 's'est couché', ...
+
+        Returns
+        -------
+        success : bool
+            True si la mise à jour a été effectuée avec succès.
+        """
+        if not id_joueur or not id_table:
+            raise ValueError("id_joueur et id_table sont requis.")
+        if statut not in ['en attente', 'tour de blinde', 'tour petite blinde', 'en jeu', "s'est couché"]:
+            raise ValueError(f"Statut invalide : {statut}")
+        return JoueurPartieDao().modifier_statut(id_joueur, id_table, statut)
+    
+    @log
+    def obtenir_statut(self, id_joueur: int, id_table: int) -> str:
+        """Retourne le statut actuel d'un joueur dans une partie.
+
+        Parameters
+        ----------
+        id_joueur : int
+            L'identifiant du joueur.
+        id_table : int
+            L'identifiant de la table.
+
+        Returns
+        -------
+        statut : str
+            Statut du joueur, ou None si non trouvé.
+        """
+        if not id_joueur or not id_table:
+            raise ValueError("id_joueur et id_table sont requis.")
+        return JoueurPartieDao().recuperer_statut(id_joueur, id_table)

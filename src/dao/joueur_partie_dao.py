@@ -205,5 +205,70 @@ class JoueurPartieDao(metaclass=Singleton):
             return False
 
         return res == 1
+    
+    @log
+    def modifier_statut(self, id_joueur: int, id_table: int, statut: str) -> bool:
+        """Met à jour le statut d'un joueur pour une table donnée.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+        id_table : int
+            Identifiant de la table.
+        statut : str
+            Nouveau statut ('en attente', 'tour de blinde', 'tour petite blinde', 'en jeu', 's'est couché', ...)
+
+        Returns
+        -------
+        success : bool
+            True si la mise à jour a réussi.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE partie_joueur "
+                        "SET statut = %(statut)s "
+                        "WHERE id_joueur = %(id_joueur)s AND id_table = %(id_table)s;",
+                        {"statut": statut, "id_joueur": id_joueur, "id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour du statut du joueur %s à la table %s", id_joueur, id_table)
+            return False
+        return res == 1
+    
+    @log
+    def recuperer_statut(self, id_joueur: int, id_table: int) -> str:
+        """Récupère le statut d'un joueur pour une table donnée.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+        id_table : int
+        Identifiant de la table.
+
+        Returns
+        -------
+        statut : str
+        Le statut actuel du joueur. Renvoie None si le joueur n'est pas trouvé.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT statut FROM partie_joueur "
+                        "WHERE id_joueur = %(id_joueur)s AND id_table = %(id_table)s;",
+                        {"id_joueur": id_joueur, "id_table": id_table},
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération du statut du joueur %s à la table %s", id_joueur, id_table)
+            return None
+
+        return res["statut"] if res else None
 
 

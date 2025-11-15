@@ -50,6 +50,9 @@ class MenuPartie(VueAbstraite):
 
         quitter_partie = False
         while not quitter_partie:
+
+            statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+            print(statut) # ça marche
             
             pioche = ListeCartes()
             croupier = Croupier(pioche)
@@ -114,7 +117,7 @@ class MenuPartie(VueAbstraite):
                 print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
                 pot_actuel = TableService().get_pot(id_table)
-                print(f"Pot actuel : {pot_actuel}")
+                print(f"Pot actuel : {pot_actuel}") # garder dans un coin : TableService().alimenter_pot(id_table, 50) et TableService().retirer_pot(id_table, 100)
 
                 cartes_communes = table_service.get_cartes_communes(id_table)
                 flop = cartes_communes["flop"]
@@ -129,7 +132,7 @@ class MenuPartie(VueAbstraite):
                     print(f'Le flop est : {flop}')
                     print(f'La turn est : {turn}')
                     print(f'La river est : {river}')
-                    
+
 
                 action = inquirer.select(
                     message="Que voulez-vous faire ?",
