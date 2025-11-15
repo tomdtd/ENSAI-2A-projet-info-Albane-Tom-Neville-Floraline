@@ -139,7 +139,7 @@ class MenuPartie(VueAbstraite):
                     #     self.joueur_partie_service.miser(joueur.id_joueur, montant)
                     #     print(f"{joueur.pseudo} a misé {montant}.")
                     # except ValueError as e:
-                    #     print(e)
+                    #     print(e) 
                 
                 elif action == "Se coucher":
                     pass # a voir
