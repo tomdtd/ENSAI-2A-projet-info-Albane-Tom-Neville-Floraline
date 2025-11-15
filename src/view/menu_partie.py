@@ -5,6 +5,8 @@ from service.joueur_partie_service import JoueurPartieService
 from service.table_service import TableService
 from service.joueur_service import JoueurService
 from business_object.siege import Siege
+from src.business_object.croupier import Croupier
+from src.business_object.liste_cartes import ListeCartes
 import time
 
 class MenuPartie(VueAbstraite):
@@ -78,10 +80,20 @@ class MenuPartie(VueAbstraite):
             liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
             joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
             print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
-            
+
             print(f"Votre credit actuel : {joueur.credit}")
 
+            print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
+
             #trouver un moyen de monter les cartes le flop si besoin ect
+            #distribuer les cartes ici : faire le flop, et donner 2 cartes au nb de joueurs
+            pioche = ListeCartes()
+            croupier = Croupier(pioche)
+            liste_joueurs_objects_partie = joueur_partie_service.lister_joueurs_objets_selon_table(self.table.id_table)
+            Croupier().distribuer2(liste_joueurs_objects_partie,2)
+            flop = croupier.distribuer_flop()
+            turn = croupier.distribuer_turn()      
+            river = croupier.distribuer_river() 
 
             action = inquirer.select(
                 message="Que voulez-vous faire ?",

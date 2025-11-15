@@ -50,3 +50,14 @@ class ListeCartes():
     def cartes(self):
         """Retourne la liste des cartes."""
         return self.__cartes
+
+    def cartes_to_str(liste_cartes):
+        """Convertit une ListeCartes en chaîne."""
+        return ','.join(str(carte) for carte in liste_cartes.cartes)
+    
+    def str_to_cartes(s):
+        """Convertit une chaîne en ListeCartes."""
+        from business_object.carte import Carte
+        from business_object.liste_cartes import ListeCartes
+        cartes = [Carte.from_str(c.strip()) for c in s.split(',') if c]
+        return ListeCartes(cartes)

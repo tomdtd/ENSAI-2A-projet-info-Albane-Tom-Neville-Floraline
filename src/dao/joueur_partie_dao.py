@@ -163,5 +163,46 @@ class JoueurPartieDao(metaclass=Singleton):
             joueurs_partie_table = [row["id_joueur"] for row in res]
 
         return joueurs_partie_table
+    
+    @log
+    def trouver_cartes_main_joueur(self, id_table: int, id_joueur: int) -> ListeCartes:
+        """Récupère la main d'un joueur dans une partie précise"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT cartes_main FROM partie_joueur "
+                        "WHERE id_table=%(id_table)s AND id_joueur=%(id_joueur)s;",
+                        {"id_table": id_table, "id_joueur": id_joueur},
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération des cartes du joueur")
+            return ListeCartes() 
+
+        if res and res["cartes_main"]:
+            return ListeCartes.str_to_cartes(res["cartes_main"])
+        return ListeCartes() 
+    
+    @log
+    def donner_cartes_main_joueur(self, id_table: int, id_joueur: int, main: ListeCartes) -> bool:
+        """Attribue une main de cartes à un joueur dans une partie précise"""
+        cartes_str = ListeCartes.cartes_to_str(main)
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE partie_joueur "
+                        "SET cartes_main=%(cartes_main)s "
+                        "WHERE id_table=%(id_table)s AND id_joueur=%(id_joueur)s;",
+                        {"cartes_main": cartes_str, "id_table": id_table, "id_joueur": id_joueur},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de l'attribution des cartes au joueur")
+            return False
+
+        return res == 1
 
 

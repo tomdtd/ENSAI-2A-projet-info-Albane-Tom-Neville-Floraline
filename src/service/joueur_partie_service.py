@@ -134,3 +134,39 @@ class JoueurPartieService:
         """
         joueurs = JoueurPartieDao().trouver_par_table(id_table)
         return joueurs if joueurs else []
+    
+    @log
+    def recuperer_cartes_main_joueur(self, id_table: int, id_joueur: int) -> ListeCartes:
+        """Récupère la main d'un joueur pour une partie spécifique.
+        Parameters
+        ----------
+        id_table : int
+            L'identifiant de la table/partie
+        id_joueur : int
+            L'identifiant du joueur
+        Returns
+        -------
+        main : ListeCartes
+            La main du joueur, vide si non trouvée.
+        """
+        return JoueurPartieDao().trouver_cartes_main_joueur(id_table, id_joueur)
+    
+    @log
+    def attribuer_cartes_main_joueur(self, id_table: int, id_joueur: int, main: ListeCartes) -> bool:
+        """Attribue une main de cartes à un joueur pour une partie spécifique.
+        Parameters
+        ----------
+        id_table : int
+            L'identifiant de la table/partie
+        id_joueur : int
+            L'identifiant du joueur
+        main : ListeCartes
+            La main à attribuer
+        Returns
+        -------
+        success : bool
+            True si l'attribution a réussi, False sinon.
+        """
+        if not isinstance(main, ListeCartes):
+            raise ValueError("main doit être un objet ListeCartes.")
+        return JoueurPartieDao().donner_cartes_main_joueur(id_table, id_joueur, main)

@@ -37,6 +37,28 @@ class Croupier:
                 carte = self.pioche.piocher()
                 if carte:
                     jp.main.ajouter_carte(carte)
+    
+    def distribuer2(self, lst_id_joueurs_partie: list[int], nb_cartes: int):
+        """Distribue un nombre de cartes privées à chaque joueur (pré-flop).
+        Attributes
+        ----------
+        lst_id_joueurs_partie: list[int]
+            Liste des joueurs a qui on doit distribuer.
+        Returns
+        ----------
+        dict{int:ListeCartes()}
+            Dictionnaire associant chaque id_joueur à sa main de cartes.
+        """
+        mains = {id_joueur: ListeCartes(cartes=[]) for id_joueur in lst_id_joueurs_partie}
+
+        for _ in range(nb_cartes):
+            for id_joueur in lst_id_joueurs_partie:
+                carte = self.pioche.piocher()
+                if carte is not None:
+                    mains[id_joueur].ajouter_carte(carte)
+
+        return mains
+                    
 
     def distribuer_flop(self) -> Flop:
         """Distribue le flop (3 cartes communes)."""
