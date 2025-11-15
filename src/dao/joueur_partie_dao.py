@@ -6,6 +6,7 @@ from utils.log_decorator import log
 from dao.db_connection import DBConnection
 
 from business_object.joueur import Joueur
+from business_object.liste_cartes import ListeCartes
 
 
 class JoueurPartieDao(metaclass=Singleton):

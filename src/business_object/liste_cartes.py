@@ -1,6 +1,7 @@
 """Implémentation de la classe ListeCartes."""
 
 from business_object.carte import Carte
+import random
 
 class ListeCartes():
     """
@@ -50,6 +51,18 @@ class ListeCartes():
     def cartes(self):
         """Retourne la liste des cartes."""
         return self.__cartes
+    
+    def piocher(self) -> Carte:
+        """Pioche une carte aléatoire et la retire de la liste.
+        Returns
+        -------
+        Carte | None
+            La carte piochée, ou None si la pioche est vide.
+        """
+        if not self.__cartes:
+            return None
+        index = random.randint(0, len(self.__cartes) - 1)
+        return self.__cartes.pop(index)
 
     def cartes_to_str(liste_cartes):
         """Convertit une ListeCartes en chaîne."""

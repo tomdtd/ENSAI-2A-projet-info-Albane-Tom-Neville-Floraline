@@ -5,8 +5,8 @@ from service.joueur_partie_service import JoueurPartieService
 from service.table_service import TableService
 from service.joueur_service import JoueurService
 from business_object.siege import Siege
-from src.business_object.croupier import Croupier
-from src.business_object.liste_cartes import ListeCartes
+from business_object.croupier import Croupier
+from business_object.liste_cartes import ListeCartes
 import time
 
 class MenuPartie(VueAbstraite):
@@ -89,11 +89,25 @@ class MenuPartie(VueAbstraite):
             #distribuer les cartes ici : faire le flop, et donner 2 cartes au nb de joueurs
             pioche = ListeCartes()
             croupier = Croupier(pioche)
-            liste_joueurs_objects_partie = joueur_partie_service.lister_joueurs_objets_selon_table(self.table.id_table)
-            Croupier().distribuer2(liste_joueurs_objects_partie,2)
+            liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+            mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie,2)
+            for id_joueur_partie in liste_joueurs_dans_partie:
+                main = mains_distribuees[id_joueur_partie]
+                joueur_partie_service.attribuer_cartes_main_joueur(
+                    id_table=self.table.id_table,
+                    id_joueur=id_joueur_partie,
+                    main=main
+                )
             flop = croupier.distribuer_flop()
             turn = croupier.distribuer_turn()      
             river = croupier.distribuer_river() 
+            id_table = self.table.id_table
+            id_joueur = joueur_partie.joueur.id_joueur 
+            main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
+            print(f'Ta main est : {main_joueur}')
+            print(f'Le flop est : {flop}')
+            print(f'La turn est : {turn}')
+            print(f'La river est : {river}')
 
             action = inquirer.select(
                 message="Que voulez-vous faire ?",

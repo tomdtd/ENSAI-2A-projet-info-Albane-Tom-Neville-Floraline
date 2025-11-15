@@ -43,3 +43,6 @@ class Monnaie:
 
     def __repr__(self) -> str:
         return f"Monnaie({self.valeur})" 
+    
+    def __str__(self) -> str:
+        return f"{self.valeur} jetons" 

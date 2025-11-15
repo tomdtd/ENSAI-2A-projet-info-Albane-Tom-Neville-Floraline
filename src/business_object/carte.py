@@ -81,4 +81,17 @@ class Carte :
 
     def __hash__(self):
         return hash(repr(self))
+    
+    @classmethod
+    def from_str(cls, s: str) -> "Carte":
+        """
+        Reconstruit une carte à partir d'une chaîne de type "valeur de couleur", 
+        ex: "As de coeur" ou "10 de pique".
+        """
+        try:
+            valeur, couleur = s.split(" de ", 1)
+            couleur = couleur.capitalize() #car stocké avec le format str en bdd
+            return cls(valeur=valeur, couleur=couleur)
+        except Exception as e:
+            raise ValueError(f"Impossible de créer une Carte à partir de '{s}'") from e
 

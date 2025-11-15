@@ -46,7 +46,6 @@ class MenuJoueurVue(VueAbstraite):
             case "Se déconnecter":
                 Session().deconnexion()
                 from view.accueil.accueil_vue import AccueilVue
-
                 return AccueilVue()
 
             case "Rejoindre une partie":
