@@ -4,6 +4,7 @@ from view.session import Session
 from service.joueur_partie_service import JoueurPartieService
 from service.table_service import TableService
 from business_object.siege import Siege
+import time
 
 class MenuPartie(VueAbstraite):
 
@@ -41,17 +42,26 @@ class MenuPartie(VueAbstraite):
 
         print(f"Joueurs présents : {liste_joueurs_dans_partie}")
 
+        num_tour_joueur = 0
+
         quitter_partie = False
         while not quitter_partie:
+            if num_tour_joueur >= len(liste_joueurs_dans_partie):
+                num_tour_joueur = 0
+            id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
+            num_tour_joueur += 1
 
-            while not self.joueur_partie_service.est_ton_tour(joueur.id_joueur, self.table.id_table): #service a crer qui fait appel a statu = en attente
+            TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
+
+            while not TableService().get_id_joueur_tour(self.table.id_table, id_tour_joueur) == joueur.id_joueur: 
                 print("En attente du tour des autres joueurs...")
                 time.sleep(2) 
                 # peut etre mettre un break ou autre pour quitter la partie
             
             print("C'est ton tour")
-            liste_joueurs = self.joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+            liste_joueurs = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
             print(f"Joueurs présents : {[j['pseudo'] for j in liste_joueurs]}")
+            print(f"Votre credit actuel : {joueur.credit}")
 
             #trouver un moyen de monter les cartes le flop si besoin ect
 

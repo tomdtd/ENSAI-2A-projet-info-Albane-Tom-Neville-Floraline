@@ -53,7 +53,8 @@ CREATE TABLE table_poker (
   blind_initial DECIMAL(10, 2) NOT NULL,
   -- nb_joueurs est une donnée dénormalisée pour un accès rapide.
   -- Elle devra être mise à jour par l'application.
-  nb_joueurs INT NOT NULL DEFAULT 0
+  nb_joueurs INT NOT NULL DEFAULT 0,
+  id_joueur_tour INT NULL DEFAULT 0
 );
 
 -- -----------------------------------------------------

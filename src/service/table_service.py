@@ -53,6 +53,27 @@ class TableService :
     def ajouter_joueur_table(self, id_table: int) -> bool:
         """Incrémente le nb_joueurs de la table dans la DB"""
         return TableDao().incrementer_nb_joueurs(id_table)
+    
+    @log
+    def get_id_joueur_tour(self, id_table: int) -> Optional[int]:
+        """
+        Retourne l'id du joueur dont c'est le tour pour la table donnée.
+        Renvoie None si aucune information disponible.
+        """
+        if not id_table:
+            raise ValueError("id_table requis.")
+        return TableDao().get_id_joueur_tour(id_table)
+    
+    @log
+    def set_id_joueur_tour(self, id_table: int, id_joueur_tour: int=None) -> bool:
+        """
+        Met à jour l'id du joueur dont c'est le tour pour la table donnée.
+        id_joueur_tour peut être None (aucun joueur).
+        Retourne True si la mise à jour a réussi.
+        """
+        if not id_table:
+            raise ValueError("id_table requis.")
+        return TableDao().set_id_joueur_tour(id_table, id_joueur_tour)
 
 
 

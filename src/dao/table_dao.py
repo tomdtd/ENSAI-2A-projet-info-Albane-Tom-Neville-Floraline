@@ -248,3 +248,38 @@ class TableDao(metaclass=Singleton):
             return False
 
         return res == 1
+    
+    @log
+    def get_id_joueur_tour(self, id_table: int) -> Optional[int]:
+        """Retourne l'id du joueur dont c'est le tour pour la table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_joueur_tour FROM table_poker WHERE id_table = %(id_table)s;",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération de id_joueur_tour")
+            return None
+
+        return res.get("id_joueur_tour") if res else None
+    
+    @log
+    def set_id_joueur_tour(self, id_table: int, id_joueur_tour: int=0) -> bool:
+        """Met à jour l'id du joueur dont c'est le tour pour la table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker SET id_joueur_tour = %(id_joueur_tour)s WHERE id_table = %(id_table)s;",
+                        {"id_joueur_tour": id_joueur_tour, "id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour de id_joueur_tour")
+            return False
+
+        return res == 1
