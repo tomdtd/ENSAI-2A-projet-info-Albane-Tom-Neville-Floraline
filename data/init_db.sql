@@ -106,7 +106,7 @@ CREATE TABLE partie_joueur (
     solde_partie DECIMAL(10,2) DEFAULT 0.00,
     statut VARCHAR(50) DEFAULT 'en attente',
     id_siege INT NULL,
-    cartes_main VARCHAR(200) DEFAULT ''
+    cartes_main VARCHAR(200) DEFAULT '',
     PRIMARY KEY (id_table, id_joueur),
     CONSTRAINT fk_partie_joueur_table
         FOREIGN KEY (id_table)
