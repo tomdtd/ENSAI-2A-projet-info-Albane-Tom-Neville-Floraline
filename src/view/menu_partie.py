@@ -7,6 +7,7 @@ from service.joueur_service import JoueurService
 from business_object.siege import Siege
 from business_object.croupier import Croupier
 from business_object.liste_cartes import ListeCartes
+from business_object.monnaie import Monnaie
 import time
 
 class MenuPartie(VueAbstraite):
@@ -116,7 +117,7 @@ class MenuPartie(VueAbstraite):
                 print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
                 pot_actuel = TableService().get_pot(id_table)
-                print(f"Pot actuel : {pot_actuel}") # garder dans un coin : TableService().alimenter_pot(id_table, 50) et TableService().retirer_pot(id_table, 100)
+                print(f"Pot actuel : {pot_actuel}") # garder dans un coin : TableService().retirer_pot(id_table, 100)
 
                 cartes_communes = table_service.get_cartes_communes(id_table)
                 flop = cartes_communes["flop"]
@@ -147,29 +148,40 @@ class MenuPartie(VueAbstraite):
 
                 if action == "Miser":
                     montant = int(inquirer.text(message="Montant à miser : ").execute())
-                    TableService().set_val_derniere_mise(self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table))
                     valeur_totale_paye = montant + TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
                     
-                    #retirer le solde du joueur
-                    solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
-                    valeur_solde = solde.get()
-                    joueur.credit = Monnaie(valeur_solde - valeur_totale_paye)
-                    #ajouter au pot
-                    TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
+                    if joueur.credit.valeur < valeur_totale_paye:
+                        print("Votre solde est insufisant")
+                        JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                        print(f"{joueur.pseudo} s'est couché.")
+                    else :
+                        TableService().set_val_derniere_mise(self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table))
                     
-                    print(f"{joueur.pseudo} a misé {montant}.")
+                        #retirer le solde du joueur
+                        solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
+                        valeur_solde = solde.get()
+                        joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
+                        #ajouter au pot
+                        TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
+                        
+                        print(f"{joueur.pseudo} a misé {montant}.")
 
                 elif action == "Suivre":
                     valeur_totale_paye = TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
 
-                    #retirer le solde du joueur
-                    solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
-                    valeur_solde = solde.get()
-                    joueur.credit = Monnaie(valeur_solde - valeur_totale_paye)
-                    #ajouter au pot
-                    TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
+                    if joueur.credit.valeur < valeur_totale_paye:
+                        print("Votre solde est insufisant")
+                        JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                        print(f"{joueur.pseudo} s'est couché.")
+                    else :
+                        #retirer le solde du joueur
+                        solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
+                        valeur_solde = solde.get()
+                        joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
+                        #ajouter au pot
+                        TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
 
-                    print(f"{joueur.pseudo} a suivi.")
+                        print(f"{joueur.pseudo} a suivi.")
 
                 elif action == "Se coucher":
                     JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
