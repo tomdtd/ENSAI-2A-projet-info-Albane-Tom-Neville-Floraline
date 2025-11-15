@@ -50,43 +50,7 @@ class MenuPartie(VueAbstraite):
 
         quitter_partie = False
         while not quitter_partie:
-            if num_tour_joueur >= len(liste_joueurs_dans_partie):
-                num_tour_joueur = 0
-            id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
-            num_tour_joueur += 1
-            TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
-
-            while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
-                print("En attente du tour des autres joueurs...")
-                time.sleep(2) 
-
-                action_attente = inquirer.select(
-                    message="Voulez-vous continuer à attendre ou quitter la partie ?",
-                    choices=[
-                        "Continuer à attendre",
-                        "Quitter la partie"
-                    ],
-                    default="Continuer à attendre"
-                ).execute()
-
-                if action_attente == "Quitter la partie":
-                    quitter_partie = True
-                    break
-            if quitter_partie:
-                break
             
-            print("C'est ton tour")
-
-            liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
-            print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
-
-            print(f"Votre credit actuel : {joueur.credit}")
-
-            print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
-
-            #trouver un moyen de monter les cartes le flop si besoin ect
-            #distribuer les cartes ici : faire le flop, et donner 2 cartes au nb de joueurs
             pioche = ListeCartes()
             croupier = Croupier(pioche)
             liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
@@ -99,49 +63,101 @@ class MenuPartie(VueAbstraite):
                     main=main
                 )
             flop = croupier.distribuer_flop()
-            turn = croupier.distribuer_turn()      
-            river = croupier.distribuer_river() 
+            turn = ListeCartes([croupier.distribuer_turn()])      
+            river = ListeCartes([croupier.distribuer_river()]) 
+
+            TableService().set_flop(self.table.id_table, flop)
+            TableService().set_turn(self.table.id_table, turn)
+            TableService().set_river(self.table.id_table, river)
+
             id_table = self.table.id_table
             id_joueur = joueur_partie.joueur.id_joueur 
             main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
             print(f'Ta main est : {main_joueur}')
+            cartes_communes = table_service.get_cartes_communes(id_table)
+            flop = cartes_communes["flop"]
+            turn = cartes_communes["turn"]
+            river = cartes_communes["river"]
             print(f'Le flop est : {flop}')
             print(f'La turn est : {turn}')
             print(f'La river est : {river}')
-
-            action = inquirer.select(
-                message="Que voulez-vous faire ?",
-                choices=[
-                    "Miser",
-                    "Se coucher",
-                    "Quitter la partie"
-                ],
-            ).execute()
-
-            if action == "Miser":
-                pass # a voir
-                # montant = int(inquirer.text(message="Montant à miser : ").execute())
-                # try:
-                #     self.joueur_partie_service.miser(joueur.id_joueur, montant)
-                #     print(f"{joueur.pseudo} a misé {montant}.")
-                # except ValueError as e:
-                #     print(e)
             
-            elif action == "Se coucher":
-                pass # a voir
-                # try:
-                #     self.joueur_partie_service.se_coucher(joueur.id_joueur)
-                #     print(f"{joueur.pseudo} s'est couché.")
-                # except ValueError as e:
-                #     print(e)
+
+            tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River']
+            for tour in tours_de_mise:
+
+
+                if num_tour_joueur >= len(liste_joueurs_dans_partie):
+                    num_tour_joueur = 0
+                id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
+                num_tour_joueur += 1
+                TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
+
+                while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
+                    print("En attente du tour des autres joueurs...")
+                    time.sleep(2) 
+
+                    action_attente = inquirer.select(
+                        message="Voulez-vous continuer à attendre ou quitter la partie ?",
+                        choices=[
+                            "Continuer à attendre",
+                            "Quitter la partie"
+                        ],
+                        default="Continuer à attendre"
+                    ).execute()
+
+                    if action_attente == "Quitter la partie":
+                        quitter_partie = True
+                        break
+                if quitter_partie:
+                    break
+                
+                print("C'est ton tour")
+
+                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
+                print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
+
+                print(f"Votre credit actuel : {joueur.credit}")
+
+                print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
+
+
+                action = inquirer.select(
+                    message="Que voulez-vous faire ?",
+                    choices=[
+                        "Miser",
+                        "Se coucher",
+                        "Quitter la partie"
+                    ],
+                ).execute()
+
+                if action == "Miser":
+                    pass # a voir
+                    # montant = int(inquirer.text(message="Montant à miser : ").execute())
+                    # try:
+                    #     self.joueur_partie_service.miser(joueur.id_joueur, montant)
+                    #     print(f"{joueur.pseudo} a misé {montant}.")
+                    # except ValueError as e:
+                    #     print(e)
+                
+                elif action == "Se coucher":
+                    pass # a voir
+                    # try:
+                    #     self.joueur_partie_service.se_coucher(joueur.id_joueur)
+                    #     print(f"{joueur.pseudo} s'est couché.")
+                    # except ValueError as e:
+                    #     print(e)
+                
+                elif action == "Quitter la partie":
+                    quitter_partie = True
             
-            elif action == "Quitter la partie":
-                quitter_partie = True
+            if quitter_partie:
+                    break
 
         #faire quitter la partie au joueur
         # trouver un moyen de retirer le nb de joueurs dans la table table_poker -1
-        #penser a retirer le joueur de joueur partie à la fin
-        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur)
+        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur) #penser a retirer le joueur de joueur partie à la fin
         print(f"{joueur.pseudo} a quitté la partie.")
 
         from view.menu_joueur_vue import MenuJoueurVue

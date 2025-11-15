@@ -6,6 +6,7 @@ from utils.securite import hash_password
 from business_object.table import Table
 from business_object.joueur import Joueur
 from business_object.accesspartie import AccessPartie
+from business_object.liste_cartes import ListeCartes
 from dao.table_dao import TableDao
 
 class TableService :
@@ -74,6 +75,29 @@ class TableService :
         if not id_table:
             raise ValueError("id_table requis.")
         return TableDao().set_id_joueur_tour(id_table, id_joueur_tour)
+    
+    @log
+    def set_flop(self, id_table: int, flop: ListeCartes) -> bool:
+        """Met à jour le flop pour une table donnée"""
+        return TableDao().set_flop(id_table, flop)
+
+    @log
+    def set_turn(self, id_table: int, turn: ListeCartes) -> bool:
+        """Met à jour le turn pour une table donnée"""
+        return TableDao().set_turn(id_table, turn)
+
+    @log
+    def set_river(self, id_table: int, river: ListeCartes) -> bool:
+        """Met à jour la river pour une table donnée"""
+        return TableDao().set_river(id_table, river)
+
+    @log
+    def get_cartes_communes(self, id_table: int) -> dict:
+        """
+        Récupère le flop, turn et river d'une table.
+        Renvoie un dictionnaire avec des objets ListeCartes pour chaque étape.
+        """
+        return TableDao().get_cartes_communess(id_table)
 
 
 

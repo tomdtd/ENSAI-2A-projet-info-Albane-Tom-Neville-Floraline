@@ -7,6 +7,7 @@ from dao.db_connection import DBConnection
 
 from business_object.table import Table
 from business_object.monnaie import Monnaie
+from business_object.liste_cartes import ListeCartes
 
 
 class TableDao(metaclass=Singleton):
@@ -283,3 +284,78 @@ class TableDao(metaclass=Singleton):
             return False
 
         return res == 1
+    
+    @log
+    def set_flop(self, id_table: int, flop: ListeCartes) -> bool:
+        """Met à jour le flop pour une table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker SET flop=%(flop)s WHERE id_table=%(id_table)s;",
+                        {"flop": ListeCartes.cartes_to_str(flop), "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour du flop")
+            return False
+        return res == 1
+
+    @log
+    def set_turn(self, id_table: int, turn: ListeCartes) -> bool:
+        """Met à jour le turn pour une table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker SET turn=%(turn)s WHERE id_table=%(id_table)s;",
+                        {"turn": ListeCartes.cartes_to_str(turn), "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour du turn")
+            return False
+        return res == 1
+
+    @log
+    def set_river(self, id_table: int, river: ListeCartes) -> bool:
+        """Met à jour la river pour une table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker SET river=%(river)s WHERE id_table=%(id_table)s;",
+                        {"river": ListeCartes.cartes_to_str(river), "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour de la river")
+            return False
+        return res == 1
+
+    @log
+    def get_cartes_communess(self, id_table: int) -> dict:
+        """Récupère le flop, turn et river d'une table"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT flop, turn, river FROM table_poker WHERE id_table=%(id_table)s;",
+                        {"id_table": id_table}
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération des cartes communes")
+            return {"flop": ListeCartes(), "turn": ListeCartes(), "river": ListeCartes()}
+
+        if res:
+            return {
+                "flop": ListeCartes.str_to_cartes(res["flop"]),
+                "turn": ListeCartes.str_to_cartes(res["turn"]),
+                "river": ListeCartes.str_to_cartes(res["river"]),
+            }
+        else:
+            return {"flop": ListeCartes(), "turn": ListeCartes(), "river": ListeCartes()}

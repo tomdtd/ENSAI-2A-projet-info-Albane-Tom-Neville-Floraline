@@ -51,6 +51,10 @@ CREATE TABLE table_poker (
   id_table INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nb_sieges INT NOT NULL,
   blind_initial DECIMAL(10, 2) NOT NULL,
+  pot DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  flop VARCHAR(200) DEFAULT '',
+  turn VARCHAR(200) DEFAULT '',
+  river VARCHAR(200) DEFAULT '',
   -- nb_joueurs est une donnée dénormalisée pour un accès rapide.
   -- Elle devra être mise à jour par l'application.
   nb_joueurs INT NOT NULL DEFAULT 0,

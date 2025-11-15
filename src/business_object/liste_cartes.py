@@ -24,7 +24,7 @@ class ListeCartes():
                 Carte(valeur, couleur)
                 for couleur in Carte.COULEURS()
                 for valeur in Carte.VALEURS()
-            ] * 2
+            ]
         elif not isinstance(cartes, list):
             raise ValueError(f"{cartes} doit être une liste.")
         elif not all(isinstance(carte, Carte) for carte in cartes):
