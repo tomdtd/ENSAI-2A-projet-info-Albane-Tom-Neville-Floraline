@@ -55,6 +55,7 @@ CREATE TABLE table_poker (
   flop VARCHAR(200) DEFAULT '',
   turn VARCHAR(200) DEFAULT '',
   river VARCHAR(200) DEFAULT '',
+  val_derniere_mise DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   -- nb_joueurs est une donnée dénormalisée pour un accès rapide.
   -- Elle devra être mise à jour par l'application.
   nb_joueurs INT NOT NULL DEFAULT 0,

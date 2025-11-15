@@ -414,3 +414,37 @@ class TableDao(metaclass=Singleton):
             return 0.0
         return float(res["pot"]) if res else 0.0
 
+    @log
+    def set_val_derniere_mise(self, id_table: int, montant: float) -> bool:
+        """Remplace la valeur de la dernière mise pour une table."""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker "
+                        "   SET val_derniere_mise = %(montant)s "
+                        " WHERE id_table = %(id_table)s;",
+                        {"montant": montant, "id_table": id_table}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour de val_derniere_mise pour la table %s", id_table)
+            return False
+        return res == 1
+    
+    @log
+    def get_val_derniere_mise(self, id_table: int) -> float:
+        """Retourne la valeur de la dernière mise pour une table (0.0 si introuvable)."""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT val_derniere_mise FROM table_poker WHERE id_table = %(id_table)s;",
+                        {"id_table": id_table}
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération de val_derniere_mise pour la table %s", id_table)
+            return 0.0
+        return float(res["val_derniere_mise"]) if res and res["val_derniere_mise"] is not None else 0.0

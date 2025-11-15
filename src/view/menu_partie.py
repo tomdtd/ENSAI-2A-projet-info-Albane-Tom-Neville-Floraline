@@ -133,34 +133,71 @@ class MenuPartie(VueAbstraite):
                     print(f'La turn est : {turn}')
                     print(f'La river est : {river}')
 
+                montant_pour_suivre = self.table.blind_initial + TableService().get_val_derniere_mise(self.table.id_table)
+                print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
                 action = inquirer.select(
                     message="Que voulez-vous faire ?",
                     choices=[
                         "Miser",
+                        "Suivre",
                         "Se coucher",
                         "Quitter la partie"
                     ],
                 ).execute()
 
                 if action == "Miser":
-                    pass # a voir
-                    # montant = int(inquirer.text(message="Montant à miser : ").execute())
-                    # try:
-                    #     self.joueur_partie_service.miser(joueur.id_joueur, montant)
-                    #     print(f"{joueur.pseudo} a misé {montant}.")
-                    # except ValueError as e:
-                    #     print(e) 
-                
+                    montant = int(inquirer.text(message="Montant à miser : ").execute())
+                    TableService().set_val_derniere_mise(self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table))
+                    valeur_totale_paye = montant + TableService().get_val_derniere_mise(self.table.id_table) #+blinde
+                    
+                    #retirer le solde du joueur
+                    solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
+                    valeur_solde = solde.get()
+                    joueur.credit = Monnaie(valeur_solde - valeur_totale_paye)
+                    #ajouter au pot
+                    TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
+                    
+                    print(f"{joueur.pseudo} a misé {montant}.")
+
+                elif action == "Suivre":
+                    valeur_totale_paye = TableService().get_val_derniere_mise(self.table.id_table) #+blinde
+
+                    #retirer le solde du joueur
+                    solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
+                    valeur_solde = solde.get()
+                    joueur.credit = Monnaie(valeur_solde - valeur_totale_paye)
+                    #ajouter au pot
+                    TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
+
+                    print(f"{joueur.pseudo} a suivi.")
+
                 elif action == "Se coucher":
-                    pass # a voir
-                    # try:
-                    #     self.joueur_partie_service.se_coucher(joueur.id_joueur)
-                    #     print(f"{joueur.pseudo} s'est couché.")
-                    # except ValueError as e:
-                    #     print(e)
+                    joueur_partie_service.mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                    self.joueur_partie_service.se_coucher(joueur.id_joueur)
+                    print(f"{joueur.pseudo} s'est couché.")
+
+                    while joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "s'est couché":
+                        print("En attente de la fin de la main des autres joueurs...")
+                        time.sleep(2) 
+
+                        action_attente = inquirer.select(
+                            message="Voulez-vous continuer à attendre ou quitter la partie ?",
+                            choices=[
+                                "Continuer à attendre",
+                                "Quitter la partie"
+                            ],
+                            default="Continuer à attendre"
+                        ).execute()
+
+                        if action_attente == "Quitter la partie":
+                            quitter_partie = True
+                            break
+                    if quitter_partie:
+                        break
+                    #monter que joueur a gagné
                 
-                elif action == "Quitter la partie":
+                if action == "Quitter la partie":
                     quitter_partie = True
             
             if quitter_partie:

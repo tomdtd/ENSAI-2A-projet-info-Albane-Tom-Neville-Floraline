@@ -117,5 +117,23 @@ class TableService :
     def get_pot(self, id_table: int) -> float:
         """Récupère le montant actuel du pot de la table."""
         return TableDao().get_pot(id_table)
+    
+    @log
+    def set_val_derniere_mise(self, id_table: int, montant: float) -> bool:
+        """Met à jour la valeur de la dernière mise pour la table.
+        Vérifie les arguments puis délègue au DAO.
+        """
+        if id_table is None:
+            raise ValueError("id_table requis.")
+        if montant is None or montant < 0:
+            raise ValueError("montant doit être >= 0.")
+        return TableDao().set_val_derniere_mise(id_table, montant)
+
+    @log
+    def get_val_derniere_mise(self, id_table: int) -> float:
+        """Récupère la valeur de la dernière mise pour la table."""
+        if id_table is None:
+            raise ValueError("id_table requis.")
+        return TableDao().get_val_derniere_mise(id_table)
 
 
