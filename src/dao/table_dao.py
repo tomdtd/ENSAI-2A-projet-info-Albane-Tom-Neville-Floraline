@@ -250,7 +250,7 @@ class TableDao(metaclass=Singleton):
         return res == 1
     
     @log
-    def get_id_joueur_tour(self, id_table: int) -> Optional[int]:
+    def get_id_joueur_tour(self, id_table: int) -> int:
         """Retourne l'id du joueur dont c'est le tour pour la table donnée"""
         try:
             with DBConnection().connection as connection:

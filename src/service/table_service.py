@@ -55,7 +55,7 @@ class TableService :
         return TableDao().incrementer_nb_joueurs(id_table)
     
     @log
-    def get_id_joueur_tour(self, id_table: int) -> Optional[int]:
+    def get_id_joueur_tour(self, id_table: int) -> int:
         """
         Retourne l'id du joueur dont c'est le tour pour la table donnée.
         Renvoie None si aucune information disponible.

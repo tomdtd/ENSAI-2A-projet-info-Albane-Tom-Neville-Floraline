@@ -17,7 +17,7 @@ class RejoindrePartie(VueAbstraite):
             if joueur is None:
                 print("Aucun joueur connecté.")
                 from view.menu_joueur_vue import MenuJoueurVue
-                return MenuJoueurVue()
+                return MenuJoueurVue().choisir_menu()
 
             # Créer le service de table
             table_service = TableService()
@@ -45,7 +45,7 @@ class RejoindrePartie(VueAbstraite):
             # Retour au menu
             if choix == "Retour au menu":
                 from view.menu_joueur_vue import MenuJoueurVue
-                return MenuJoueurVue()
+                return MenuJoueurVue().choisir_menu()
 
             # Créer une nouvelle table
             elif choix == "Créer une nouvelle table":
@@ -61,12 +61,12 @@ class RejoindrePartie(VueAbstraite):
                     else:
                         print("Erreur lors de la création de la table.")
                         from view.menu_joueur_vue import MenuJoueurVue
-                        return MenuJoueurVue()
+                        return MenuJoueurVue().choisir_menu()
                 except Exception as e:
                     print("Erreur lors de la création de la table :", e)
                     traceback.print_exc()
                     from view.menu_joueur_vue import MenuJoueurVue
-                    return MenuJoueurVue()
+                    return MenuJoueurVue().choisir_menu()
 
             # Rejoindre une table existante
             table_choisie = next((t for t in tables_disponibles if f"Table {t.id_table}" == choix), None)
@@ -90,4 +90,4 @@ class RejoindrePartie(VueAbstraite):
 
         # Retour au menu joueur
         from view.menu_joueur_vue import MenuJoueurVue
-        return MenuJoueurVue()
+        return MenuJoueurVue().choisir_menu()

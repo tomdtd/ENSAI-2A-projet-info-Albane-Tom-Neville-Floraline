@@ -50,7 +50,7 @@ class JoueurService:
             Le joueur trouvé si l'identifiant est valide.
             None sinon.
         """
-        if not id_joueur:
+        if id_joueur is None:
             raise ValueError("L'identifiant du joueur ne peut pas être vide.")
 
         return JoueurDao().trouver_par_id(id_joueur)

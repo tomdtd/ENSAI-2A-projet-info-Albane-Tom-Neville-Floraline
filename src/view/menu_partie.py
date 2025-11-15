@@ -3,6 +3,7 @@ from view.vue_abstraite import VueAbstraite
 from view.session import Session
 from service.joueur_partie_service import JoueurPartieService
 from service.table_service import TableService
+from service.joueur_service import JoueurService
 from business_object.siege import Siege
 import time
 
@@ -39,8 +40,9 @@ class MenuPartie(VueAbstraite):
         
 
         liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-
-        print(f"Joueurs présents : {liste_joueurs_dans_partie}")
+        
+        joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
+        print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
 
         num_tour_joueur = 0
 
@@ -50,17 +52,33 @@ class MenuPartie(VueAbstraite):
                 num_tour_joueur = 0
             id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
             num_tour_joueur += 1
-
             TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
 
-            while not TableService().get_id_joueur_tour(self.table.id_table, id_tour_joueur) == joueur.id_joueur: 
+            while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
                 print("En attente du tour des autres joueurs...")
                 time.sleep(2) 
-                # peut etre mettre un break ou autre pour quitter la partie
+
+                action_attente = inquirer.select(
+                    message="Voulez-vous continuer à attendre ou quitter la partie ?",
+                    choices=[
+                        "Continuer à attendre",
+                        "Quitter la partie"
+                    ],
+                    default="Continuer à attendre"
+                ).execute()
+
+                if action_attente == "Quitter la partie":
+                    quitter_partie = True
+                    break
+            if quitter_partie:
+                break
             
             print("C'est ton tour")
-            liste_joueurs = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            print(f"Joueurs présents : {[j['pseudo'] for j in liste_joueurs]}")
+
+            liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+            joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
+            print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
+            
             print(f"Votre credit actuel : {joueur.credit}")
 
             #trouver un moyen de monter les cartes le flop si besoin ect
@@ -101,4 +119,4 @@ class MenuPartie(VueAbstraite):
         print(f"{joueur.pseudo} a quitté la partie.")
 
         from view.menu_joueur_vue import MenuJoueurVue
-        return MenuJoueurVue()
+        return MenuJoueurVue().choisir_menu()
