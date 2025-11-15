@@ -8,6 +8,8 @@ from business_object.siege import Siege
 from business_object.croupier import Croupier
 from business_object.liste_cartes import ListeCartes
 from business_object.monnaie import Monnaie
+from business_object.main_joueur_complete import MainJoueurComplete
+from business_object.combinaison import Combinaison
 import time
 
 class MenuPartie(VueAbstraite):
@@ -219,6 +221,13 @@ class MenuPartie(VueAbstraite):
                     
                     if action == "Quitter la partie":
                         quitter_partie = True
+                    
+                    #recalcul du nombre de joueurs en jeu
+                    liste_joueurs_en_jeu = []
+                    for id_j in liste_joueurs_dans_partie:
+                        statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                        if statut_joueur in statuts_en_jeu:
+                            liste_joueurs_en_jeu.append(id_j)
                 
                 if quitter_partie:
                         break
@@ -238,7 +247,27 @@ class MenuPartie(VueAbstraite):
                 #Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
 
                 #Recuperer les mains des joueurs en jeu
+                dict_id_cartes = {}
+                for id_en_jeu in liste_joueurs_en_jeu:
+                    dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
+                
                 #Comparer les mains
+                dict_id_combinaison = {}
+                for id in dict_id_cartes:
+                    flop_complet = flop + [turn, river] # ajouter turn et river
+                    main_complete = MainJoueurComplete(dict_id_cartes[id] + flop_complet)
+                    dict_id_combinaison[id] = main_complete.combinaison()
+                #Trouver la valeur maximale
+                max_val = max(dict_id_combinaison.values())
+                combinaison_max = Combinaison(val_max)
+                id_max = [k for k, v in d.items() if v == max_val] # recupere les id avec la combinaison la plus haute
+                
+                id_gagnant = id_max[0]
+                if not len(id_max) == 1:
+                    pass
+
+                print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
+                
                 #Créditer le gagnant
             
             if quitter_partie:
