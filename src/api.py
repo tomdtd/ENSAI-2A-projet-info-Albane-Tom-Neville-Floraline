@@ -58,6 +58,40 @@ def se_connecter(pseudo: str, mdp: str):
         return {"message": "Connexion réussie", "joueur": joueur}
     raise HTTPException(status_code=401, detail="Pseudo ou mot de passe incorrect")
 
+# Modifier un joueur
+@app.put("/joueurs/{id_joueur}")
+def modifier_joueur(id_joueur: int, pseudo: str = None, mail: str = None, age: int = None, credit: int = None):
+    joueur = joueur_service.trouver_par_id(id_joueur)
+    if not joueur:
+        raise HTTPException(status_code=404, detail="Joueur non trouvé")
+
+    if pseudo:
+        joueur.pseudo = pseudo
+    if mail:
+        joueur.mail = mail
+    if age:
+        joueur.age = age
+    if credit is not None:
+        joueur.credit = Monnaie(credit)
+
+    joueur_modifie = joueur_service.modifier(joueur)
+    if joueur_modifie:
+        return {"message": "Joueur modifié avec succès", "joueur": joueur_modifie}
+    raise HTTPException(status_code=500, detail="Erreur lors de la modification du joueur")
+
+# Supprimer un joueur
+@app.delete("/joueurs/{id_joueur}")
+def supprimer_joueur(id_joueur: int):
+    joueur = joueur_service.trouver_par_id(id_joueur)
+    if not joueur:
+        raise HTTPException(status_code=404, detail="Joueur non trouvé")
+
+    success = joueur_service.supprimer(joueur)
+    if success:
+        return {"message": "Joueur supprimé avec succès"}
+    raise HTTPException(status_code=500, detail="Erreur lors de la suppression du joueur")
+
+
 # Créer une table
 @app.post("/tables/")
 def creer_table(nb_sieges: int, blind_initial: float):
