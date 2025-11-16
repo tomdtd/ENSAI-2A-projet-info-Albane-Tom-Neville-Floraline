@@ -145,7 +145,7 @@ class MenuPartie(VueAbstraite):
                         print(f'La turn est : {turn}')
                         print(f'La river est : {river}')
 
-                    montant_pour_suivre = self.table.blind_initial.valeur + TableService().get_val_derniere_mise(self.table.id_table)
+                    montant_pour_suivre = float(self.table.blind_initial.valeur) + float(TableService().get_val_derniere_mise(self.table.id_table))
                     print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
                     action = inquirer.select(
@@ -160,7 +160,7 @@ class MenuPartie(VueAbstraite):
 
                     if action == "Miser":
                         montant = int(inquirer.text(message="Montant à miser : ").execute())
-                        valeur_totale_paye = montant + TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
+                        valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
                         
                         if joueur.credit.valeur < valeur_totale_paye:
                             print("Votre solde est insufisant")
@@ -179,7 +179,7 @@ class MenuPartie(VueAbstraite):
                             print(f"{joueur.pseudo} a misé {montant}.")
 
                     elif action == "Suivre":
-                        valeur_totale_paye = TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur
+                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
 
                         if joueur.credit.valeur < valeur_totale_paye:
                             print("Votre solde est insufisant")
@@ -237,11 +237,12 @@ class MenuPartie(VueAbstraite):
                 #Cas ou il reste un seul joueur : il remporte le pot
                 if len(liste_joueurs_en_jeu) == 1:
                     id_gagnant = liste_joueurs_en_jeu[0]
+                
                     pot = TableService().get_pot(self.table.id_table)
                     print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                    solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
-                    valeur_solde = solde.get()
-                    joueur.credit = Monnaie(float(valeur_solde) + float(pot))
+                    
+                    nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
+                    JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
 
                 #Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
@@ -277,13 +278,13 @@ class MenuPartie(VueAbstraite):
 
                 else:
                     print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
-                    # marche pas car credite pas id_gagnant : creer une dao et service qui change le credit du joueur...
-                    # pot = TableService().get_pot(self.table.id_table)
-                    # print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                    # solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
-                    # valeur_solde = solde.get()
-                    # joueur.credit = Monnaie(float(valeur_solde) + float(pot))
-                    # TableService().retirer_pot(self.table.id_table, pot)
+                    
+                    pot = TableService().get_pot(self.table.id_table)
+                    print(f'Fin de la main : le gagnant remporte le pot : {pot}')
+                    
+                    nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
+                    JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
+                    TableService().retirer_pot(self.table.id_table, pot)
                 
                     
             if quitter_partie:

@@ -149,3 +149,46 @@ class JoueurService:
         Retourne True si le pseudo existe déjà en BDD"""
         joueurs = JoueurDao().lister_tous()
         return pseudo in [j.pseudo for j in joueurs]
+
+    @log
+    def modifier_credit(self, id_joueur: int, credit: int) -> bool:
+        """Modifie le crédit (valeur absolue) d'un joueur.
+        
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+        credit : int
+            Nouvelle valeur du crédit (valeur absolue).
+        
+        Returns
+        -------
+        bool
+            True si la mise à jour a réussi, False sinon.
+        """
+        if id_joueur is None:
+            raise ValueError("L'identifiant du joueur ne peut pas être vide.")
+        if credit < 0:
+            raise ValueError("Le crédit ne peut pas être négatif.")
+        # créer un objet Monnaie si ton DAO attend .get() sur Monnaie ; sinon on peut envoyer Decimal/str
+        credit_bo = Monnaie(credit)
+        return JoueurDao().modifier_credit(id_joueur, credit_bo)
+    
+    @log
+    def recuperer_credit(self, id_joueur: int) -> Monnaie():
+        """Récupère le crédit d'un joueur par son identifiant.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+
+        Returns
+        -------
+        Monnaie | None
+            Le crédit du joueur si trouvé, sinon None.
+        """
+        if id_joueur is None:
+            raise ValueError("L'identifiant du joueur ne peut pas être vide.")
+
+        return JoueurDao().recuperer_credit(id_joueur)

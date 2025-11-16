@@ -41,7 +41,7 @@ class SoldeVue(VueAbstraite):
             nouveau_solde = valeur_solde + int(montant)
             joueur.credit = Monnaie(nouveau_solde)
             try:
-                JoueurService().modifier(joueur)
+                JoueurService().modifier_credit(joueur.id_joueur, int(joueur.credit.get()))
                 print(f"Crédit ajouté avec succès. Nouveau solde : {joueur.credit.get():.2f}")
             except Exception as e:
                 logging.exception(e)
@@ -63,7 +63,7 @@ class SoldeVue(VueAbstraite):
             else:
                 joueur.credit = Monnaie(valeur_solde - int(montant))
                 try:
-                    JoueurService().modifier(joueur)
+                    JoueurService().modifier_credit(joueur.id_joueur, int(joueur.credit.get()))
                     print(f"Crédit retiré avec succès. Nouveau solde : {joueur.credit.get():.2f}")
                 except Exception as e:
                     logging.exception(e)

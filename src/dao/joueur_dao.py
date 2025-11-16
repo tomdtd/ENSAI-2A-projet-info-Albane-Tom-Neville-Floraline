@@ -257,3 +257,78 @@ class JoueurDao(metaclass=Singleton):
             )
 
         return joueur
+    
+    @log
+    def modifier_credit(self, id_joueur, credit) -> bool:
+        """Modifier uniquement le crédit d'un joueur.
+
+        Parameters
+        ----------
+        id_joueur : int
+            id du joueur dont on veut changer le crédit
+        credit : Monnaie | int | float | Decimal | str
+            nouvelle valeur du crédit — si c'est un Monnaie, on utilise .get()
+
+        Returns
+        -------
+        bool
+            True si une ligne a été modifiée, False sinon
+        """
+        res = 0
+        try:
+            # Récupérer la valeur numérique si on reçoit un objet Monnaie
+            if isinstance(credit, Monnaie):
+                credit_val = credit.get()
+            else:
+                credit_val = credit
+
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE joueur "
+                        "   SET credit = %(credit)s "
+                        " WHERE id_joueur = %(id_joueur)s;",
+                        {"credit": credit_val, "id_joueur": id_joueur},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception:
+            logging.exception("Erreur lors de la modification du crédit du joueur (modifier_credit)")
+            return False
+
+        return res == 1
+    
+    @log
+    def recuperer_credit(self, id_joueur) -> Monnaie | None:
+        """Récupère le crédit d'un joueur par son id.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+
+        Returns
+        -------
+        Monnaie | None
+            Objet Monnaie contenant le crédit si trouvé, sinon None.
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT credit "
+                        "  FROM joueur  "
+                        " WHERE id_joueur = %(id_joueur)s;",
+                        {"id_joueur": id_joueur},
+                    )
+                    res = cursor.fetchone()
+        except Exception:
+            logging.exception("Erreur lors de la récupération du crédit (recuperer_credit)")
+            return None
+
+        if not res:
+            return None
+
+        # On retourne un objet Monnaie pour rester cohérent avec le reste du code
+        return Monnaie(res["credit"])
+
