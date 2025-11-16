@@ -102,6 +102,8 @@ At the root of the project :
 - [ ] Create a file called `.env`
 - [ ] Paste in and complete the elements below
 
+Si vous passez directement par le lien copier collé dans onyxia pas besoin des variables export VAULT_ADDR et export VAULT_TOKEN
+
 ```default
 WEBSERVICE_HOST=https://pickpoker.com/api
 
