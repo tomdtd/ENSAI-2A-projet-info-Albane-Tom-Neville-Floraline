@@ -130,11 +130,10 @@ CREATE TABLE partie_joueur (
 -- Gere les transaction.
 -- -----------------------------------------------------
 CREATE TABLE transaction (
-  id_transaction INT NOT NULL, 
-  id_joueur INT NOT NULL, 
+  id_transaction SERIAL PRIMARY KEY,
+  id_joueur INT NOT NULL,
   solde INT DEFAULT 0,
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (id_transaction),
   CONSTRAINT fk_transaction_joueur
         FOREIGN KEY (id_joueur)
         REFERENCES joueur(id_joueur)

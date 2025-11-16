@@ -30,11 +30,10 @@ class TransactionDao(metaclass=Singleton):
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO transaction (id_transaction, id_joueur, solde, date)"
-                        "VALUES (%(id_transaction)s, %(id_joueur)s, %(solde)s, %(date)s)"
-                        "RETURNING id_transaction;                                              ",
+                        "INSERT INTO transaction (id_joueur, solde, date) "
+                        "VALUES (%(id_joueur)s, %(solde)s, %(date)s) "
+                        "RETURNING id_transaction;",
                         {
-                            "id_transaction": transaction.id_transaction,
                             "id_joueur": transaction.id_joueur,
                             "solde": transaction.solde,
                             "date": transaction.date
