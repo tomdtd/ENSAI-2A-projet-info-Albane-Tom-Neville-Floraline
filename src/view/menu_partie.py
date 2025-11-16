@@ -154,10 +154,11 @@ class MenuPartie(VueAbstraite):
 
                     print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
-                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour de blinde':
-                        print("C'est ton tour de grosse blinde")
-                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour petite blinde':
-                        print("C'est ton tour de petite blinde")
+                    if tour == 'Pré-flop':
+                        if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour de blinde':
+                            print("C'est ton tour de grosse blinde")
+                        if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour petite blinde':
+                            print("C'est ton tour de petite blinde")
 
 
                     pot_actuel = TableService().get_pot(id_table)
@@ -192,8 +193,16 @@ class MenuPartie(VueAbstraite):
 
                     if action == "Miser":
                         montant = int(inquirer.text(message="Montant à miser : ").execute())
-                        valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
-                        
+
+                        if tour == 'Pré-flop' and (not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}):
+                            valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
+
+                        elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
+                            valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + (self.table.blind_initial.valeur/2))
+
+                        else:
+                            valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
+                            
                         if joueur.credit.valeur < valeur_totale_paye:
                             print("Votre solde est insufisant")
                             JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
@@ -211,7 +220,16 @@ class MenuPartie(VueAbstraite):
                             print(f"{joueur.pseudo} a misé {montant}.")
 
                     elif action == "Suivre":
-                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
+
+                        if tour == 'Pré-flop' and (not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}):
+                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
+
+                        elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
+                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table) + (self.table.blind_initial.valeur/2))
+
+                        else:
+                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
+                        
 
                         if joueur.credit.valeur < valeur_totale_paye:
                             print("Votre solde est insufisant")
