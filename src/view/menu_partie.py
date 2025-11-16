@@ -55,6 +55,7 @@ class MenuPartie(VueAbstraite):
         while not quitter_partie:
 
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde
             
             pioche = ListeCartes()
             croupier = Croupier(pioche)
