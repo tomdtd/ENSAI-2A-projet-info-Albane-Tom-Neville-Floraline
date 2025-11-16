@@ -9,7 +9,7 @@ class JoueurService:
     """Classe contenant les méthodes de service pour les joueurs."""
 
     @log
-    def creer(self, pseudo: str, mdp: str, age: int, mail: str,  credit: Monnaie) -> Optional[Joueur]:
+    def creer(self, pseudo: str, mdp: str, mail: str, age: int, credit: Monnaie) -> Optional[Joueur]:
         """Crée un nouveau joueur.
         Parameters
         ----------

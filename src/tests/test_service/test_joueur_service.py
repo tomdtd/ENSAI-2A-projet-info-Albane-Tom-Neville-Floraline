@@ -36,7 +36,7 @@ def test_creer_ok(mock_joueur_dao):
 
     # WHEN
     joueur_service = JoueurService()
-    joueur = joueur_service.creer(pseudo, mdp, age, mail, credit)
+    joueur = joueur_service.creer(pseudo, mdp, mail, age, credit)
 
     # THEN
     assert joueur is not None
