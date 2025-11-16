@@ -97,7 +97,7 @@ class MenuPartie(VueAbstraite):
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
                 
-                while (not len(liste_joueurs_en_jeu) == 1) or (tours_de_mise == 'Fin de la main'):
+                while (not len(liste_joueurs_en_jeu) == 1) or (tour == 'Fin de la main'):
 
                     while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
                         print("En attente du tour des autres joueurs...")
@@ -254,22 +254,22 @@ class MenuPartie(VueAbstraite):
                 
                 #Comparer les mains
                 dict_id_combinaison = {}
+                flop_complet = flop + [turn, river] # ajouter turn et river
                 for id in dict_id_cartes:
-                    flop_complet = flop + [turn, river] # ajouter turn et river
                     main_complete = MainJoueurComplete(dict_id_cartes[id] + flop_complet)
                     dict_id_combinaison[id] = main_complete.combinaison()
                 #Trouver la valeur maximale
                 max_val = max(dict_id_combinaison.values())
-                combinaison_max = Combinaison(val_max)
+                combinaison_max = Combinaison(max_val)
                 id_max = [k for k, v in d.items() if v == max_val] # recupere les id avec la combinaison la plus haute
                 
                 id_gagnant = id_max[0]
                 if not len(id_max) == 1:
-                    pass
-                    # Cas ou toutes les cartes ne sont pas égales
-                    # Peut etre creer une nouvelle méthode dans main_complete
-                    # Cas ou toutes les cartes sont égales
-                    #id_gagnant = id_cartes_egales
+                    # Creer dico
+                    dict_comb_complete = {}
+                    for id in id_max:
+                        dict_comb_complete[id] = dict_id_cartes[id] + flop_complet
+                    id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
 
                 #Créditer le gagnant
@@ -282,7 +282,7 @@ class MenuPartie(VueAbstraite):
 
                     for id in id_gagnant:
                         nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
-                        JoueurService().modifier_credit(id, pot + int(nouveau_solde_du_gagnant.get()))
+                        JoueurService().modifier_credit(id, repartition_pot + int(nouveau_solde_du_gagnant.get()))
                     
                     TableService().retirer_pot(self.table.id_table, pot)
 
