@@ -63,6 +63,13 @@ class PotRequest(BaseModel):
 class DerniereMiseRequest(BaseModel):
     montant: float
 
+class JoueurRequest(BaseModel):
+    id_joueur: int
+
+class LancerPartieRequest(BaseModel):
+    joueurs: List[JoueurRequest]
+    dealer_id: int
+
 @app.post("/joueurs/")
 async def creer_joueur(joueur: JoueurCreate):
     joueur_obj = joueur_service.creer(joueur.pseudo, joueur.mdp, joueur.mail, joueur.age, Monnaie(joueur.credit))
@@ -276,6 +283,29 @@ def get_val_derniere_mise(id_table: int):
     try:
         montant = table_service.get_val_derniere_mise(id_table)
         return {"montant": montant}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/parties/lancer")
+def lancer_partie(request: LancerPartieRequest):
+    try:
+        joueurs = []
+        for joueur_req in request.joueurs:
+            joueur = joueur_service.trouver_par_id(joueur_req.id_joueur)
+            if not joueur:
+                raise HTTPException(status_code=404, detail=f"Joueur {joueur_req.id_joueur} non trouvé")
+            joueurs.append(joueur)
+
+        dealer = joueur_service.trouver_par_id(request.dealer_id)
+        if not dealer:
+            raise HTTPException(status_code=404, detail=f"Dealer {request.dealer_id} non trouvé")
+
+        result = partie_service.lancer_partie(joueurs, dealer.id_joueur)
+        if "Erreur" in result:
+            raise HTTPException(status_code=400, detail=result)
+        return {"message": "Partie lancée avec succès", "id_partie": result}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
