@@ -4,6 +4,7 @@ from view.vue_abstraite import VueAbstraite
 from client.poker_client import PokerClient
 from view.session import Session
 from service.joueur_service import JoueurService
+from service.transaction_service import TransactionService
 from business_object.monnaie import Monnaie
 
 class SoldeVue(VueAbstraite):
@@ -42,6 +43,7 @@ class SoldeVue(VueAbstraite):
             joueur.credit = Monnaie(nouveau_solde)
             try:
                 JoueurService().modifier_credit(joueur.id_joueur, int(joueur.credit.get()))
+                TransactionService().enregistrer_transaction(joueur.id_joueur, int(montant))
                 print(f"Crédit ajouté avec succès. Nouveau solde : {joueur.credit.get():.2f}")
             except Exception as e:
                 logging.exception(e)
@@ -64,6 +66,7 @@ class SoldeVue(VueAbstraite):
                 joueur.credit = Monnaie(valeur_solde - int(montant))
                 try:
                     JoueurService().modifier_credit(joueur.id_joueur, int(joueur.credit.get()))
+                    TransactionService().enregistrer_transaction(joueur.id_joueur, - int(montant))
                     print(f"Crédit retiré avec succès. Nouveau solde : {joueur.credit.get():.2f}")
                 except Exception as e:
                     logging.exception(e)
