@@ -251,6 +251,26 @@ class TableDao(metaclass=Singleton):
         return res == 1
     
     @log
+    def decrementer_nb_joueurs(self, id_table: int) -> bool:
+        """Décrémente le nombre de joueurs d'une table de 1"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker "
+                        "   SET nb_joueurs = GREATEST(nb_joueurs - 1, 0) "
+                        " WHERE id_table = %(id_table)s;",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la décrémentation du nombre de joueurs de la table %s", id_table)
+            return False
+
+        return res == 1
+    
+    @log
     def get_id_joueur_tour(self, id_table: int) -> int:
         """Retourne l'id du joueur dont c'est le tour pour la table donnée"""
         try:

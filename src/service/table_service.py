@@ -56,6 +56,11 @@ class TableService :
         return TableDao().incrementer_nb_joueurs(id_table)
     
     @log
+    def retirer_joueur_table(self, id_table: int) -> bool:
+        """Décrémente le nb_joueurs de la table dans la DB"""
+        return TableDao().decrementer_nb_joueurs(id_table)
+    
+    @log
     def get_id_joueur_tour(self, id_table: int) -> int:
         """
         Retourne l'id du joueur dont c'est le tour pour la table donnée.
