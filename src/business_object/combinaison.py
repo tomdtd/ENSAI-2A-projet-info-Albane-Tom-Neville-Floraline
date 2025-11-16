@@ -1,6 +1,6 @@
 """Implementation de la classe Combinaison."""
 
-from src.business_object.carte import Carte
+from business_object.carte import Carte
 from enum import IntEnum
 
 class Combinaison(IntEnum):

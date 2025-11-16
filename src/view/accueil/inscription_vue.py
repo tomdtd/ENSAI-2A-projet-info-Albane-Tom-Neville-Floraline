@@ -17,11 +17,19 @@ class InscriptionVue(VueAbstraite):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
 
-        VAULT_TOKEN = os.environ.get("VAULT_TOKEN")  # récupère le token depuis ton .env
+        VAULT_TOKEN = os.environ.get("VAULT_TOKEN") # récupère le token depuis le .env
 
-        headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
+        if VAULT_TOKEN:  # cas où la variable existe
+            headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
+            response = requests.get(f"{API_URL}/joueurs/", headers=headers)
+        else:  # cas où elle n'existe pas
+            response = requests.get(f"{API_URL}/joueurs/")
 
-        response = requests.get(f"{API_URL}/joueurs/", headers=headers)
+        # VAULT_TOKEN = os.environ.get("VAULT_TOKEN")  # récupère le token depuis ton .env
+
+        # headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
+
+        # response = requests.get(f"{API_URL}/joueurs/", headers=headers)
 
         # Ensuite tu récupères la liste des joueurs
         joueurs = response.json().get("joueurs", [])
