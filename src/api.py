@@ -28,6 +28,11 @@ def accueil():
 joueur_service = JoueurService()
 table_service = TableService()
 
+@app.get("/", include_in_schema=False)
+async def redirect_to_docs():
+    """Redirect to the API documentation"""
+    return RedirectResponse(url="/docs")
+    
 # Créer un joueur
 @app.post("/joueurs/")
 def creer_joueur(pseudo: str, mdp: str, age: int, mail: str, credit: int):
