@@ -276,6 +276,16 @@ class MenuPartie(VueAbstraite):
                 if isinstance(id_gagnant, list):
                     print(f"Les gagnants sont : {id_gagnant} avec une {combinaison_max}")
 
+                    # Cas plusieurs gagnant il faut diviser le pot
+                    pot = int(TableService().get_pot(self.table.id_table))
+                    repartition_pot = int(pot/len(id_gagnant))
+
+                    for id in id_gagnant:
+                        nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
+                        JoueurService().modifier_credit(id, pot + int(nouveau_solde_du_gagnant.get()))
+                    
+                    TableService().retirer_pot(self.table.id_table, pot)
+
                 else:
                     print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
                     
@@ -283,7 +293,7 @@ class MenuPartie(VueAbstraite):
                     print(f'Fin de la main : le gagnant remporte le pot : {pot}')
                     
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
-                    JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
+                    JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
                 
                     
