@@ -135,5 +135,19 @@ class TableService :
         if id_table is None:
             raise ValueError("id_table requis.")
         return TableDao().get_val_derniere_mise(id_table)
+    
+    @log
+    def get_id_joueur_bouton(self, id_table: int) -> int:
+        """Retourne l'id du joueur qui a le bouton"""
+        if not id_table:
+            raise ValueError("id_table requis.")
+        return TableDao().get_id_joueur_bouton(id_table)
+
+    @log
+    def set_id_joueur_bouton(self, id_table: int, id_joueur_bouton: int=None) -> bool:
+        """Met à jour l'id du joueur qui a le bouton"""
+        if not id_table:
+            raise ValueError("id_table requis.")
+        return TableDao().set_id_joueur_bouton(id_table, id_joueur_bouton)
 
 

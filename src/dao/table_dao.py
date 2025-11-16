@@ -448,3 +448,38 @@ class TableDao(metaclass=Singleton):
             logging.exception("Erreur lors de la récupération de val_derniere_mise pour la table %s", id_table)
             return 0.0
         return float(res["val_derniere_mise"]) if res and res["val_derniere_mise"] is not None else 0.0
+    
+    @log
+    def get_id_joueur_bouton(self, id_table: int) -> int:
+        """Retourne l'id du joueur qui a le bouton pour la table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_joueur_bouton FROM table_poker WHERE id_table = %(id_table)s;",
+                        {"id_table": id_table},
+                    )
+                    res = cursor.fetchone()
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération de id_joueur_bouton")
+            return None
+
+        return res.get("id_joueur_bouton") if res else None
+
+    @log
+    def set_id_joueur_bouton(self, id_table: int, id_joueur_bouton: int=None) -> bool:
+        """Met à jour l'id du joueur qui a le bouton pour la table donnée"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "UPDATE table_poker SET id_joueur_bouton = %(id_joueur_bouton)s WHERE id_table = %(id_table)s;",
+                        {"id_joueur_bouton": id_joueur_bouton, "id_table": id_table},
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+        except Exception as e:
+            logging.exception("Erreur lors de la mise à jour de id_joueur_bouton")
+            return False
+
+        return res == 1

@@ -80,6 +80,32 @@ class MenuPartie(VueAbstraite):
             main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
             print(f'Ta main est : {main_joueur}')
 
+
+            # Identifier le bouton du croupier (ici le premier joueur ou stocké dans la table)
+            bouton_index = liste_joueurs_dans_partie.index(table_service.get_id_joueur_bouton(self.table.id_table))
+            nb_joueurs = len(liste_joueurs_dans_partie)
+
+            # Indices des blindes
+            indice_petite_blinde = (bouton_index + 1) % nb_joueurs
+            indice_grosse_blinde = (bouton_index + 2) % nb_joueurs
+
+            id_petite_blinde = liste_joueurs_dans_partie[indice_petite_blinde]
+            id_grosse_blinde = liste_joueurs_dans_partie[indice_grosse_blinde]
+
+            # Mettre à jour les statuts
+            joueur_partie_service.mettre_a_jour_statut(id_petite_blinde, self.table.id_table, "tour petite blinde")
+            joueur_partie_service.mettre_a_jour_statut(id_grosse_blinde, self.table.id_table, "tour de blinde")
+
+            # Débiter automatiquement les blindes et alimenter le pot
+            credit_pb = JoueurService().recuperer_credit(id_petite_blinde)
+            JoueurService().modifier_credit(id_petite_blinde, credit_pb.get() - self.table.blind_initial.get()/2)
+            TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get()/2)
+
+            credit_gb = JoueurService().recuperer_credit(id_grosse_blinde)
+            JoueurService().modifier_credit(id_grosse_blinde, credit_gb.get() - self.table.blind_initial.get())
+            TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
+
+
             tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River', 'Fin de la main']
             for tour in tours_de_mise:
 
@@ -90,7 +116,7 @@ class MenuPartie(VueAbstraite):
                 TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
 
 
-                liste_joueurs_en_jeu = [] # ne marche pas pour l'instant car la gestion des blindes n'est pas encore faite
+                liste_joueurs_en_jeu = []
                 statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
                 for id_j in liste_joueurs_dans_partie:
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
@@ -128,6 +154,12 @@ class MenuPartie(VueAbstraite):
 
                     print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
+                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour de blinde':
+                        print("C'est ton tour de grosse blinde")
+                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour petite blinde':
+                        print("C'est ton tour de petite blinde")
+
+
                     pot_actuel = TableService().get_pot(id_table)
                     print(f"Pot actuel : {pot_actuel}")
 
@@ -135,12 +167,12 @@ class MenuPartie(VueAbstraite):
                     flop = cartes_communes["flop"]
                     turn = cartes_communes["turn"]
                     river = cartes_communes["river"]
-                    if tours_de_mise == 'Flop':
+                    if tour == 'Flop':
                         print(f'Le flop est : {flop}')
-                    elif tours_de_mise == 'Turn':
+                    elif tour == 'Turn':
                         print(f'Le flop est : {flop}')
                         print(f'La turn est : {turn}')
-                    elif tours_de_mise == 'River':
+                    elif tour == 'River':
                         print(f'Le flop est : {flop}')
                         print(f'La turn est : {turn}')
                         print(f'La river est : {river}')
@@ -295,6 +327,32 @@ class MenuPartie(VueAbstraite):
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
                     JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
+                
+                # Remet en jeu les joueurs couchés pour commencer une prochaine main
+                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                for id_j in liste_joueurs_dans_partie:
+                    statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                    if statut_joueur == "s'est couché":
+                        joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
+                
+                # Faire tourner la blinde
+
+                # Récupérer l'id du bouton actuel
+                id_bouton_actuel = table_service.get_id_joueur_bouton(self.table.id_table)
+
+                # Calculer le nouveau bouton (le joueur suivant dans la liste)
+                index_actuel = liste_joueurs_dans_partie.index(id_bouton_actuel)
+                nouveau_index_bouton = (index_actuel + 1) % len(liste_joueurs_dans_partie)
+                nouveau_bouton = liste_joueurs_dans_partie[nouveau_index_bouton]
+
+                # Mettre à jour dans la DB
+                table_service.set_id_joueur_bouton(self.table.id_table, nouveau_bouton)
+
+                # Changer les statuts des joueurs
+                for id_j in liste_joueurs_dans_partie:
+                    statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                    if (statut_joueur == "tour de blinde") or (statut_joueur == "tour petite blinde"):
+                        joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
                 
                     
             if quitter_partie:
