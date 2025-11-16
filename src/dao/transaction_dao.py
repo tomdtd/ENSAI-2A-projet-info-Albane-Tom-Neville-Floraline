@@ -52,3 +52,28 @@ class TransactionDao(metaclass=Singleton):
             created = True
 
         return created
+    
+    @log
+    def lister_par_joueur(self, joueur_id: int) -> list[Transaction]:
+        """Retourne toutes les transactions d’un joueur depuis la base"""
+        transactions = []
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_transaction, id_joueur, solde, date "
+                        "FROM transaction WHERE id_joueur = %(id_joueur)s "
+                        "ORDER BY date ASC;",
+                        {"id_joueur": joueur_id}
+                    )
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        transactions.append(Transaction(
+                            id_transaction=row["id_transaction"],
+                            id_joueur=row["id_joueur"],
+                            solde=row["solde"],
+                            date=row["date"]
+                        ))
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération des transactions")
+        return transactions

@@ -378,7 +378,7 @@ class MenuPartie(VueAbstraite):
 
         #faire quitter la partie au joueur
         TableService().retirer_joueur_table(self.table.id_table) # retirer le nb de joueurs dans la table table_poker
-        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur) #penser a retirer le joueur de joueur partie à la fin
+        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur) # retirer le joueur de la partie à la fin
         print(f"{joueur.pseudo} a quitté la partie.")
 
         from view.menu_joueur_vue import MenuJoueurVue
