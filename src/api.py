@@ -35,7 +35,7 @@ async def redirect_to_docs():
     
 # Créer un joueur
 @app.post("/joueurs/")
-def creer_joueur(pseudo: str, mdp: str, age: int, mail: str, credit: int):
+async def creer_joueur(pseudo: str, mdp: str, age: int, mail: str, credit: int):
     joueur = joueur_service.creer(pseudo, mdp, age, mail, credit)
     if joueur:
         return {"message": "Joueur créé avec succès", "joueur": joueur}
@@ -43,13 +43,13 @@ def creer_joueur(pseudo: str, mdp: str, age: int, mail: str, credit: int):
 
 # Lister tous les joueurs
 @app.get("/joueurs/")
-def lister_joueurs():
+async def lister_joueurs():
     joueurs = joueur_service.lister_tous()
     return {"joueurs": joueurs}
 
 # Trouver un joueur par ID
 @app.get("/joueurs/{id_joueur}")
-def trouver_joueur(id_joueur: int):
+async def trouver_joueur(id_joueur: int):
     joueur = joueur_service.trouver_par_id(id_joueur)
     if joueur:
         return {"joueur": joueur}
@@ -57,7 +57,7 @@ def trouver_joueur(id_joueur: int):
 
 # Se connecter
 @app.post("/joueurs/connexion")
-def se_connecter(pseudo: str, mdp: str):
+async def se_connecter(pseudo: str, mdp: str):
     joueur = joueur_service.se_connecter(pseudo, mdp)
     if joueur:
         return {"message": "Connexion réussie", "joueur": joueur}
@@ -65,7 +65,7 @@ def se_connecter(pseudo: str, mdp: str):
 
 # Modifier un joueur
 @app.put("/joueurs/{id_joueur}")
-def modifier_joueur(id_joueur: int, pseudo: str = None, mail: str = None, age: int = None, credit: int = None):
+async def modifier_joueur(id_joueur: int, pseudo: str = None, mail: str = None, age: int = None, credit: int = None):
     joueur = joueur_service.trouver_par_id(id_joueur)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
@@ -86,7 +86,7 @@ def modifier_joueur(id_joueur: int, pseudo: str = None, mail: str = None, age: i
 
 # Supprimer un joueur
 @app.delete("/joueurs/{id_joueur}")
-def supprimer_joueur(id_joueur: int):
+async def supprimer_joueur(id_joueur: int):
     joueur = joueur_service.trouver_par_id(id_joueur)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
@@ -99,7 +99,7 @@ def supprimer_joueur(id_joueur: int):
 
 # Créer une table
 @app.post("/tables/")
-def creer_table(nb_sieges: int, blind_initial: float):
+async def creer_table(nb_sieges: int, blind_initial: float):
     table = table_service.creer_table(nb_sieges, blind_initial)
     if table:
         return {"message": "Table créée avec succès", "table": table}
@@ -107,13 +107,13 @@ def creer_table(nb_sieges: int, blind_initial: float):
 
 # Lister les tables disponibles
 @app.get("/tables/")
-def lister_tables():
+async def lister_tables():
     tables = table_service.lister_tables_disponibles()
     return {"tables": tables}
 
 # Rejoindre une table
 @app.post("/tables/{id_table}/rejoindre")
-def rejoindre_table(id_table: int, joueur_id: int):
+async def rejoindre_table(id_table: int, joueur_id: int):
     joueur = joueur_service.trouver_par_id(joueur_id)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
@@ -125,7 +125,7 @@ def rejoindre_table(id_table: int, joueur_id: int):
 
 # Quitter une table
 @app.post("/tables/{id_table}/quitter")
-def quitter_table(id_table: int, joueur_id: int):
+async def quitter_table(id_table: int, joueur_id: int):
     joueur = joueur_service.trouver_par_id(joueur_id)
     if not joueur:
         raise HTTPException(status_code=404, detail="Joueur non trouvé")
