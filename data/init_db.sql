@@ -139,3 +139,42 @@ CREATE TABLE transaction (
         REFERENCES joueur(id_joueur)
         ON DELETE CASCADE
 );
+
+-- -----------------------------------------------------
+-- Table `admin` 
+-- Gere les administrateurs et leurs identifiants.
+-- -----------------------------------------------------
+CREATE TABLE admin (
+  admin_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  nom VARCHAR(100) NOT NULL UNIQUE,
+  mdp VARCHAR(255) NOT NULL,
+  mail VARCHAR(255) NOT NULL UNIQUE,
+  date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- -----------------------------------------------------
+-- Table `admin` 
+-- Gere les administrateurs et leurs identifiants.
+-- -----------------------------------------------------
+CREATE TABLE joueur_bannis (
+  id_ban INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id_joueur INT NOT NULL,
+  id_admin INT NOT NULL,
+  raison_ban TEXT NOT NULL,
+  date_ban TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  date_fin_ban TIMESTAMP, -- NULL pour bannissement permanent
+  actif BOOLEAN DEFAULT TRUE,
+  
+  CONSTRAINT fk_joueur_bannis_joueur
+    FOREIGN KEY (id_joueur)
+    REFERENCES joueur(id_joueur)
+    ON DELETE CASCADE,
+    
+  CONSTRAINT fk_joueur_bannis_admin
+    FOREIGN KEY (id_admin)
+    REFERENCES admin(admin_id)
+    ON DELETE CASCADE,
+    
+  CONSTRAINT unique_joueur_ban_actif UNIQUE (id_joueur, actif) 
+  -- Un joueur ne peut avoir qu'un seul bannissement actif à la fois
+);
