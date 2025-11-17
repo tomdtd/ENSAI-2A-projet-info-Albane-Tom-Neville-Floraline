@@ -83,7 +83,14 @@ class MenuPartie(VueAbstraite):
 
 
             # Identifier le bouton du croupier (ici le premier joueur ou stocké dans la table)
-            bouton_index = liste_joueurs_dans_partie.index(table_service.get_id_joueur_bouton(self.table.id_table))
+            id_bouton = TableService().get_id_joueur_bouton(self.table.id_table)
+
+            # Si le bouton n'est pas défini ou plus dans la liste, choisir le premier joueur
+            if id_bouton not in liste_joueurs_dans_partie:
+                id_bouton = liste_joueurs_dans_partie[0]
+                TableService().set_id_joueur_bouton(self.table.id_table, id_bouton)
+
+            bouton_index = liste_joueurs_dans_partie.index(id_bouton)
             nb_joueurs = len(liste_joueurs_dans_partie)
 
             # Indices des blindes
@@ -99,11 +106,25 @@ class MenuPartie(VueAbstraite):
 
             # Débiter automatiquement les blindes et alimenter le pot
             credit_pb = JoueurService().recuperer_credit(id_petite_blinde)
-            JoueurService().modifier_credit(id_petite_blinde, credit_pb.get() - self.table.blind_initial.get()/2)
+            montant_a_donner_blinde = float(credit_pb.get()) - float(self.table.blind_initial.get()/2)
+            if montant_a_donner_blinde < 0:
+                print("Solde insufisant pour payer la blinde")
+                quitter_partie = True
+                break
+            else:
+                JoueurService().modifier_credit(id_petite_blinde, float(credit_pb.get()) - float(self.table.blind_initial.get()/2))
+
             TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get()/2)
 
             credit_gb = JoueurService().recuperer_credit(id_grosse_blinde)
-            JoueurService().modifier_credit(id_grosse_blinde, credit_gb.get() - self.table.blind_initial.get())
+            montant_a_donner_petite_blinde = float(credit_gb.get()) - float(self.table.blind_initial.get())
+            if montant_a_donner_petite_blinde < 0:
+                print("Solde insufisant pour payer la blinde")
+                quitter_partie = True
+                break
+            else:
+                JoueurService().modifier_credit(id_grosse_blinde, float(credit_gb.get()) - float(self.table.blind_initial.get()))
+
             TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
 
 
@@ -305,14 +326,19 @@ class MenuPartie(VueAbstraite):
                 
                 #Comparer les mains
                 dict_id_combinaison = {}
-                flop_complet = flop + [turn, river] # ajouter turn et river
-                for id in dict_id_cartes:
-                    main_complete = MainJoueurComplete(dict_id_cartes[id] + flop_complet)
+                # aplatir en UNE LISTE de cartes (et non pas liste de listes)
+                flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
+                            (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
+                            (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
+                            
+                for id, main_obj in dict_id_cartes.items():
+                    main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
+                    main_complete = MainJoueurComplete(main_list + flop_complet)
                     dict_id_combinaison[id] = main_complete.combinaison()
                 #Trouver la valeur maximale
                 max_val = max(dict_id_combinaison.values())
                 combinaison_max = Combinaison(max_val)
-                id_max = [k for k, v in d.items() if v == max_val] # recupere les id avec la combinaison la plus haute
+                id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
                 
                 id_gagnant = id_max[0]
                 if not len(id_max) == 1:

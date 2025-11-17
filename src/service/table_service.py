@@ -114,7 +114,7 @@ class TableService :
     @log
     def retirer_pot(self, id_table: int, montant: float) -> bool:
         """Retire une somme du pot de la table."""
-        if montant <= 0:
+        if montant < 0:
             raise ValueError("Le montant doit être positif pour retirer du pot.")
         return TableDao().retirer_pot(id_table, montant)
 
