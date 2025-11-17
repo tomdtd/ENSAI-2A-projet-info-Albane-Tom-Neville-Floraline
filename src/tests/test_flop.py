@@ -1,7 +1,7 @@
 import pytest
-from src.business_object.flop import Flop
-from src.business_object.carte import Carte
-from src.business_object.liste_cartes import ListeCartes
+from business_object.flop import Flop
+from business_object.carte import Carte
+from business_object.liste_cartes import ListeCartes
 
 class TestFlop():
     def test_flop_valide_ok(self) :
@@ -30,4 +30,4 @@ class TestFlop():
         with pytest.raises(ValueError) as excinfo:
             Flop(cartes)
         assert "Le flop doit contenir entre 3 et 5 cartes" in str(excinfo.value)
-        
+

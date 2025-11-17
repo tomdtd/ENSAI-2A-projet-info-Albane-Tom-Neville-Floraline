@@ -1,5 +1,6 @@
 from business_object.monnaie import Monnaie
 
+
 class Joueur:
     """
     Classe représentant un Joueur
@@ -15,7 +16,7 @@ class Joueur:
     credit : Monnaie()
         nombre de crédits du joueur
     mail : str
-        adresse mail du joueur 
+        adresse mail du joueur
     age : int
         age du joueur
     """
@@ -27,12 +28,12 @@ class Joueur:
         self.mdp = mdp
         self.mail = mail
         self.credit = credit
-        self.age = age  
+        self.age = age
 
     def __str__(self):
         """Permet d'afficher les informations du joueur"""
         return f"Joueur({self.pseudo}, {self.mail} ans)"
-    
+
     def __repr__(self) -> str:
         return f"Joueur(id={self.id_joueur}, pseudo='{self.pseudo}', credit={self.credit.get()})"
 
@@ -50,9 +51,8 @@ class Joueur:
 
     def changer_mdp(self, last_mdp, new_mdp: str) -> None:
         """Permet à l'administrateur de changer son mot de passe."""
-        if self.mdp != last_mdp: 
+        if self.mdp != last_mdp:
             print("Mot de passe actuel incorrect.")
-        else : 
+        else:
             self.mdp = new_mdp
             print(f"Le mot de passe de l'administrateur {self.name} a été changé.")
-
