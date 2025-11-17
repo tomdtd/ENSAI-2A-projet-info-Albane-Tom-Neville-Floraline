@@ -1,18 +1,18 @@
 from src.business_object.joueur_partie import JoueurPartie
 from src.business_object.pot import Pot
-from src.business_object.carte import Carte
 
-class Partie : 
+
+class Partie:
     """
     Classe représentant une partie du jeu
     Attributs:
     ----------
-    joueurs : list[JoueurPartie] 
+    joueurs : list[JoueurPartie]
 
     Liste des joueurs dans la partie
 
-    pot : Pot 
-    Pot de la partie     
+    pot : Pot
+    Pot de la partie
 
     id_partie : int 
     Identifiant unique de la partie            
@@ -46,19 +46,22 @@ class Partie :
         self.id_table = id_table
         self.date_debut = date_debut
         self.date_fin = None
+     
     def __str__(self):
         return f"Partie(id_partie={self.id_partie}, joueurs={self.joueurs}, pot={self.pot})"  
 
     # def repartition_blind() : # Attribuer les blinds aux joueurs au début
-    #    pass 
-    def finir_partie() : # Mettre fin à la partie et déterminer le gagnant
-        pass 
-    def gerer_blind(self) : # Sortie c'est le joueur qui doit poser la blind
+    #    pass
+
+    def finir_partie():
+    # Mettre fin à la partie et déterminer le gagnant
+        pass
+
+    def gerer_blind(self): # Sortie c'est le joueur qui doit poser la blind
         n = len(self.joueurs)
-        if n >=1 :
+        if n >= 1 :
             b = self.joueurs[-1]
             for i in range(0,n-1):
                 self.joueurs[i+1] = self.joueurs[i]
                 # Logique pour gérer les blinds pour chaque joueur
             self.joueurs[0] = b
-            
