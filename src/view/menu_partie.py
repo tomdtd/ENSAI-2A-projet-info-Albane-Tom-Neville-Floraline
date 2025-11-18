@@ -145,7 +145,7 @@ class MenuPartie(VueAbstraite):
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
                 
-                while (not len(liste_joueurs_en_jeu) == 1) or (tour == 'Fin de la main'):
+                while (not len(liste_joueurs_en_jeu) == 1) or (not tour == 'Fin de la main'):
 
                     while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
                         print("En attente du tour des autres joueurs...")
@@ -217,7 +217,7 @@ class MenuPartie(VueAbstraite):
                         montant = int(inquirer.text(message="Montant à miser : ").execute())
 
                         if tour == 'Pré-flop' and (not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}):
-                            valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
+                            valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
 
                         elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
                             valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + (self.table.blind_initial.valeur/2))
@@ -247,10 +247,10 @@ class MenuPartie(VueAbstraite):
                             valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
 
                         elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
-                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table) + (self.table.blind_initial.valeur/2))
+                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur/2)
 
                         else:
-                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table) + self.table.blind_initial.valeur)
+                            valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
                         
 
                         if joueur.credit.valeur < valeur_totale_paye:
@@ -289,7 +289,40 @@ class MenuPartie(VueAbstraite):
                                 break
                         if quitter_partie:
                             break
-                        #monter que joueur a gagné
+
+                        #mise a jour du joueur dont c'est le tour
+
+                        # recharger la liste des joueurs et filtrer les joueurs actifs
+                        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                        statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
+                        liste_joueurs_en_jeu = [
+                            jid for jid in liste_joueurs_dans_partie
+                            if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
+                        ]
+
+                        if len(liste_joueurs_en_jeu) == 0:
+                            # plus personne en jeu (sécurité) : rien à faire
+                            print("Aucun joueur en jeu pour passer le tour.")
+                        else:
+                            # id courant (celui qui venait de jouer) stocké en DB
+                            id_courant = TableService().get_id_joueur_tour(self.table.id_table)
+
+                            # s'assurer que id_courant est dans la liste (même type !)
+                            try:
+                                idx = liste_joueurs_en_jeu.index(id_courant)
+                            except ValueError:
+                                # si l'id courant n'est pas présent (ex : il s'est couché), on prend
+                                # l'indice du premier joueur en jeu (ou le joueur suivant de num_tour_joueur si tu préfères)
+                                idx = 0
+
+                            prochain_idx = (idx + 1) % len(liste_joueurs_en_jeu)
+                            prochain_id = liste_joueurs_en_jeu[prochain_idx]
+
+                            # écrire en base : c'est cette écriture qui permettra aux autres clients de voir le changement
+                            TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
+
+                            print(f"DEBUG -> Tour passé de {id_courant} à {prochain_id}")
+
                     
                     if action == "Quitter la partie":
                         quitter_partie = True
