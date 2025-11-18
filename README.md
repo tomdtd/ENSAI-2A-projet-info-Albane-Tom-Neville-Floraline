@@ -53,7 +53,7 @@ Le dépôt contient de nombreux fichiers de configuration pour paramétrer les o
 
 | Élément                      | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
-| `.github/workflows/ci.yml` | Workflow CI automatisé (tests, linting, déploiement)) |
+| `.github/workflows/ci.yml` | Workflow CI automatisé (tests, linting, déploiement) |
 | `.vscode/settings.json`    | Paramètres VSCode spécifiques au projet                      |
 | `.coveragerc`              | Configuration de la couverture de tests                                                  |
 | `.gitignore`               | Liste des fichiers/dossiers ignorés par Git            |
