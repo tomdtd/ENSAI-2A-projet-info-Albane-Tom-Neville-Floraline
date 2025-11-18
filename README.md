@@ -145,6 +145,11 @@ Executer le script creation_db_pord_poker.py
 
 ## Création de l'API
 
+Pour lancer l'API, il y a deux possibilités:
+- [ ] Soit vous le lancez à la main depuis le terminal avec la commande suivante:
+uvicorn api:app --reload --host 0.0.0.0 --port 9876
+- [ ] Soit vous le lancez depuis Onyxia en faisant Ouvrir puis en cliquant sur le *port 9876* qui est en bleu
+
 ## :arrow_forward: Tests unitaires
 
 - [ ] Dans Git Bash: `pytest -v` 
