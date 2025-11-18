@@ -55,4 +55,4 @@ class Joueur:
             print("Mot de passe actuel incorrect.")
         else:
             self.mdp = new_mdp
-            print(f"Le mot de passe de l'administrateur {self.name} a été changé.")
+            print(f"Le mot de passe de l'administrateur {self.pseudo} a été changé.")
