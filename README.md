@@ -1,108 +1,108 @@
 # ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline
 
-Recommendations for the poker application.
+Recommandations pour l’application de poker
 
-This very simple application includes a few elements that may help with our info 2A project:
+Cette application intègre plusieurs éléments utiles pour notre projet Informatique :
 
-- Layer programming (DAO, service, view, business_object)
-- Connection to a database
-- Terminal interface (view layer) with [inquirerPy](https://inquirerpy.readthedocs.io/en/latest/)
-- Calling a Webservice
-- Creating a webservice
+- Programmation en couches (DAO, service, view, business_object)
+- Connexion à une base de données
+- Interface terminal (couche view) avec [inquirerPy](https://inquirerpy.readthedocs.io/en/latest/)
+- Appel d'un Webservice
+- Création d'un webservice
 
 
-## :arrow_forward: Software and tools
+## :arrow_forward: Logiciels et outils
 
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Python 3.13](https://www.python.org/)
 - [Git](https://git-scm.com/)
-- A [PostgreSQL](https://www.postgresql.org/) database
+- Une base de données [PostgreSQL](https://www.postgresql.org/)
 
 
 ## :arrow_forward: Clone the repository
 
-- [ ] Open VSCode
-- [ ] Open **Git Bash**
-- [ ] Clone the repo
+- [ ] Ouvrir VSCode
+- [ ] Ouvrir **Git Bash**
+- [ ] Cloner le dépôt :
   - `git clone https://github.com/tomdtd/ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline.git`
 
 
 ### Open Folder
 
-- [ ] Open **Visual Studio Code**
-- [ ] File > Open Folder
-- [ ] Select folder *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline*
-  - *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline* should be the root of your Explorer
-  - :warning: if not the application will not launch. Retry open folder
+- [ ] Ouvrir **Visual Studio Code** via Onyxia SSPLAB
+- [ ] Dans Visual Studio Code : File > Open Folder
+- [ ] Sélectionner le dossier   *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline*
+  - *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline* Ce dossier doit être la racine de l’Explorer
+  - :warning: Sinon l’application ne se lancera pas correctement
 
 
-## Repository Files Overview
-
-
-| Item                       | Description                                                              |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `README.md`                | Provides useful information to present, install, and use the application |
-| `LICENSE`                  | Specifies the usage rights and licensing terms for the repository        |
-
-### Configuration files
-
-This repository contains a large number of configuration files for setting the parameters of the various tools used.
-
-Normally, for the purposes of your project, you won't need to modify these files, except for `.env`, `.env_test` and `requirements.txt`.
+## :arrow_forward: Structure du dépôt
 
 
 | Item                       | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
-| `.github/workflows/ci.yml` | Automated workflow that runs predefined tasks (like testing, linting, or deploying) |
-| `.vscode/settings.json`    | Contains VS Code settings specific to this project                       |
-| `.coveragerc`              | Setup for test coverage                                                  |
-| `.gitignore`               | Lists the files and folders that should not be tracked by Git            |
-| `logging_config.yml`       | Setup for logging                                                        |
-| `requirements.txt`         | Lists the required Python packages for the project                       |
+| `README.md`                | Informations pour présenter, installer et utiliser l’application |
+| `LICENSE`                  | Droits d’utilisation et termes de licence du dépôt        |
 
-You will also need a `.env` file. See below.
+### Fichiers de configuration
+
+Le dépôt contient de nombreux fichiers de configuration pour paramétrer les outils utilisés.
+
+ En pratique, seuls `.env`, `.env_test` et `requirements.txt` doivent être modifiés pour le projet.
 
 
-### Folders
-
-| Item                       | Description                                                              |
+| Élément                      | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
-| `data`                     | SQL script containing data sets                                          |
-| `doc`                      | UML diagrams, project status...                                          |
-| `logs`                     | Containing logs files (once you have launched the application)           |
-| `src`                      | Folder containing Python files organized using a layered architecture    |
+| `.github/workflows/ci.yml` | Workflow CI automatisé (tests, linting, déploiement)) |
+| `.vscode/settings.json`    | Paramètres VSCode spécifiques au projet                      |
+| `.coveragerc`              | Configuration de la couverture de tests                                                  |
+| `.gitignore`               | Liste des fichiers/dossiers ignorés par Git            |
+| `logging_config.yml`       | Configuration du logging                                                        |
+| `requirements.txt`         | Liste des dépendances Python nécessaires                   |
+
+  Vous aurez aussi besoin du fichier `.env`. Voir ci-dessous.
+
+
+### Dossiers
+
+| Élément               | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `data`                     | Scripts SQL contenant les jeux de données                                        |
+| `doc`                      | Diagrammes UML, suivi du projet...                                          |
+| `logs`                     | Fichiers de logs générés après lancement de l’application        |
+| `src`                      | Code source Python, organisé selon une architecture en couches   |
 
 
 
-### Settings files
+### Documents de paramétrages
 
-This repository contains a large number of configuration files for setting the parameters of the various tools used.
+Le dépôt contient de nombreux fichiers de configuration pour paramétrer les outils utilisés.
 
-Normally, for the purposes of your project, you won't need to modify these files, except for `.env`, `.env_test` and `requirements.txt`.
+En pratique, seuls `.env`, `.env_test` et `requirements.txt`doivent être modifiés pour le projet.
 
 
-## :arrow_forward: Install required packages
+## :arrow_forward: Installation des dépendances
 
-- [ ] In Git Bash, run the following commands to:
-  - install all packages from file `requirements.txt`
-  - list all packages
+- [ ] Dans le terminal Git Bash, faire tourner les lignes de codes suivantes:
+
 
 ```bash
 pip install -r requirements.txt
 pip list
 ```
+  - Cela permet d'installer le contenu de `requirements.txt`
+  - affiche la liste de tous les packages chargés
+
+## :arrow_forward: Variables d'environnement
+
+Définir les variables d’environnement pour connecter l’application Python à la base et au webservice.
+
+À la racine du projet :
+
+- [ ] Créer un fichier`.env`
 
 
-## :arrow_forward: Environment variables
-
-You are now going to define environment variables to declare the database and webservice to which you are going to connect your python application.
-
-At the root of the project :
-
-- [ ] Create a file called `.env`
-- [ ] Paste in and complete the elements below
-
-Si vous passez directement par le lien copier collé dans onyxia pas besoin des variables export VAULT_ADDR et export VAULT_TOKEN
+Si vous passez directement par le lien copier coller dans onyxia pas besoin des variables export VAULT_ADDR et export VAULT_TOKEN
 
 ```default
 WEBSERVICE_HOST=https://pickpoker.com/api
@@ -122,10 +122,10 @@ API_URL = "url_de_l'api"
 ```
 
 
-At the root of the project :
+ À la racine du projet:
 
-- [ ] Create a file called `.env_test`
-- [ ] Paste in and complete the elements below
+- [ ] Créer un fichier `.env_test`
+- [ ] Coller les éléments suivants:
 
 ```default
 WEBSERVICE_HOST=https://pickpoker.com/api
@@ -142,48 +142,41 @@ POSTGRES_SCHEMA=projet
 
 Executer le script creation_db_pord_poker.py
 
-## :arrow_forward: Unit tests
+## :arrow_forward: Tests unitaires
 
-- [ ] In Git Bash: `pytest -v` 
-  - or `python -m pytest -v` if *pytest* has not been added to *PATH*
-
-
-### TU DAO
-
-To ensure tests are repeatable, safe, and **do not interfere with the real database**, we use a dedicated schema for unit testing.
-
-The DAO unit tests use data from the `data/pop_db_test.sql` file.
-
-This data is loaded into a separate schema (projet_test_dao) so as not to pollute the other data.
+- [ ] Dans Git Bash: `pytest -v` 
+  - ou `python -m pytest -v` si *pytest* n'a pas été ajouté à *PATH*
 
 
-### Test coverage
+### Tests unitaires DAO
 
-It is also possible to generate test coverage using [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
+Les tests DAO utilisent un schéma dédié `projet_test_dao` afin de ne pas polluer la base réelle.
 
-:bulb: The `.coveragerc` file can be used to modify the settings
+Les données proviennent du fichier `data/pop_db_test.sql`.
+
+
+
+### Couverture de tests
+
+Générer la couverture avec [Coverage](https://coverage.readthedocs.io/en/7.4.0/index.html)
+
+:bulb: Le fichier `.coveragerc` peut être utilisé pour modifier les paramètres
 
 - [ ] `coverage run -m pytest`
 - [ ] `coverage report -m`
 - [ ] `coverage html`
-  - Download and open coverage_report/index.html
+  - Télécharger et ouvrir coverage_report/index.html
 
 
 
-## :arrow_forward: Launch the CLI application
+## :arrow_forward: Lancer l'application CLI 
 
-This application provides a very basic graphical interface for navigating between different menus.
-
-- [ ] In Git Bash: `python src/main.py`
-- [ ] On first launch, choose **Reset database**
-  - this calls the `src/utils/reset_database.py` program
-  - which will itself execute the SQL scripts in the `data` folder
+- [ ] Dans Git Bash: `python src/main.py`
+- [ ] Au premier lancement, choisir **Reset database** pour exécuter `src/utils/reset_database.py` et et charger les scripts SQL du dossier `data`.
 
 
 
-## :arrow_forward: Launch the webservice
-
-This application can also be used to create a webservice.
+## :arrow_forward: Lancer le webservice
 
 - [ ] `python src/api.py`
 
@@ -194,7 +187,7 @@ Documentation :
 
 ### Endpoints
 
-Examples of endpoints (to be tested, for example, with *Insomnia* or a browser):
+Examples d'endpoints (à tester avec *Insomnia* or a moteur de recherche):
 
 
 - `GET http://localhost:8000/joueur`
@@ -226,22 +219,12 @@ Content-Type: application/json
 
 ## :arrow_forward: Logs
 
-It is initialised in the `src/utils/log_init.py` module:
+Initialisés dans `src/utils/log_init.py`avec la configuration : `logging_config.yml`.
+Un décorateur `src/utils/log_decorator.py`permet de tracer les entrées/sorties des méthodes.
 
-- This is called when the application or webservice is started.
-- It uses the `logging_config.yml` file for configuration.
-  - to change the log level :arrow_right: *level* tag
+Les fichiers de logs sont stockés dans le dossier `logs`:
 
-A decorator has been created in `src/utils/log_decorator.py`.
-
-When applied to a method, it will display in the logs :
-
-- input parameters
-- the output
-
-The logs can be viewed in the `logs` folder.
-
-Example of logs :
+Exemples of logs :
 
 ```
 22/11/2025 09:07:07 - INFO     - ConnexionVue
@@ -266,16 +249,16 @@ Example of logs :
 
 ## :arrow_forward: Continuous integration (CI)
 
-The repository contains a `.github/workflow/main.yml' file.
+Le dépôt contient un workflow GitHub Actions`.github/workflow/main.yml'.
 
-When you *push* on GitHub, it triggers a pipeline that will perform the following steps:
+À chaque *push*, une pipeline est déclenchée :
 
-- Creating a container from an Ubuntu (Linux) image
-  - In other words, it creates a virtual machine with just a Linux kernel.
-- Install Python
-- Install the required packages
-- Run the unit tests (only the service tests, as it's more complicated to run the dao tests)
-- Analyse the code with *pylint*
-  - If the score is less than 7.5, the step will fail
+- Création d’un conteneur Ubuntu
+- Installation de Python et des dépendances
+- Exécution des tests unitaires (services uniquement)
+- Installation des packages requis
+- Exécution des tests unitaires (services uniquement)
+- Analyse du code avec *pylint*
+  - Échec si score < 7.5
 
-You can check how this pipeline is progressing on your repository's GitHub page, *Actions* tab.
+Le suivi du pipeline est visible dans l’onglet Actions du dépôt GitHub.
