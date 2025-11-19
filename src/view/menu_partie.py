@@ -12,6 +12,19 @@ from business_object.main_joueur_complete import MainJoueurComplete
 from business_object.combinaison import Combinaison
 import time
 
+COMBINAISON_LABELS = {
+    Combinaison.CarteHaute: "Carte haute",
+    Combinaison.Paire: "Paire",
+    Combinaison.DoublePaire: "Double paire",
+    Combinaison.Brelan: "Brelan",
+    Combinaison.Quinte: "Quinte",
+    Combinaison.Flush: "Couleur",
+    Combinaison.Full: "Full",
+    Combinaison.Carre: "Carré",
+    Combinaison.QuinteFlush: "Quinte flush",
+    Combinaison.QuinteRoyale: "Quinte royale",
+}
+
 class MenuPartie(VueAbstraite):
 
     def __init__(self, table):
@@ -79,7 +92,7 @@ class MenuPartie(VueAbstraite):
 
 
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
-            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> jen pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
+            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> je pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
 
             pioche = ListeCartes()
             croupier = Croupier(pioche)
@@ -106,7 +119,7 @@ class MenuPartie(VueAbstraite):
             print(f'Ta main est : {main_joueur}')
 
 
-            # Identifier le bouton du croupier (ici le premier joueur ou stocké dans la table)
+            # Identifier le bouton du croupier (ici le premier joueur stocké dans la table)
             id_bouton = TableService().get_id_joueur_bouton(self.table.id_table)
 
             # Si le bouton n'est pas défini ou plus dans la liste, choisir le premier joueur
@@ -237,8 +250,12 @@ class MenuPartie(VueAbstraite):
                     print(f'La river est : {river}')
                 print(f'Ta main est : {main_joueur}')
                 
-                montant_pour_suivre = float(self.table.blind_initial.valeur) + float(TableService().get_val_derniere_mise(self.table.id_table))
-                print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
+                if not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}:
+                    montant_pour_suivre = float(self.table.blind_initial.valeur) + float(TableService().get_val_derniere_mise(self.table.id_table))
+                    print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
+                elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
+                    montant_pour_suivre = float(self.table.blind_initial.valeur)/2 + float(TableService().get_val_derniere_mise(self.table.id_table))
+                    print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
                 action = inquirer.select(
                     message="Que voulez-vous faire ?",
@@ -361,7 +378,7 @@ class MenuPartie(VueAbstraite):
                     # écrire en base : c'est cette écriture qui permettra aux autres clients de voir le changement
                     TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
 
-                    print(f"DEBUG -> Tour passé de {id_courant} à {prochain_id}")
+                    print(f"Tour passé de {id_courant} à {prochain_id}")
 
                     
                     if action == "Quitter la partie":
@@ -424,7 +441,7 @@ class MenuPartie(VueAbstraite):
 
             #Créditer le gagnant
             if isinstance(id_gagnant, list):
-                print(f"Les gagnants sont : {id_gagnant} avec une {combinaison_max}")
+                print(f"Les gagnants sont : {", ".join([JoueurService().trouver_par_id(id).pseudo for id in id_gagnant])} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
 
                 # Cas plusieurs gagnant il faut diviser le pot
                 pot = int(TableService().get_pot(self.table.id_table))
@@ -437,7 +454,7 @@ class MenuPartie(VueAbstraite):
                 TableService().retirer_pot(self.table.id_table, pot)
 
             else:
-                print(f"Le gagnant est : {id_gagnant} avec une {combinaison_max}")
+                print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
                 
                 pot = TableService().get_pot(self.table.id_table)
                 print(f'Fin de la main : le gagnant remporte le pot : {pot}')

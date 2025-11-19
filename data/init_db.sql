@@ -10,6 +10,9 @@ DROP TABLE IF EXISTS table_poker CASCADE;
 DROP TABLE IF EXISTS portefeuille CASCADE;
 DROP TABLE IF EXISTS joueur CASCADE;
 DROP TABLE IF EXISTS transaction CASCADE;
+DROP TABLE IF EXISTS joueur_bannis;
+DROP TABLE IF EXISTS admin;
+
 
 
 -- -----------------------------------------------------
