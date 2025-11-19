@@ -1,10 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 from src.service.joueur_service import JoueurService
 from src.service.table_service import TableService
+from src.service.partie_service import PartieService
 from src.business_object.joueur import Joueur
 from src.business_object.table import Table
+from src.business_object.monnaie import Monnaie
 
 app = FastAPI(title="pickpoker")
 
@@ -21,7 +24,8 @@ def accueil():
             "/tables/ (GET, POST)",
             "/tables/{id_table}/rejoindre (POST)",
             "/tables/{id_table}/quitter (POST)",
-            "/docs (Swagger UI)"
+            "/docs (Swagger UI)",
+            "et pleins d'autres choses"
         ]
     }
 
@@ -29,6 +33,7 @@ def accueil():
 # Instancie tes services
 joueur_service = JoueurService()
 table_service = TableService()
+partie_service = PartieService()
 
 @app.get("/", include_in_schema=False)
 async def redirect_to_docs():
@@ -69,6 +74,20 @@ class JoueurRequest(BaseModel):
 class LancerPartieRequest(BaseModel):
     joueurs: List[JoueurRequest]
     dealer_id: int
+
+# Modèles pour PartieService
+class PartieCreateRequest(BaseModel):
+    joueurs: List[int]  # Liste des IDs des joueurs
+    dealer_id: int
+
+class PartieUpdateRequest(BaseModel):
+    id_table: Optional[int] = None
+    pot: Optional[float] = None
+    date_debut: Optional[datetime] = None
+
+class PeriodeRequest(BaseModel):
+    debut: datetime
+    fin: datetime    
 
 @app.post("/joueurs/")
 async def creer_joueur(joueur: JoueurCreate):
@@ -136,9 +155,13 @@ async def supprimer_joueur(id_joueur: int):
 # Créer une table
 @app.post("/tables/")
 async def creer_table(nb_sieges: int, blind_initial: float):
-    table = table_service.creer_table(nb_sieges, blind_initial)
+    blind_initial_monnaie = Monnaie(blind_initial)
+
+    table = table_service.creer_table(nb_sieges, blind_initial_monnaie)
+
     if table:
         return {"message": "Table créée avec succès", "table": table}
+
     raise HTTPException(status_code=400, detail="Échec de la création de la table")
 
 # Lister les tables disponibles
@@ -311,6 +334,106 @@ def lancer_partie(request: LancerPartieRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
 
+@app.post("/parties/")
+def creer_partie(request: PartieCreateRequest):
+    try:
+        joueurs = []
+        for joueur_id in request.joueurs:
+            joueur = joueur_service.trouver_par_id(joueur_id)
+            if not joueur:
+                raise HTTPException(status_code=404, detail=f"Joueur {joueur_id} non trouvé")
+            joueurs.append(joueur)
+
+        dealer = joueur_service.trouver_par_id(request.dealer_id)
+        if not dealer:
+            raise HTTPException(status_code=404, detail=f"Dealer {request.dealer_id} non trouvé")
+
+        result = partie_service.lancer_partie(joueurs, dealer.id_joueur)
+        if "Erreur" in result:
+            raise HTTPException(status_code=400, detail=result)
+
+        return {"message": "Partie créée avec succès"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/parties/{id_partie}")
+def trouver_partie_par_id(id_partie: int):
+    try:
+        partie = PartieDao().trouver_par_id(id_partie)
+        if partie:
+            return {"partie": partie}
+        raise HTTPException(status_code=404, detail="Partie non trouvée")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/parties/")
+def lister_parties():
+    try:
+        parties = PartieDao().lister_toutes()
+        return {"parties": parties}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.put("/parties/{id_partie}")
+def modifier_partie(id_partie: int, request: PartieUpdateRequest):
+    try:
+        partie = PartieDao().trouver_par_id(id_partie)
+        if not partie:
+            raise HTTPException(status_code=404, detail="Partie non trouvée")
+
+        if request.id_table is not None:
+            partie.id_table = request.id_table
+        if request.pot is not None:
+            partie.pot = Pot(request.pot)
+        if request.date_debut is not None:
+            partie.date_debut = request.date_debut
+
+        success = PartieDao().modifier(partie)
+        if success:
+            return {"message": "Partie modifiée avec succès"}
+        raise HTTPException(status_code=500, detail="Erreur lors de la modification de la partie")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.delete("/parties/{id_partie}")
+def supprimer_partie(id_partie: int):
+    try:
+        success = PartieDao().supprimer(id_partie)
+        if success:
+            return {"message": "Partie supprimée avec succès"}
+        raise HTTPException(status_code=500, detail="Erreur lors de la suppression de la partie")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/parties/statut/{statut}")
+def trouver_parties_par_statut(statut: str):
+    try:
+        parties = PartieDao().trouver_parties_par_statut(statut)
+        return {"parties": parties}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/tables/{id_table}/derniere-partie")
+def trouver_derniere_partie_sur_table(id_table: int):
+    try:
+        partie = PartieDao().trouver_derniere_partie_sur_table(id_table)
+        if partie:
+            return {"partie": partie}
+        raise HTTPException(status_code=404, detail="Aucune partie trouvée sur cette table")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/parties/periode")
+def lister_parties_par_periode(request: PeriodeRequest):
+    try:
+        parties = PartieDao().lister_parties_par_periode(request.debut, request.fin)
+        return {"parties": parties}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
