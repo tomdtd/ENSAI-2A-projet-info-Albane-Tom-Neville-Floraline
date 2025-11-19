@@ -79,8 +79,8 @@ class MenuPartie(VueAbstraite):
 
 
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
-            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde
-            
+            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> jen pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
+
             pioche = ListeCartes()
             croupier = Croupier(pioche)
             liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
@@ -152,7 +152,7 @@ class MenuPartie(VueAbstraite):
             TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
 
 
-            tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River', 'Fin de la main']
+            tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River']
             for tour in tours_de_mise:
 
                 if num_tour_joueur >= len(liste_joueurs_dans_partie):
@@ -186,6 +186,19 @@ class MenuPartie(VueAbstraite):
                     if action_attente == "Quitter la partie":
                         quitter_partie = True
                         break
+                    
+                    # Vérifier que les joueurs ne sont pas partis pendant l'attente
+                    liste_joueurs_en_jeu = []
+                    for id_j in liste_joueurs_dans_partie:
+                        statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                        if statut_joueur in statuts_en_jeu:
+                            liste_joueurs_en_jeu.append(id_j)
+                    if len(liste_joueurs_en_jeu) == 1:
+                        print("Tous les autres joueurs on quitté la partie")
+                        break
+                if len(liste_joueurs_en_jeu) ==1:
+                    break
+
                 if quitter_partie:
                     break
                 
@@ -222,7 +235,8 @@ class MenuPartie(VueAbstraite):
                     print(f'Le flop est : {flop}')
                     print(f'La turn est : {turn}')
                     print(f'La river est : {river}')
-
+                print(f'Ta main est : {main_joueur}')
+                
                 montant_pour_suivre = float(self.table.blind_initial.valeur) + float(TableService().get_val_derniere_mise(self.table.id_table))
                 print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
