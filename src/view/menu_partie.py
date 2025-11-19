@@ -31,6 +31,7 @@ class MenuPartie(VueAbstraite):
         self.table = table
         self.solde_initial_partie = self.table.blind_initial.get()
 
+
     def choisir_menu(self):
         session = Session()
         joueur = session.joueur
@@ -56,7 +57,6 @@ class MenuPartie(VueAbstraite):
             from view.rejoindre_partie import RejoindrePartie
             return RejoindrePartie().choisir_menu()
         
-
         liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
         
         joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
@@ -90,14 +90,13 @@ class MenuPartie(VueAbstraite):
             if quitter_partie == True:
                 break
 
-
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
             # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> je pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
 
             pioche = ListeCartes()
             croupier = Croupier(pioche)
             liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie,2)
+            mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie, 2)
             for id_joueur_partie in liste_joueurs_dans_partie:
                 main = mains_distribuees[id_joueur_partie]
                 joueur_partie_service.attribuer_cartes_main_joueur(

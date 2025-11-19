@@ -8,12 +8,15 @@ import re
 import random
 import string
 
+
 def random_pseudo(prefix="test_joueur"):
     """Génère un pseudo unique pour chaque test"""
     return prefix + "".join(random.choices(string.ascii_lowercase + string.digits, k=5))
 
+
 # Regex pour ignorer les séquences ANSI (couleurs, curseur, etc.)
 ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+
 
 def test_creation_et_connexion_joueur_ok():
     pseudo = random_pseudo()
@@ -78,7 +81,6 @@ def test_creation_et_connexion_joueur_ok():
     child.terminate(force=True)
 
 
-
 def creer_compte(child, pseudo, mdp="Test_joueur1", age="22", email=None):
     """Simule la création d'un compte joueur"""
     if email is None:
@@ -97,6 +99,7 @@ def creer_compte(child, pseudo, mdp="Test_joueur1", age="22", email=None):
     child.sendline(email)
     child.expect(f"Votre compte {pseudo} a été créé")
 
+
 def se_connecter(child, pseudo, mdp="Test_joueur1"):
     """Simule la connexion d'un joueur"""
     child.expect("Se connecter")
@@ -109,6 +112,7 @@ def se_connecter(child, pseudo, mdp="Test_joueur1"):
     child.sendline(mdp)
     child.expect(f"Vous êtes connecté sous le pseudo {pseudo}")
     child.expect("Rejoindre une partie")
+
 
 def test_deux_joueurs_rejoignent_partie():
     main_path = os.path.abspath("src/main.py")
