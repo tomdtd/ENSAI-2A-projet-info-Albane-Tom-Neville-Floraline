@@ -1,11 +1,11 @@
 from InquirerPy import inquirer
 
-from view.vue_abstraite import VueAbstraite
+from src.view.vue_abstraite import VueAbstraite
 from client.poker_client import PokerClient
-from view.session import Session
-from service.joueur_service import JoueurService
-from service.transaction_service import TransactionService
-from business_object.monnaie import Monnaie
+from src.view.session import Session
+from src.service.joueur_service import JoueurService
+from src.service.transaction_service import TransactionService
+from src.business_object.monnaie import Monnaie
 
 class SoldeVue(VueAbstraite):
     """Vue pour consulter et gérer le solde du joueur connecté."""

@@ -3,14 +3,14 @@ import pytest
 
 from unittest.mock import patch
 
-from utils.reset_database import ResetDatabase
-from utils.securite import hash_password
+from src.utils.reset_database import ResetDatabase
+from src.utils.securite import hash_password
 
-from dao.db_connection import DBConnection
-from dao.joueur_dao import JoueurDao
+from src.dao.db_connection import DBConnection
+from src.dao.joueur_dao import JoueurDao
 
-from business_object.joueur import Joueur
-from business_object.monnaie import Monnaie
+from src.business_object.joueur import Joueur
+from src.business_object.monnaie import Monnaie
 
 from pathlib import Path
 from dotenv import load_dotenv

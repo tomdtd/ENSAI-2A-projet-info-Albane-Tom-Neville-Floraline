@@ -1,5 +1,5 @@
 import pytest
-from business_object.admin import Admin
+from src.business_object.admin import Admin
 
 
 class TestAdmin:

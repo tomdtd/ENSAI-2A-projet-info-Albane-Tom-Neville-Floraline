@@ -1,9 +1,9 @@
 from InquirerPy import inquirer
-from view.vue_abstraite import VueAbstraite
-from view.session import Session
-from service.table_service import TableService
-from business_object.monnaie import Monnaie
-from view.menu_partie import MenuPartie
+from src.view.vue_abstraite import VueAbstraite
+from src.view.session import Session
+from src.service.table_service import TableService
+from src.business_object.monnaie import Monnaie
+from src.view.menu_partie import MenuPartie
 import traceback
 
 class RejoindrePartie(VueAbstraite):

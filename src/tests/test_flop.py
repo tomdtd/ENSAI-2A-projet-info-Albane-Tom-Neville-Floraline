@@ -1,7 +1,7 @@
 import pytest
-from business_object.flop import Flop
-from business_object.carte import Carte
-from business_object.liste_cartes import ListeCartes
+from src.business_object.flop import Flop
+from src.business_object.carte import Carte
+from src.business_object.liste_cartes import ListeCartes
 
 class TestFlop():
     def test_flop_valide_ok(self) :

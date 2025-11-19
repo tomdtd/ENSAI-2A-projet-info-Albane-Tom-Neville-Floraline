@@ -103,9 +103,9 @@ class TestMainJoueurComplete():
             pytest.as_carreau,
             pytest.deux_trefle
         ]
-        #WHEN
+        # WHEN
         cartes = MainJoueurComplete(liste_cartes)
-        #THEN
+        # THEN
         assert cartes.combinaison() == Combinaison.Quinte
 
     def test_combinaison_Flush(self):

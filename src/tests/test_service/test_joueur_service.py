@@ -2,10 +2,10 @@ import pytest
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 from src.service.joueur_service import JoueurService
-from dao.joueur_dao import JoueurDao
-from business_object.joueur import Joueur
-from business_object.monnaie import Monnaie
-from utils.securite import hash_password
+from src.dao.joueur_dao import JoueurDao
+from src.business_object.joueur import Joueur
+from src.business_object.monnaie import Monnaie
+from src.utils.securite import hash_password
 
 @pytest.fixture
 def mock_joueur_dao():

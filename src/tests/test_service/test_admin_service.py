@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from business_object.admin import Admin
-from service.admin_service import AdminService
-from dao.admin_dao import AdminDao
-from utils.securite import hash_password
+from src.business_object.admin import Admin
+from src.service.admin_service import AdminService
+from src.dao.admin_dao import AdminDao
+from src.utils.securite import hash_password
 
 @pytest.fixture
 def mock_admin_dao():

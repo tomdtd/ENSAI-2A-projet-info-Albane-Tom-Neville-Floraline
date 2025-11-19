@@ -1,13 +1,13 @@
 import logging
 
-from utils.singleton import Singleton
-from utils.log_decorator import log
+from src.utils.singleton import Singleton
+from src.utils.log_decorator import log
 
-from dao.db_connection import DBConnection
+from src.dao.db_connection import DBConnection
 
-from business_object.table import Table
-from business_object.monnaie import Monnaie
-from business_object.liste_cartes import ListeCartes
+from src.business_object.table import Table
+from src.business_object.monnaie import Monnaie
+from src.business_object.liste_cartes import ListeCartes
 
 
 class TableDao(metaclass=Singleton):
@@ -34,14 +34,30 @@ class TableDao(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute(
-                        "INSERT INTO table_poker (nb_sieges, blind_initial) "
-                        "VALUES (%(nb_sieges)s, %(blind_initial)s) "
-                        "RETURNING id_table;",
-                     {"nb_sieges": table.nb_sieges, "blind_initial": table.blind_initial.get()},
-                    )
+                    # Si id_table est fourni, utiliser OVERRIDING SYSTEM VALUE
+                    if table.id_table is not None:
+                        cursor.execute(
+                            "INSERT INTO table_poker (id_table, nb_sieges, blind_initial) "
+                            "OVERRIDING SYSTEM VALUE "
+                            "VALUES (%(id_table)s, %(nb_sieges)s, %(blind_initial)s) "
+                            "RETURNING id_table;",
+                            {
+                                "id_table": table.id_table,
+                                "nb_sieges": table.nb_sieges,
+                                "blind_initial": table.blind_initial.get()
+                            },
+                        )
+                    else:
+                        # Sinon, laisser la base générer l'ID
+                        cursor.execute(
+                            "INSERT INTO table_poker (nb_sieges, blind_initial) "
+                            "VALUES (%(nb_sieges)s, %(blind_initial)s) "
+                            "RETURNING id_table;",
+                            {"nb_sieges": table.nb_sieges, "blind_initial": table.blind_initial.get()},
+                        )
                     res = cursor.fetchone()
-                    table.id_table = res["id_table"]
+                    if res:
+                        table.id_table = res["id_table"]
                 connection.commit()
         except Exception as e:
             logging.exception("Erreur lors de la création de la table")

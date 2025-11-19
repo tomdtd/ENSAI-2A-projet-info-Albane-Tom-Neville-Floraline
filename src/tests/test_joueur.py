@@ -16,7 +16,7 @@ class TestJoueur:
             credit=Monnaie(100),
             id_joueur=1
         )
-    
+
     @pytest.fixture
     def joueur_sans_id(self):
         """Fixture pour créer un joueur sans ID"""

@@ -3,7 +3,7 @@ import pytest
 
 from unittest.mock import patch
 
-from utils.reset_database import ResetDatabase
+from src.utils.reset_database import ResetDatabase
 from src.dao.db_connection import DBConnection
 from src.dao.table_dao import TableDao
 

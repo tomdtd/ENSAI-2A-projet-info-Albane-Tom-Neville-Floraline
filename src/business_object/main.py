@@ -1,4 +1,4 @@
-from business_object.liste_cartes import ListeCartes
+from src.business_object.liste_cartes import ListeCartes
 
 class Main(ListeCartes):
     """

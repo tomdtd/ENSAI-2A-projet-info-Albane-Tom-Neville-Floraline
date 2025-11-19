@@ -1,10 +1,10 @@
 from InquirerPy import inquirer
 
-from view.vue_abstraite import VueAbstraite
-from view.session import Session
-from view.rejoindre_partie import RejoindrePartie
+from src.view.vue_abstraite import VueAbstraite
+from src.view.session import Session
+from src.view.rejoindre_partie import RejoindrePartie
 
-from service.joueur_service import JoueurService
+from src.service.joueur_service import JoueurService
 
 
 class MenuJoueurVue(VueAbstraite):

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from typing import Optional, List
 from datetime import datetime, timedelta
 
-from utils.log_decorator import log
+from src.utils.log_decorator import log
 from src.utils.reset_database import ResetDatabase
 from src.utils.singleton import Singleton
 from src.dao.db_connection import DBConnection
