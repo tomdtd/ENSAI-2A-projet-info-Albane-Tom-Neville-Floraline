@@ -1,8 +1,8 @@
 from typing import Optional, List, Dict
-from utils.log_decorator import log
-from dao.admin_dao import AdminDao
-from business_object.admin import Admin
-from utils.securite import hash_password, verify_password
+from src.utils.log_decorator import log
+from src.dao.admin_dao import AdminDao
+from src.business_object.admin import Admin
+from src.utils.securite import hash_password, verify_password
 
 class AdminService:
     """Classe contenant les méthodes de service pour les administrateurs."""

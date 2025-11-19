@@ -1,15 +1,15 @@
 from InquirerPy import inquirer
-from view.vue_abstraite import VueAbstraite
-from view.session import Session
-from service.joueur_partie_service import JoueurPartieService
-from service.table_service import TableService
-from service.joueur_service import JoueurService
-from business_object.siege import Siege
-from business_object.croupier import Croupier
-from business_object.liste_cartes import ListeCartes
-from business_object.monnaie import Monnaie
-from business_object.main_joueur_complete import MainJoueurComplete
-from business_object.combinaison import Combinaison
+from src.view.vue_abstraite import VueAbstraite
+from src.view.session import Session
+from src.service.joueur_partie_service import JoueurPartieService
+from src.service.table_service import TableService
+from src.service.joueur_service import JoueurService
+from src.business_object.siege import Siege
+from src.business_object.croupier import Croupier
+from src.business_object.liste_cartes import ListeCartes
+from src.business_object.monnaie import Monnaie
+from src.business_object.main_joueur_complete import MainJoueurComplete
+from src.business_object.combinaison import Combinaison
 import time
 
 class MenuPartie(VueAbstraite):

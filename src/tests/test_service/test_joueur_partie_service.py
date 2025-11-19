@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import patch, MagicMock                     
-from service.joueur_partie_service import JoueurPartieService             
-from dao.joueur_partie_dao import JoueurPartieDao             
-from business_object.joueur_partie import JoueurPartie           
-from business_object.joueur import Joueur
-from business_object.siege import Siege
-from business_object.monnaie import Monnaie         
+from src.service.joueur_partie_service import JoueurPartieService             
+from src.dao.joueur_partie_dao import JoueurPartieDao             
+from src.business_object.joueur_partie import JoueurPartie           
+from src.business_object.joueur import Joueur
+from src.business_object.siege import Siege
+from src.business_object.monnaie import Monnaie         
 from datetime import datetime
 
 @pytest.fixture

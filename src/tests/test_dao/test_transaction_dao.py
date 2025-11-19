@@ -3,13 +3,13 @@ import pytest
 
 from unittest.mock import patch
 
-from utils.reset_database import ResetDatabase
-from utils.securite import hash_password
+from src.utils.reset_database import ResetDatabase
+from src.utils.securite import hash_password
 
-from dao.db_connection import DBConnection
-from dao.transaction_dao import TransactionDao
+from src.dao.db_connection import DBConnection
+from src.dao.transaction_dao import TransactionDao
 
-from business_object.transaction import Transaction
+from src.business_object.transaction import Transaction
 from datetime import datetime
 
 from pathlib import Path

@@ -1,9 +1,9 @@
 from typing import List, Optional
-from utils.log_decorator import log
-from dao.joueur_dao import JoueurDao
-from business_object.joueur import Joueur
-from utils.securite import hash_password
-from business_object.monnaie import Monnaie
+from src.utils.log_decorator import log
+from src.dao.joueur_dao import JoueurDao
+from src.business_object.joueur import Joueur
+from src.utils.securite import hash_password
+from src.business_object.monnaie import Monnaie
 
 class JoueurService:
     """Classe contenant les méthodes de service pour les joueurs."""

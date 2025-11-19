@@ -1,12 +1,12 @@
 import logging
 
-from utils.singleton import Singleton
-from utils.log_decorator import log
+from src.utils.singleton import Singleton
+from src.utils.log_decorator import log
 
-from dao.db_connection import DBConnection
+from src.dao.db_connection import DBConnection
 
-from business_object.joueur import Joueur
-from business_object.monnaie import Monnaie
+from src.business_object.joueur import Joueur
+from src.business_object.monnaie import Monnaie
 
 
 class JoueurDao(metaclass=Singleton):

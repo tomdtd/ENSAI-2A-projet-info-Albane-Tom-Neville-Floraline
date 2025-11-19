@@ -2,8 +2,8 @@ import logging
 
 import dotenv
 
-from utils.log_init import initialiser_logs
-from view.accueil.accueil_vue import AccueilVue
+from src.utils.log_init import initialiser_logs
+from src.view.accueil.accueil_vue import AccueilVue
 
 if __name__ == "__main__":
     # On charge les variables d'envionnement

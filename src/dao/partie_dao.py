@@ -2,12 +2,12 @@ import logging
 from typing import List, Optional
 from datetime import datetime
 
-from utils.singleton import Singleton
-from utils.log_decorator import log
-from dao.db_connection import DBConnection
-from business_object.partie import Partie
-from business_object.joueur_partie import JoueurPartie
-from business_object.pot import Pot
+from src.utils.singleton import Singleton
+from src.utils.log_decorator import log
+from src.dao.db_connection import DBConnection
+from src.business_object.partie import Partie
+from src.business_object.joueur_partie import JoueurPartie
+from src.business_object.pot import Pot
 
 
 class PartieDao(metaclass=Singleton):
@@ -31,9 +31,16 @@ class PartieDao(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
+                    # Si id_partie est None, générer un nouvel ID
+                    if partie.id_partie is None:
+                        # Trouver le prochain ID disponible
+                        cursor.execute("SELECT COALESCE(MAX(id_partie), 0) + 1 AS next_id FROM partie;")
+                        next_id_row = cursor.fetchone()
+                        partie.id_partie = next_id_row["next_id"]
+
                     cursor.execute(
-                        "INSERT INTO partie (id_partie, id_table, pot, date_debut)"
-                        "VALUES (%(id_partie)s, %(id_table)s, %(pot)s, %(date_debut)s)"
+                        "INSERT INTO partie (id_partie, id_table, pot, date_debut) "
+                        "VALUES (%(id_partie)s, %(id_table)s, %(pot)s, %(date_debut)s) "
                         "RETURNING id_partie;",
                         {
                             "id_partie": partie.id_partie,
@@ -43,6 +50,8 @@ class PartieDao(metaclass=Singleton):
                         },
                     )
                     res = cursor.fetchone()
+                    if res:
+                        partie.id_partie = res["id_partie"]
                 connection.commit()
         except Exception as e:
             logging.exception("Erreur lors de la création de la partie")

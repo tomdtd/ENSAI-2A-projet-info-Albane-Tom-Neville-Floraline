@@ -1,0 +1,40 @@
+[flake8]
+# Configuration Flake8 pour éviter les erreurs de formatage non critiques
+
+# Longueur de ligne maximale
+max-line-length = 120
+
+# Codes d'erreur à ignorer
+# E501: line too long
+# E131: continuation line unaligned for hanging indent
+# E252: missing whitespace around parameter equals
+# F841: local variable is assigned to but never used
+# W503: line break before binary operator
+# W504: line break after binary operator
+# E203: whitespace before ':'
+# E266: too many leading '#' for block comment
+# W293: blank line contains whitespace
+ignore = E501,E131,E252,F841,W503,W504,E203,E266,W293
+
+# Fichiers/dossiers à exclure
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    .eggs,
+    *.egg,
+    build,
+    dist,
+    .pytest_cache,
+    .mypy_cache,
+    node_modules
+
+# Nombre maximum de complexité cyclomatique
+max-complexity = 15
+
+# Par fichier : ignorer certaines erreurs spécifiques
+per-file-ignores =
+    __init__.py:F401,F403
+    tests/*:F401,F811

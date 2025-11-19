@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 from typing import Optional, List
 
-from utils.log_decorator import log
+from src.utils.log_decorator import log
 from src.dao.admin_dao import AdminDao
 from src.business_object.admin import Admin
 from src.dao.db_connection import DBConnection

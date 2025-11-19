@@ -1,0 +1,59 @@
+[MASTER]
+# Fichiers ou répertoires à ignorer
+ignore=.git,__pycache__,.venv,venv,env,build,dist,.pytest_cache,.mypy_cache
+
+# Extensions Python à analyser
+extension-pkg-whitelist=
+
+[MESSAGES CONTROL]
+# Désactiver les messages de formatage non critiques
+disable=
+    C0301,  # Line too long
+    C0303,  # Trailing whitespace
+    C0330,  # Wrong hanging indentation
+    C0326,  # Bad whitespace
+    W0612,  # Unused variable
+    W0613,  # Unused argument
+    R0913,  # Too many arguments
+    R0914,  # Too many local variables
+    R0915,  # Too many statements
+    C0103,  # Invalid name (pour les noms de variables courtes)
+    R0801,  # Similar lines in files
+    W0611,  # Unused import
+    C0114,  # Missing module docstring
+    C0115,  # Missing class docstring
+    C0116,  # Missing function docstring
+    W0719,  # Broad exception caught
+
+[FORMAT]
+# Longueur de ligne maximale
+max-line-length=120
+
+# Nombre maximum de lignes dans un module
+max-module-lines=2000
+
+# Indentation
+indent-string='    '
+indent-after-paren=4
+
+[DESIGN]
+# Complexité
+max-complexity=15
+max-args=10
+max-locals=25
+max-returns=10
+max-branches=20
+max-statements=75
+
+[SIMILARITIES]
+# Nombre minimum de lignes similaires
+min-similarity-lines=10
+
+[BASIC]
+# Longueur des noms de variables
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+argument-rgx=[a-z_][a-z0-9_]{0,30}$
+attr-rgx=[a-z_][a-z0-9_]{0,30}$
+
+# Autoriser les noms courts
+good-names=i,j,k,e,x,y,z,id,_,df,db,pk,fk,ok

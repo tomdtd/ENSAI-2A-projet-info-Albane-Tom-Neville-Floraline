@@ -1,8 +1,8 @@
 """Implémentation de la classe MainJoueurComplete."""
 
-from business_object.liste_cartes import ListeCartes
-from business_object.combinaison import Combinaison
-from business_object.carte import Carte
+from src.business_object.liste_cartes import ListeCartes
+from src.business_object.combinaison import Combinaison
+from src.business_object.carte import Carte
 
 class MainJoueurComplete(ListeCartes):
     """

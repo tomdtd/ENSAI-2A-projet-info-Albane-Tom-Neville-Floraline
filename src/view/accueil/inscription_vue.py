@@ -5,9 +5,9 @@ from InquirerPy import inquirer
 from InquirerPy.validator import EmptyInputValidator, PasswordValidator
 from prompt_toolkit.validation import ValidationError, Validator
 
-from service.joueur_service import JoueurService
-from business_object.monnaie import Monnaie
-from view.vue_abstraite import VueAbstraite
+from src.service.joueur_service import JoueurService
+from src.business_object.monnaie import Monnaie
+from src.view.vue_abstraite import VueAbstraite
 
 import requests
 API_URL = os.environ.get("API_URL")

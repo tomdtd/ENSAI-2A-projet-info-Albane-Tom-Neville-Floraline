@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from business_object.table import Table
-from business_object.joueur import Joueur
-from service.table_service import TableService
-from dao.table_dao import TableDao
-from business_object.accesspartie import AccessPartie
+from src.business_object.table import Table
+from src.business_object.joueur import Joueur
+from src.service.table_service import TableService
+from src.dao.table_dao import TableDao
+from src.business_object.accesspartie import AccessPartie
 
 @pytest.fixture
 def mock_table_dao():

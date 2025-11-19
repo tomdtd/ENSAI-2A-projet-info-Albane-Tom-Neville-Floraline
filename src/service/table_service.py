@@ -1,13 +1,13 @@
 from tabulate import tabulate
 
-from utils.log_decorator import log
-from utils.securite import hash_password
+from src.utils.log_decorator import log
+from src.utils.securite import hash_password
 
-from business_object.table import Table
-from business_object.joueur import Joueur
-from business_object.accesspartie import AccessPartie
-from business_object.liste_cartes import ListeCartes
-from dao.table_dao import TableDao
+from src.business_object.table import Table
+from src.business_object.joueur import Joueur
+from src.business_object.accesspartie import AccessPartie
+from src.business_object.liste_cartes import ListeCartes
+from src.dao.table_dao import TableDao
 
 class TableService :
     """Classe contenant les méthodes de service des tables"""

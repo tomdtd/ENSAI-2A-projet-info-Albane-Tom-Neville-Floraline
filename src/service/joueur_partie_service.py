@@ -1,11 +1,11 @@
 from typing import Optional, List
-from utils.log_decorator import log
-from dao.joueur_partie_dao import JoueurPartieDao
-from business_object.joueur_partie import JoueurPartie
-from business_object.joueur import Joueur
-from business_object.siege import Siege
-from business_object.monnaie import Monnaie
-from business_object.liste_cartes import ListeCartes
+from src.utils.log_decorator import log
+from src.dao.joueur_partie_dao import JoueurPartieDao
+from src.business_object.joueur_partie import JoueurPartie
+from src.business_object.joueur import Joueur
+from src.business_object.siege import Siege
+from src.business_object.monnaie import Monnaie
+from src.business_object.liste_cartes import ListeCartes
 
 class JoueurPartieService:
     """Classe contenant les méthodes de service pour les joueurs dans une partie."""

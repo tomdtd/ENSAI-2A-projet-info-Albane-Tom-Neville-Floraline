@@ -1,6 +1,6 @@
 """Implémentation de la classe ListeCartes."""
 
-from business_object.carte import Carte
+from src.business_object.carte import Carte
 import random
 
 class ListeCartes():
@@ -70,7 +70,7 @@ class ListeCartes():
     
     def str_to_cartes(s):
         """Convertit une chaîne en ListeCartes."""
-        from business_object.carte import Carte
-        from business_object.liste_cartes import ListeCartes
+        from src.business_object.carte import Carte
+        from src.business_object.liste_cartes import ListeCartes
         cartes = [Carte.from_str(c.strip()) for c in s.split(',') if c]
         return ListeCartes(cartes)
