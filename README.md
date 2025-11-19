@@ -30,6 +30,7 @@ Cette application intègre plusieurs éléments utiles pour notre projet Informa
 ### Open Folder
 
 - [ ] Ouvrir **Visual Studio Code** via Onyxia SSPLAB
+- [ ] Au moment de l'ouverture de **Visual Studio Code**, il est nécessaire de configurer l'ouverture d'un port. Donc, avant de cliquer sur lancer, aller dans *access network* et ajouter le port 9876
 - [ ] Dans Visual Studio Code : File > Open Folder
 - [ ] Sélectionner le dossier   *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline*
   - *ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline* Ce dossier doit être la racine de l’Explorer
@@ -53,7 +54,7 @@ Le dépôt contient de nombreux fichiers de configuration pour paramétrer les o
 
 | Élément                      | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
-| `.github/workflows/ci.yml` | Workflow CI automatisé (tests, linting, déploiement)) |
+| `.github/workflows/ci.yml` | Workflow CI automatisé (tests, linting, déploiement) |
 | `.vscode/settings.json`    | Paramètres VSCode spécifiques au projet                      |
 | `.coveragerc`              | Configuration de la couverture de tests                                                  |
 | `.gitignore`               | Liste des fichiers/dossiers ignorés par Git            |
@@ -141,6 +142,13 @@ POSTGRES_SCHEMA=projet
 ## Création de la base de donnée prod_poker et des tables associées
 
 Executer le script creation_db_pord_poker.py
+
+## Création de l'API
+
+Pour lancer l'API, il y a deux possibilités:
+- [ ] Soit vous le lancez à la main depuis le terminal avec la commande suivante:
+uvicorn api:app --reload --host 0.0.0.0 --port 9876
+- [ ] Soit vous le lancez depuis Onyxia en faisant Ouvrir puis en cliquant sur le *port 9876* qui est en bleu
 
 ## :arrow_forward: Tests unitaires
 
