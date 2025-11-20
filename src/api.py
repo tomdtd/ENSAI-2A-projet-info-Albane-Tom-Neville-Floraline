@@ -100,6 +100,12 @@ class TransactionResponse(BaseModel):
     id_joueur: int
     solde: int
     date: datetime
+class AjouterJoueurPartieRequest(BaseModel):
+    id_joueur: int
+    id_siege: int
+    solde_partie: int
+    id_table: int
+
 @app.post("/joueurs/")
 async def creer_joueur(joueur: JoueurCreate):
     joueur_obj = joueur_service.creer(joueur.pseudo, joueur.mdp, joueur.mail, joueur.age, Monnaie(joueur.credit))
@@ -465,6 +471,25 @@ def historique_joueur(joueur_id: int):
         return historique
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/joueurs-partie/ajouter")
+def ajouter_joueur_a_partie(request: AjouterJoueurPartieRequest):
+    try:
+        joueur = joueur_service.trouver_par_id(request.id_joueur)
+        if not joueur:
+            raise HTTPException(status_code=404, detail=f"Joueur {request.id_joueur} non trouvé")
+
+        siege = Siege(id_siege=request.id_siege)
+        joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, request.solde_partie, request.id_table)
+        if joueur_partie:
+            return {"message": "Joueur ajouté à la partie avec succès", "joueur_partie": joueur_partie}
+        raise HTTPException(status_code=400, detail="Échec de l'ajout du joueur à la partie")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+
 
 if __name__ == "__main__":
     import uvicorn
