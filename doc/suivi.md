@@ -1,12 +1,12 @@
 à utiliser avec **https://hackmd.io/**
 
-# :clipboard:  Présentation du sujet
+# Présentation du sujet
 
 * **Sujet** : Application pour jouer en ligne au poker
 * **Tuteur / Tutrice** : Lucas Bouju 
 * [Dépôt GitHub](https://github.com/tomdtd/ENSAI-2A-projet-info-Albane-Tom-Neville-Floraline.git)
 
-# :dart: Échéances
+# Échéances
 
 ---
 Dossier d'Analyse :  :clock1: <iframe src="https://free.timeanddate.com/countdown/i83zdl7u/n1264/cf11/cm0/cu2/ct4/cs0/ca0/co0/cr0/ss0/cac009/cpcf00/pcfff/tcfff/fs100/szw256/szh108/iso2025-10-07T12:00:00" allowtransparency="true" frameborder="0" width="130" height="16"></iframe>
@@ -56,7 +56,7 @@ gantt
 | 22 nov. | Rapport final + code |
 | 10 déc. | Soutenance                                                    |
 
-# :construction: Todo List
+# Todo List
 
 ## Dossier Analyse
 
