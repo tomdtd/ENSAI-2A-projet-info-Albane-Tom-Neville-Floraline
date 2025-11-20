@@ -533,7 +533,7 @@ class MenuPartie(VueAbstraite):
                 # Creer dico
                 dict_comb_complete = {}
                 for id in id_max:
-                    dict_comb_complete[id] = dict_id_cartes[id] + flop_complet
+                    dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
                 id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
 
