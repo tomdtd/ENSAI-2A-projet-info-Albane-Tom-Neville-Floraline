@@ -93,85 +93,93 @@ class MenuPartie(VueAbstraite):
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
             # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> je pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
 
-            pioche = ListeCartes()
-            croupier = Croupier(pioche)
-            liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie, 2)
-            for id_joueur_partie in liste_joueurs_dans_partie:
-                main = mains_distribuees[id_joueur_partie]
-                joueur_partie_service.attribuer_cartes_main_joueur(
-                    id_table=self.table.id_table,
-                    id_joueur=id_joueur_partie,
-                    main=main
-                )
-            flop = croupier.distribuer_flop()
-            turn = ListeCartes([croupier.distribuer_turn()])      
-            river = ListeCartes([croupier.distribuer_river()]) 
+            ### partie de code executée une seule fois
+            if joueur.id_joueur == liste_joueurs_dans_partie[0]: 
+                # executera le tirage dans le script d'un seul joueur
+                pioche = ListeCartes()
+                croupier = Croupier(pioche)
+                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie, 2)
+                for id_joueur_partie in liste_joueurs_dans_partie:
+                    main = mains_distribuees[id_joueur_partie]
+                    joueur_partie_service.attribuer_cartes_main_joueur(
+                        id_table=self.table.id_table,
+                        id_joueur=id_joueur_partie,
+                        main=main
+                    )
+                flop = croupier.distribuer_flop()
+                turn = ListeCartes([croupier.distribuer_turn()])      
+                river = ListeCartes([croupier.distribuer_river()]) 
 
-            TableService().set_flop(self.table.id_table, flop)
-            TableService().set_turn(self.table.id_table, turn)
-            TableService().set_river(self.table.id_table, river)
+                TableService().set_flop(self.table.id_table, flop)
+                TableService().set_turn(self.table.id_table, turn)
+                TableService().set_river(self.table.id_table, river)
 
             id_table = self.table.id_table
             id_joueur = joueur_partie.joueur.id_joueur 
             main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
             print(f'Ta main est : {main_joueur}')
 
+            ### Partie de code executée une seule fois
+            if joueur.id_joueur == liste_joueurs_dans_partie[0]:
+                # Identifier le bouton du croupier (ici le premier joueur stocké dans la table)
+                id_bouton = TableService().get_id_joueur_bouton(self.table.id_table)
 
-            # Identifier le bouton du croupier (ici le premier joueur stocké dans la table)
-            id_bouton = TableService().get_id_joueur_bouton(self.table.id_table)
+                # Si le bouton n'est pas défini ou plus dans la liste, choisir le premier joueur
+                if id_bouton not in liste_joueurs_dans_partie:
+                    id_bouton = liste_joueurs_dans_partie[0]
+                    TableService().set_id_joueur_bouton(self.table.id_table, id_bouton)
 
-            # Si le bouton n'est pas défini ou plus dans la liste, choisir le premier joueur
-            if id_bouton not in liste_joueurs_dans_partie:
-                id_bouton = liste_joueurs_dans_partie[0]
-                TableService().set_id_joueur_bouton(self.table.id_table, id_bouton)
+                bouton_index = liste_joueurs_dans_partie.index(id_bouton)
+                nb_joueurs = len(liste_joueurs_dans_partie)
 
-            bouton_index = liste_joueurs_dans_partie.index(id_bouton)
-            nb_joueurs = len(liste_joueurs_dans_partie)
+                # Indices des blindes
+                indice_petite_blinde = (bouton_index + 1) % nb_joueurs
+                indice_grosse_blinde = (bouton_index + 2) % nb_joueurs
 
-            # Indices des blindes
-            indice_petite_blinde = (bouton_index + 1) % nb_joueurs
-            indice_grosse_blinde = (bouton_index + 2) % nb_joueurs
+                id_petite_blinde = liste_joueurs_dans_partie[indice_petite_blinde]
+                id_grosse_blinde = liste_joueurs_dans_partie[indice_grosse_blinde]
 
-            id_petite_blinde = liste_joueurs_dans_partie[indice_petite_blinde]
-            id_grosse_blinde = liste_joueurs_dans_partie[indice_grosse_blinde]
+                # Mettre à jour les statuts
+                joueur_partie_service.mettre_a_jour_statut(id_petite_blinde, self.table.id_table, "tour petite blinde")
+                joueur_partie_service.mettre_a_jour_statut(id_grosse_blinde, self.table.id_table, "tour de blinde")
 
-            # Mettre à jour les statuts
-            joueur_partie_service.mettre_a_jour_statut(id_petite_blinde, self.table.id_table, "tour petite blinde")
-            joueur_partie_service.mettre_a_jour_statut(id_grosse_blinde, self.table.id_table, "tour de blinde")
+            if joueur_partie_service.obtenir_statut(joueur.id_joueur) == "tour petite blinde":
+                # Débiter automatiquement les blindes et alimenter le pot
+                credit_pb = JoueurService().recuperer_credit(id_petite_blinde)
+                montant_a_donner_blinde = float(credit_pb.get()) - float(self.table.blind_initial.get()/2)
+                if montant_a_donner_blinde < 0:
+                    print("Solde insufisant pour payer la blinde")
+                    quitter_partie = True
+                    break
+                else:
+                    JoueurService().modifier_credit(id_petite_blinde, float(credit_pb.get()) - float(self.table.blind_initial.get()/2))
 
-            # Débiter automatiquement les blindes et alimenter le pot
-            credit_pb = JoueurService().recuperer_credit(id_petite_blinde)
-            montant_a_donner_blinde = float(credit_pb.get()) - float(self.table.blind_initial.get()/2)
-            if montant_a_donner_blinde < 0:
-                print("Solde insufisant pour payer la blinde")
-                quitter_partie = True
-                break
-            else:
-                JoueurService().modifier_credit(id_petite_blinde, float(credit_pb.get()) - float(self.table.blind_initial.get()/2))
+                TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get()/2)
 
-            TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get()/2)
+            if joueur_partie_service.obtenir_statut(joueur.id_joueur) == "tour de blinde":
+                credit_gb = JoueurService().recuperer_credit(id_grosse_blinde)
+                montant_a_donner_petite_blinde = float(credit_gb.get()) - float(self.table.blind_initial.get())
+                if montant_a_donner_petite_blinde < 0:
+                    print("Solde insufisant pour payer la blinde")
+                    quitter_partie = True
+                    break
+                else:
+                    JoueurService().modifier_credit(id_grosse_blinde, float(credit_gb.get()) - float(self.table.blind_initial.get()))
 
-            credit_gb = JoueurService().recuperer_credit(id_grosse_blinde)
-            montant_a_donner_petite_blinde = float(credit_gb.get()) - float(self.table.blind_initial.get())
-            if montant_a_donner_petite_blinde < 0:
-                print("Solde insufisant pour payer la blinde")
-                quitter_partie = True
-                break
-            else:
-                JoueurService().modifier_credit(id_grosse_blinde, float(credit_gb.get()) - float(self.table.blind_initial.get()))
-
-            TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
+                TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
 
 
             tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River']
             for tour in tours_de_mise:
 
-                if num_tour_joueur >= len(liste_joueurs_dans_partie):
-                    num_tour_joueur = 0
-                id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
-                num_tour_joueur += 1
-                TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
+                ### incrémenter le tour du joueur au début
+                if joueur.id_joueur == liste_joueurs_dans_partie[0] and tour == 'Pré-flop':
+                    if num_tour_joueur >= len(liste_joueurs_dans_partie):
+                        num_tour_joueur = 0
+                    id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
+                    num_tour_joueur += 1
+                    TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
 
 
                 liste_joueurs_en_jeu = []
@@ -181,7 +189,7 @@ class MenuPartie(VueAbstraite):
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
                 
-
+                passage_prochain_joueur = True
                 while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
                     print("En attente du tour des autres joueurs...")
                     time.sleep(2) 
@@ -198,6 +206,42 @@ class MenuPartie(VueAbstraite):
                     if action_attente == "Quitter la partie":
                         quitter_partie = True
                         break
+
+                    # Mettre a jour une fois pour passer au prochain joueur
+                    if passage_prochain_joueur = True:
+                        #mise a jour du joueur dont c'est le tour
+
+                        # recharger la liste des joueurs et filtrer les joueurs actifs
+                        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                        statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
+                        liste_joueurs_en_jeu = [
+                            jid for jid in liste_joueurs_dans_partie
+                            if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
+                        ]
+
+                        if len(liste_joueurs_en_jeu) == 0:
+                            # plus personne en jeu (sécurité) : rien à faire
+                            print("Aucun joueur en jeu pour passer le tour.")
+                        else:
+                            # id courant (celui qui venait de jouer) stocké en DB
+                            id_courant = TableService().get_id_joueur_tour(self.table.id_table)
+
+                            # s'assurer que id_courant est dans la liste (même type !)
+                            try:
+                                idx = liste_joueurs_en_jeu.index(id_courant)
+                            except ValueError:
+                            # si l'id courant n'est pas présent (ex : il s'est couché), on prend
+                            # l'indice du premier joueur en jeu (ou le joueur suivant de num_tour_joueur si tu préfères)
+                                idx = 0
+
+                            prochain_idx = (idx + 1) % len(liste_joueurs_en_jeu)
+                            prochain_id = liste_joueurs_en_jeu[prochain_idx]
+
+                            # écrire en base : c'est cette écriture qui permettra aux autres clients de voir le changement
+                            TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
+
+                            print(f"Tour passé de {id_courant} à {prochain_id}")
+                        passage_prochain_joueur = False
                     
                     # Vérifier que les joueurs ne sont pas partis pendant l'attente
                     liste_joueurs_en_jeu = []
@@ -346,39 +390,6 @@ class MenuPartie(VueAbstraite):
                 if len(liste_joueurs_en_jeu) <= 1:
                     break
 
-                #mise a jour du joueur dont c'est le tour
-
-                # recharger la liste des joueurs et filtrer les joueurs actifs
-                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-                statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
-                liste_joueurs_en_jeu = [
-                    jid for jid in liste_joueurs_dans_partie
-                    if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
-                ]
-
-                if len(liste_joueurs_en_jeu) == 0:
-                    # plus personne en jeu (sécurité) : rien à faire
-                    print("Aucun joueur en jeu pour passer le tour.")
-                else:
-                    # id courant (celui qui venait de jouer) stocké en DB
-                    id_courant = TableService().get_id_joueur_tour(self.table.id_table)
-
-                    # s'assurer que id_courant est dans la liste (même type !)
-                    try:
-                        idx = liste_joueurs_en_jeu.index(id_courant)
-                    except ValueError:
-                    # si l'id courant n'est pas présent (ex : il s'est couché), on prend
-                    # l'indice du premier joueur en jeu (ou le joueur suivant de num_tour_joueur si tu préfères)
-                        idx = 0
-
-                    prochain_idx = (idx + 1) % len(liste_joueurs_en_jeu)
-                    prochain_id = liste_joueurs_en_jeu[prochain_idx]
-
-                    # écrire en base : c'est cette écriture qui permettra aux autres clients de voir le changement
-                    TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
-
-                    print(f"Tour passé de {id_courant} à {prochain_id}")
-
                     
                     if action == "Quitter la partie":
                         quitter_partie = True
@@ -492,102 +503,111 @@ class MenuPartie(VueAbstraite):
                 if quitter_partie:
                         break
                 
-            #Gestion de la fin de la main
+            #Gestion de la fin de la main -> code executé dans le script d'un seul joueur pour qu'il s'execute une fois
 
-            #Cas ou il reste un seul joueur : il remporte le pot
-            if len(liste_joueurs_en_jeu) == 1:
-                id_gagnant = liste_joueurs_en_jeu[0]
-            
-                pot = TableService().get_pot(self.table.id_table)
-                print(f'Fin de la main : le gagnant remporte le pot : {pot}')
+            #recalcul du nombre de joueurs en jeu
+                    liste_joueurs_en_jeu = []
+                    for id_j in liste_joueurs_dans_partie:
+                        statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                        if statut_joueur in statuts_en_jeu:
+                            liste_joueurs_en_jeu.append(id_j)
+
+            if joueur.id_joueur == liste_joueurs_en_jeu[0]: # premier joueur de la liste pris arbitrairement pour que le code s'execute une seule fois
+                #Cas ou il reste un seul joueur : il remporte le pot
+                if len(liste_joueurs_en_jeu) == 1:
+                    id_gagnant = liste_joueurs_en_jeu[0]
                 
-                nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
-                JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
-                TableService().retirer_pot(self.table.id_table, pot)
-
-            # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
-
-            #Recuperer les mains des joueurs en jeu
-            dict_id_cartes = {}
-            for id_en_jeu in liste_joueurs_en_jeu:
-                dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
-            
-            #Comparer les mains
-            dict_id_combinaison = {}
-            # aplatir en UNE LISTE de cartes (et non pas liste de listes)
-            flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
-                        (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
-                        (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
-                        
-            for id, main_obj in dict_id_cartes.items():
-                main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
-                main_complete = MainJoueurComplete(main_list + flop_complet)
-                dict_id_combinaison[id] = main_complete.combinaison()
-            #Trouver la valeur maximale
-            max_val = max(dict_id_combinaison.values())
-            combinaison_max = Combinaison(max_val)
-            id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
-            
-            id_gagnant = id_max[0]
-            if not len(id_max) == 1:
-                # Creer dico
-                dict_comb_complete = {}
-                for id in id_max:
-                    dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
-                id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
-
-
-            #Créditer le gagnant
-            if isinstance(id_gagnant, list):
-                noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
-                print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-                # Cas plusieurs gagnant il faut diviser le pot
-                pot = int(TableService().get_pot(self.table.id_table))
-                repartition_pot = int(pot/len(id_gagnant))
-
-                for id in id_gagnant:
-                    nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
-                    JoueurService().modifier_credit(id, repartition_pot + int(nouveau_solde_du_gagnant.get()))
-                
-                TableService().retirer_pot(self.table.id_table, pot)
-
-            else:
-                print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-                
-                pot = TableService().get_pot(self.table.id_table)
-                print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                
-                nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
-                JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
-                TableService().retirer_pot(self.table.id_table, pot)
-            
-            # Remet en jeu les joueurs couchés pour commencer une prochaine main
-            liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            for id_j in liste_joueurs_dans_partie:
-                statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
-                if statut_joueur == "s'est couché":
-                    joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
-            
-            # Faire tourner la blinde
-
-            # Récupérer l'id du bouton actuel
-            id_bouton_actuel = table_service.get_id_joueur_bouton(self.table.id_table)
-
-            # Calculer le nouveau bouton (le joueur suivant dans la liste)
-            index_actuel = liste_joueurs_dans_partie.index(id_bouton_actuel)
-            nouveau_index_bouton = (index_actuel + 1) % len(liste_joueurs_dans_partie)
-            nouveau_bouton = liste_joueurs_dans_partie[nouveau_index_bouton]
-
-            # Mettre à jour dans la DB
-            table_service.set_id_joueur_bouton(self.table.id_table, nouveau_bouton)
-
-            # Changer les statuts des joueurs
-            for id_j in liste_joueurs_dans_partie:
-                statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
-                if (statut_joueur == "tour de blinde") or (statut_joueur == "tour petite blinde"):
-                    joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
-            
+                    pot = TableService().get_pot(self.table.id_table)
+                    print(f'Fin de la main : le gagnant remporte le pot : {pot}')
                     
+                    nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
+                    JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
+                    TableService().retirer_pot(self.table.id_table, pot)
+
+                # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
+
+                #Recuperer les mains des joueurs en jeu
+                dict_id_cartes = {}
+                for id_en_jeu in liste_joueurs_en_jeu:
+                    dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
+                
+                #Comparer les mains
+                dict_id_combinaison = {}
+                # aplatir en UNE LISTE de cartes (et non pas liste de listes)
+                flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
+                            (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
+                            (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
+                            
+                for id, main_obj in dict_id_cartes.items():
+                    main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
+                    main_complete = MainJoueurComplete(main_list + flop_complet)
+                    dict_id_combinaison[id] = main_complete.combinaison()
+                #Trouver la valeur maximale
+                max_val = max(dict_id_combinaison.values())
+                combinaison_max = Combinaison(max_val)
+                id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
+                
+                id_gagnant = id_max[0]
+                if not len(id_max) == 1:
+                    # Creer dico
+                    dict_comb_complete = {}
+                    for id in id_max:
+                        dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
+                    id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
+
+
+                #Créditer le gagnant
+                if isinstance(id_gagnant, list):
+                    noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
+                    print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
+                    # Cas plusieurs gagnant il faut diviser le pot
+                    pot = int(TableService().get_pot(self.table.id_table))
+                    repartition_pot = int(pot/len(id_gagnant))
+
+                    for id in id_gagnant:
+                        nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
+                        JoueurService().modifier_credit(id, repartition_pot + int(nouveau_solde_du_gagnant.get()))
+                    
+                    TableService().retirer_pot(self.table.id_table, pot)
+
+                else:
+                    print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
+                    
+                    pot = TableService().get_pot(self.table.id_table)
+                    print(f'Fin de la main : le gagnant remporte le pot : {pot}')
+                    
+                    nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
+                    JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
+                    TableService().retirer_pot(self.table.id_table, pot)
+                
+                # Remet en jeu les joueurs couchés pour commencer une prochaine main
+                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                for id_j in liste_joueurs_dans_partie:
+                    statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                    if statut_joueur == "s'est couché":
+                        joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
+                
+                # Faire tourner la blinde
+
+                # Récupérer l'id du bouton actuel
+                id_bouton_actuel = table_service.get_id_joueur_bouton(self.table.id_table)
+
+                # Calculer le nouveau bouton (le joueur suivant dans la liste)
+                index_actuel = liste_joueurs_dans_partie.index(id_bouton_actuel)
+                nouveau_index_bouton = (index_actuel + 1) % len(liste_joueurs_dans_partie)
+                nouveau_bouton = liste_joueurs_dans_partie[nouveau_index_bouton]
+
+                # Mettre à jour dans la DB
+                table_service.set_id_joueur_bouton(self.table.id_table, nouveau_bouton)
+
+                # Changer les statuts des joueurs
+                for id_j in liste_joueurs_dans_partie:
+                    statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
+                    if (statut_joueur == "tour de blinde") or (statut_joueur == "tour petite blinde"):
+                        joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
+                        
+            # Affichage pour l'ensemble des utilisateurs
+                        
             if quitter_partie:
                     break
 
