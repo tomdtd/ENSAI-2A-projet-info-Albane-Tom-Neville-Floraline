@@ -1,4 +1,5 @@
 ```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'11px'}, 'er': {'layoutDirection': 'TB', 'minEntityWidth': 100, 'minEntityHeight': 75}}}%%
 erDiagram
     %% ===== ENTITÉS PRINCIPALES =====
 
@@ -112,3 +113,28 @@ erDiagram
     JOUEUR ||--o{ JOUEUR_BANNIS : "peut être banni"
 ```
 
+
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'11px'}, 'flowchart': {'nodeSpacing': 30, 'rankSpacing': 40}}}%%
+graph TB
+    subgraph "Gestion des Joueurs"
+        J[Joueur] --> P[Portefeuille]
+        J --> T[Transaction]
+        A[Admin] --> T
+        A --> B[Bannissement]
+        J --> B
+    end
+
+    subgraph "Jeu de Poker"
+        J --> TJ[Table_Joueur]
+        TP[Table_Poker] --> TJ
+        TP --> PA[Partie]
+        J --> PJ[Partie_Joueur]
+        TP --> PJ
+    end
+
+    style J fill:#4CAF50
+    style A fill:#FF9800
+    style TP fill:#2196F3
+```
