@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from src.utils.log_decorator import log
 from src.dao.joueur_dao import JoueurDao
+from src.dao.statistiques_dao import StatistiquesDao
 from src.business_object.joueur import Joueur
 from src.utils.securite import hash_password
 from src.business_object.monnaie import Monnaie
@@ -192,3 +193,54 @@ class JoueurService:
             raise ValueError("L'identifiant du joueur ne peut pas être vide.")
 
         return JoueurDao().recuperer_credit(id_joueur)
+
+    @log
+    def consulter_mes_statistiques(self, id_joueur: int) -> Optional[Dict]:
+        """Permet à un joueur de consulter ses propres statistiques.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur qui consulte ses statistiques.
+
+        Returns
+        -------
+        Dict | None
+            Dictionnaire contenant les statistiques du joueur,
+            ou None si le joueur n'existe pas.
+        """
+        if id_joueur is None:
+            raise ValueError("L'identifiant du joueur ne peut pas être vide.")
+
+        # Vérifier que le joueur existe
+        joueur = JoueurDao().trouver_par_id(id_joueur)
+        if not joueur:
+            return None
+
+        # Récupérer les statistiques via StatistiquesDao
+        return StatistiquesDao().obtenir_stats_joueur(id_joueur)
+
+    @log
+    def consulter_mon_historique_parties(
+        self, id_joueur: int, limite: int = 10
+    ) -> List[Dict]:
+        """Permet à un joueur de consulter son historique de parties.
+
+        Parameters
+        ----------
+        id_joueur : int
+            Identifiant du joueur.
+        limite : int
+            Nombre de parties à récupérer (défaut: 10).
+
+        Returns
+        -------
+        List[Dict]
+            Liste des dernières parties jouées.
+        """
+        if id_joueur is None:
+            raise ValueError("L'identifiant du joueur ne peut pas être vide.")
+
+        return StatistiquesDao().obtenir_historique_parties_joueur(
+            id_joueur, limite
+        )

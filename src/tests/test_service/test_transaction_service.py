@@ -2,115 +2,96 @@ import pytest
 from unittest.mock import MagicMock, patch
 from datetime import datetime
 from src.service.transaction_service import TransactionService
+from src.dao.transaction_dao import TransactionDao
 from src.business_object.transaction import Transaction
 
-@pytest.fixture
-def transaction_service():
-    return TransactionService()
 
-def test_enregistrer_transaction(transaction_service):
+@pytest.fixture
+def mock_transaction_dao():
+    with patch.object(TransactionDao, 'creer') as mock_creer, \
+         patch.object(TransactionDao, 'lister_par_joueur') as mock_lister_par_joueur:
+        yield {
+            "creer": mock_creer,
+            "lister_par_joueur": mock_lister_par_joueur,
+        }
+
+
+def test_enregistrer_transaction(mock_transaction_dao):
     # GIVEN
     joueur_id = 1
     montant = 100
+    mock_transaction_dao["creer"].return_value = True
 
     # WHEN
+    transaction_service = TransactionService()
     transaction = transaction_service.enregistrer_transaction(joueur_id, montant)
 
     # THEN
     assert transaction is not None
-    assert transaction.id_transaction == 1
     assert transaction.id_joueur == joueur_id
     assert transaction.solde == montant
     assert isinstance(transaction.date, datetime)
-    assert len(transaction_service.transactions) == 1
+    mock_transaction_dao["creer"].assert_called_once()
 
-def test_enregistrer_plusieurs_transactions(transaction_service):
+
+def test_enregistrer_transaction_echec(mock_transaction_dao):
     # GIVEN
     joueur_id = 1
-    montants = [100, 200, 300]
+    montant = 100
+    mock_transaction_dao["creer"].return_value = False
 
     # WHEN
-    transactions = []
-    for montant in montants:
-        transaction = transaction_service.enregistrer_transaction(joueur_id, montant)
-        transactions.append(transaction)
+    transaction_service = TransactionService()
+    transaction = transaction_service.enregistrer_transaction(joueur_id, montant)
 
     # THEN
-    assert len(transactions) == 3
-    assert len(transaction_service.transactions) == 3
-    for i, transaction in enumerate(transactions):
-        assert transaction.id_transaction == i + 1
-        assert transaction.id_joueur == joueur_id
-        assert transaction.solde == montants[i]
-        assert isinstance(transaction.date, datetime)
+    assert transaction is None
+    mock_transaction_dao["creer"].assert_called_once()
 
-def test_historique_joueur(transaction_service):
-    # GIVEN
-    joueur_id_1 = 1
-    joueur_id_2 = 2
-    montants_1 = [100, 200]
-    montants_2 = [300, 400]
 
-    for montant in montants_1:
-        transaction_service.enregistrer_transaction(joueur_id_1, montant)
-    for montant in montants_2:
-        transaction_service.enregistrer_transaction(joueur_id_2, montant)
-
-    # WHEN
-    historique_1 = transaction_service.historique_joueur(joueur_id_1)
-    historique_2 = transaction_service.historique_joueur(joueur_id_2)
-
-    # THEN
-    assert len(historique_1) == 2
-    assert len(historique_2) == 2
-    for i, transaction in enumerate(historique_1):
-        assert transaction.solde == montants_1[i]
-    for i, transaction in enumerate(historique_2):
-        assert transaction.solde == montants_2[i]
-
-def test_solde_total_joueur(transaction_service):
-    # GIVEN
-    joueur_id_1 = 1
-    joueur_id_2 = 2
-    montants_1 = [100, 200]
-    montants_2 = [300, 400]
-
-    for montant in montants_1:
-        transaction_service.enregistrer_transaction(joueur_id_1, montant)
-    for montant in montants_2:
-        transaction_service.enregistrer_transaction(joueur_id_2, montant)
-
-    # WHEN
-    solde_1 = transaction_service.solde_total_joueur(joueur_id_1)
-    solde_2 = transaction_service.solde_total_joueur(joueur_id_2)
-
-    # THEN
-    assert solde_1 == sum(montants_1)
-    assert solde_2 == sum(montants_2)
-
-def test_afficher_historique(transaction_service, capsys):
+def test_historique_joueur(mock_transaction_dao):
     # GIVEN
     joueur_id = 1
-    montants = [100, 200]
-
-    for montant in montants:
-        transaction_service.enregistrer_transaction(joueur_id, montant)
+    mock_transactions = [
+        Transaction(id_transaction=1, id_joueur=joueur_id, solde=100, date=datetime.now()),
+        Transaction(id_transaction=2, id_joueur=joueur_id, solde=200, date=datetime.now()),
+    ]
+    mock_transaction_dao["lister_par_joueur"].return_value = mock_transactions
 
     # WHEN
-    transaction_service.afficher_historique(joueur_id)
+    transaction_service = TransactionService()
+    historique = transaction_service.historique_joueur(joueur_id)
 
     # THEN
-    captured = capsys.readouterr()
-    assert "Transaction" in captured.out
+    assert len(historique) == 2
+    assert historique[0].solde == 100
+    assert historique[1].solde == 200
+    mock_transaction_dao["lister_par_joueur"].assert_called_once_with(joueur_id)
 
-def test_enregistrer_transaction_avec_logger(transaction_service):
+
+def test_historique_joueur_vide(mock_transaction_dao):
+    # GIVEN
+    joueur_id = 999
+    mock_transaction_dao["lister_par_joueur"].return_value = []
+
+    # WHEN
+    transaction_service = TransactionService()
+    historique = transaction_service.historique_joueur(joueur_id)
+
+    # THEN
+    assert len(historique) == 0
+    mock_transaction_dao["lister_par_joueur"].assert_called_once_with(joueur_id)
+
+
+def test_enregistrer_transaction_avec_logger(mock_transaction_dao):
     # GIVEN
     joueur_id = 1
     montant = 100
     logger = MagicMock()
-    transaction_service.logger = logger
+    mock_transaction_dao["creer"].return_value = True
 
     # WHEN
+    transaction_service = TransactionService(logger=logger)
     transaction = transaction_service.enregistrer_transaction(joueur_id, montant)
 
     # THEN

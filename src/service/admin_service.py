@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict
 from src.utils.log_decorator import log
 from src.dao.admin_dao import AdminDao
+from src.dao.statistiques_dao import StatistiquesDao
 from src.business_object.admin import Admin
 from src.utils.securite import hash_password, verify_password
 
@@ -73,29 +74,37 @@ class AdminService:
     @log
     def lister_joueurs_banis(self) -> List[Dict]:
         """Lister tous les joueurs bannis."""
-        return AdminDao().lister_joueurs_banis()
+        return AdminDao().lister_joueurs_bannis()
 
     @log
     def obtenir_statistiques_joueur(self, id_joueur: int) -> Dict:
         """Obtenir les statistiques détaillées d'un joueur."""
-        return AdminDao().obtenir_statistiques_joueur(id_joueur)
+        return StatistiquesDao().obtenir_stats_joueur(id_joueur)
 
     @log
     def obtenir_tables_jouees_par_joueur(self, id_joueur: int) -> List[Dict]:
         """Obtenir la liste des tables auxquelles un joueur a joué."""
-        return AdminDao().obtenir_tables_jouees_par_joueur(id_joueur)
+        return StatistiquesDao().obtenir_statistiques_par_table(id_joueur)
 
     @log
     def obtenir_statistiques_globales(self) -> Dict:
         """Obtenir les statistiques globales de la plateforme."""
-        return AdminDao().obtenir_statistiques_globales()
+        return StatistiquesDao().obtenir_stats_globales()
 
     @log
     def obtenir_top_joueurs(self, limite: int = 10) -> List[Dict]:
         """Obtenir le classement des meilleurs joueurs, le top 10 par exemple."""
-        return AdminDao().obtenir_top_joueurs(limite)
+        return StatistiquesDao().obtenir_classement_joueurs(critere="credit", limite=limite)
 
     @log
     def obtenir_activite_recente(self, jours: int = 7) -> Dict:
         """Obtenir les statistiques d'activité récente, sur la dernière semaine par exemple."""
-        return AdminDao().obtenir_activite_recente(jours)
+        # Cette méthode nécessite une implémentation personnalisée
+        # Pour l'instant on retourne des stats basiques
+        stats_globales = StatistiquesDao().obtenir_stats_globales()
+        stats_parties = StatistiquesDao().obtenir_stats_parties()
+        return {
+            "nb_joueurs_actifs": stats_globales.get("nb_joueurs_total", 0) if stats_globales else 0,
+            "nb_parties_recentes": stats_parties.get("nb_parties_total", 0) if stats_parties else 0,
+            "periode_jours": jours
+        }

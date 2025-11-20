@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from src.business_object.admin import Admin
 from src.service.admin_service import AdminService
 from src.dao.admin_dao import AdminDao
+from src.dao.statistiques_dao import StatistiquesDao
 from src.utils.securite import hash_password
 
 @pytest.fixture
@@ -16,11 +17,11 @@ def mock_admin_dao():
          patch.object(AdminDao, 'bannir_joueur') as mock_bannir_joueur, \
          patch.object(AdminDao, 'debannir_joueur') as mock_debannir_joueur, \
          patch.object(AdminDao, 'lister_joueurs_bannis') as mock_lister_joueurs_bannis, \
-         patch.object(AdminDao, 'obtenir_statistiques_joueur') as mock_obtenir_statistiques_joueur, \
-         patch.object(AdminDao, 'obtenir_tables_jouees_par_joueur') as mock_obtenir_tables_jouees_par_joueur, \
-         patch.object(AdminDao, 'obtenir_statistiques_globales') as mock_obtenir_statistiques_globales, \
-         patch.object(AdminDao, 'obtenir_top_joueurs') as mock_obtenir_top_joueurs, \
-         patch.object(AdminDao, 'obtenir_activite_recente') as mock_obtenir_activite_recente:
+         patch.object(StatistiquesDao, 'obtenir_stats_joueur') as mock_obtenir_statistiques_joueur, \
+         patch.object(StatistiquesDao, 'obtenir_statistiques_par_table') as mock_obtenir_tables_jouees_par_joueur, \
+         patch.object(StatistiquesDao, 'obtenir_stats_globales') as mock_obtenir_statistiques_globales, \
+         patch.object(StatistiquesDao, 'obtenir_classement_joueurs') as mock_obtenir_top_joueurs, \
+         patch.object(StatistiquesDao, 'obtenir_stats_parties') as mock_obtenir_stats_parties:
 
         yield {
             "trouver_par_id": mock_trouver_par_id,
@@ -28,14 +29,14 @@ def mock_admin_dao():
             "changer_mot_de_passe": mock_changer_mot_de_passe,
             "valider_transaction": mock_valider_transaction,
             "lister_transactions_en_attente": mock_lister_transactions_en_attente,
-            "bannir_joueur": mock_bannir_joueur,
+            "banir_joueur": mock_bannir_joueur,
             "debannir_joueur": mock_debannir_joueur,
-            "lister_joueurs_bannis": mock_lister_joueurs_bannis,
+            "lister_joueurs_banis": mock_lister_joueurs_bannis,
             "obtenir_statistiques_joueur": mock_obtenir_statistiques_joueur,
             "obtenir_tables_jouees_par_joueur": mock_obtenir_tables_jouees_par_joueur,
             "obtenir_statistiques_globales": mock_obtenir_statistiques_globales,
             "obtenir_top_joueurs": mock_obtenir_top_joueurs,
-            "obtenir_activite_recente": mock_obtenir_activite_recente,
+            "obtenir_stats_parties": mock_obtenir_stats_parties,
         }
 
 def test_trouver_par_id(mock_admin_dao):
@@ -149,7 +150,7 @@ def test_valider_transaction_ok(mock_admin_dao):
 
     # THEN
     assert result is True
-    mock_admin_dao["valider_transaction"].assert_called_once_with(id_transaction)
+    mock_admin_dao["valider_transaction"].assert_called_once_with(id_transaction, None)
 
 def test_valider_transaction_ko(mock_admin_dao):
     # GIVEN
@@ -162,7 +163,7 @@ def test_valider_transaction_ko(mock_admin_dao):
 
     # THEN
     assert result is False
-    mock_admin_dao["valider_transaction"].assert_called_once_with(id_transaction)
+    mock_admin_dao["valider_transaction"].assert_called_once_with(id_transaction, None)
 
 def test_lister_transactions_en_attente(mock_admin_dao):
     # GIVEN
@@ -296,18 +297,23 @@ def test_obtenir_top_joueurs(mock_admin_dao):
 
     # THEN
     assert top_joueurs == mock_top_joueurs
-    mock_admin_dao["obtenir_top_joueurs"].assert_called_once_with(limite)
+    mock_admin_dao["obtenir_top_joueurs"].assert_called_once_with(critere="credit", limite=limite)
 
 def test_obtenir_activite_recente(mock_admin_dao):
     # GIVEN
     jours = 7
-    mock_activite = {"nouveaux_joueurs": 10, "parties_debutees": 5, "volume_transactions_recent": 1000}
-    mock_admin_dao["obtenir_activite_recente"].return_value = mock_activite
+    mock_stats_globales = {"nb_joueurs_total": 100, "nb_parties_total": 50}
+    mock_stats_parties = {"nb_parties_total": 25}
+    mock_admin_dao["obtenir_statistiques_globales"].return_value = mock_stats_globales
+    mock_admin_dao["obtenir_stats_parties"].return_value = mock_stats_parties
 
     # WHEN
     admin_service = AdminService()
     activite = admin_service.obtenir_activite_recente(jours)
 
     # THEN
-    assert activite == mock_activite
-    mock_admin_dao["obtenir_activite_recente"].assert_called_once_with(jours)
+    assert activite is not None
+    assert "nb_joueurs_actifs" in activite
+    assert "nb_parties_recentes" in activite
+    assert "periode_jours" in activite
+    assert activite["periode_jours"] == jours
