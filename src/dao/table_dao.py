@@ -34,27 +34,12 @@ class TableDao(metaclass=Singleton):
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
-                    # Si id_table est fourni, utiliser OVERRIDING SYSTEM VALUE
-                    if table.id_table is not None:
-                        cursor.execute(
-                            "INSERT INTO table_poker (id_table, nb_sieges, blind_initial) "
-                            "OVERRIDING SYSTEM VALUE "
-                            "VALUES (%(id_table)s, %(nb_sieges)s, %(blind_initial)s) "
-                            "RETURNING id_table;",
-                            {
-                                "id_table": table.id_table,
-                                "nb_sieges": table.nb_sieges,
-                                "blind_initial": table.blind_initial.get()
-                            },
-                        )
-                    else:
-                        # Sinon, laisser la base générer l'ID
-                        cursor.execute(
-                            "INSERT INTO table_poker (nb_sieges, blind_initial) "
-                            "VALUES (%(nb_sieges)s, %(blind_initial)s) "
-                            "RETURNING id_table;",
-                            {"nb_sieges": table.nb_sieges, "blind_initial": table.blind_initial.get()},
-                        )
+                    cursor.execute(
+                        "INSERT INTO table_poker (nb_sieges, blind_initial) "
+                        "VALUES (%(nb_sieges)s, %(blind_initial)s) "
+                        "RETURNING id_table;",
+                        {"nb_sieges": table.nb_sieges, "blind_initial": table.blind_initial.get()},
+                    )
                     res = cursor.fetchone()
                     if res:
                         table.id_table = res["id_table"]
@@ -96,10 +81,9 @@ class TableDao(metaclass=Singleton):
         table = None
         if res:
             table = Table(
-                id_table=res["id_table"],
                 nb_sieges=res["nb_sieges"],
                 blind_initial=Monnaie(res["blind_initial"]),
-
+                id_table=res["id_table"]
             )
             # Note: nb_joueurs n'est pas un attribut de Table, donc on ne le set pas
 
@@ -132,9 +116,9 @@ class TableDao(metaclass=Singleton):
         if res:
             for row in res:
                 table = Table(
-                    id_table=row["id_table"],
                     nb_sieges=row["nb_sieges"],
                     blind_initial=Monnaie(row["blind_initial"]),
+                    id_table=row["id_table"]
                 )
                 liste_tables.append(table)
 
@@ -238,9 +222,9 @@ class TableDao(metaclass=Singleton):
         if res:
             for row in res:
                 table = Table(
-                    id_table=row["id_table"],
                     nb_sieges=row["nb_sieges"],
                     blind_initial=Monnaie(row["blind_initial"]),
+                    id_table=row["id_table"]
                 )
                 liste_tables.append(table)
 

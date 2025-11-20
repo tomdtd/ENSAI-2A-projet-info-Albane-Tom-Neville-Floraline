@@ -31,7 +31,7 @@ def test_creer_table_ok(mock_table_dao, mock_access_partie):
     # GIVEN
     nb_sieges = 5
     blind_initial = 10
-    mock_table = Table(id_table=1, nb_sieges=nb_sieges, blind_initial=blind_initial)
+    mock_table = Table(nb_sieges=nb_sieges, blind_initial=blind_initial, id_table=1)
     mock_access_partie["creer_table"].return_value = mock_table
     mock_table_dao["creer"].return_value = True
 
@@ -48,7 +48,7 @@ def test_creer_table_ko(mock_table_dao, mock_access_partie):
     # GIVEN
     nb_sieges = 5
     blind_initial = 10
-    mock_table = Table(id_table=1, nb_sieges=nb_sieges, blind_initial=blind_initial)
+    mock_table = Table(nb_sieges=nb_sieges, blind_initial=blind_initial, id_table=1)
     mock_access_partie["creer_table"].return_value = mock_table
     mock_table_dao["creer"].return_value = False
 
@@ -65,7 +65,7 @@ def test_rejoindre_table_ok(mock_table_dao):
     # GIVEN
     joueur = Joueur(id_joueur=1, pseudo="Joueur1", age=25, mail="joueur1@example.com", credit=1000)
     id_table = 1
-    mock_table = Table(id_table=id_table, nb_sieges=8, blind_initial=10)
+    mock_table = Table(nb_sieges=8, blind_initial=10, id_table=id_table)
     mock_table.sieges = [MagicMock(occupe=False, id_joueur=None) for _ in range(5)]
     mock_table_dao["trouver_par_id"].return_value = mock_table
     mock_table_dao["modifier"].return_value = True
@@ -99,7 +99,7 @@ def test_rejoindre_table_ko_table_remplie(mock_table_dao):
     # GIVEN
     joueur = Joueur(id_joueur=1, pseudo="Joueur1", age=25, mail="joueur1@example.com", credit=1000)
     id_table = 1
-    mock_table = Table(id_table=id_table, nb_sieges=8, blind_initial=10)
+    mock_table = Table(nb_sieges=8, blind_initial=10, id_table=id_table)
     mock_table.sieges = [MagicMock(occupe=True, id_joueur=1) for _ in range(8)]
     mock_table_dao["trouver_par_id"].return_value = mock_table
 
@@ -115,8 +115,8 @@ def test_rejoindre_table_ko_table_remplie(mock_table_dao):
 def test_lister_tables_disponibles(mock_table_dao):
     # GIVEN
     mock_tables = [
-        Table(id_table=1, nb_sieges=5, blind_initial=10),
-        Table(id_table=2, nb_sieges=5, blind_initial=10),
+        Table(nb_sieges=5, blind_initial=10, id_table=1),
+        Table(nb_sieges=5, blind_initial=10, id_table=2),
     ]
     mock_tables[0].sieges = [MagicMock(occupe=False) for _ in range(5)]
     mock_tables[1].sieges = [MagicMock(occupe=True) for _ in range(5)]
@@ -135,7 +135,7 @@ def test_quitter_table_ok(mock_table_dao):
     # GIVEN
     joueur = Joueur(id_joueur=1, pseudo="Joueur1", age=25, mail="joueur1@example.com", credit=1000)
     id_table = 1
-    mock_table = Table(id_table=id_table, nb_sieges=5, blind_initial=10)
+    mock_table = Table(nb_sieges=5, blind_initial=10, id_table=id_table)
     mock_siege = MagicMock(occupe=True, id_joueur=joueur.id_joueur)
     mock_table.sieges = [mock_siege] + [MagicMock(occupe=False, id_joueur=None) for _ in range(4)]
     mock_table_dao["trouver_par_id"].return_value = mock_table
@@ -171,7 +171,7 @@ def test_quitter_table_ko_joueur_non_trouve(mock_table_dao):
     # GIVEN
     joueur = Joueur(id_joueur=1, pseudo="Joueur1", age=25, mail="joueur1@example.com", credit=1000)
     id_table = 1
-    mock_table = Table(id_table=id_table, nb_sieges=5, blind_initial=10)
+    mock_table = Table(nb_sieges=5, blind_initial=10, id_table=id_table)
     mock_table.sieges = [MagicMock(occupe=True, id_joueur=2) for _ in range(5)]
     mock_table_dao["trouver_par_id"].return_value = mock_table
 

@@ -13,6 +13,9 @@ INSERT INTO table_poker(id_table, nb_sieges, blind_initial, nb_joueurs)
 OVERRIDING SYSTEM VALUE
 VALUES (1, 9, 10.00, 0);
 
+-- Réinitialiser la séquence de id_table pour éviter les conflits
+SELECT setval('table_poker_id_table_seq', (SELECT MAX(id_table) FROM table_poker));
+
 
 INSERT INTO partie(id_partie, id_table, pot, date_debut)
 OVERRIDING SYSTEM VALUE

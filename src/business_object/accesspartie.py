@@ -43,9 +43,9 @@ class AccessPartie:
 
     def creer_table(self, nb_sieges: int, blind_initial: Monnaie) -> Table:
         """
-        Crée une nouvelle table avec un identifiant unique et l’ajoute à la liste.
+        Crée une nouvelle table avec un identifiant unique et l'ajoute à la liste.
         """
         new_id = len(self.tables) + 1
-        nouvelle_table = Table(id_table=new_id, nb_sieges=nb_sieges, blind_initial=blind_initial)
+        nouvelle_table = Table(nb_sieges=nb_sieges, blind_initial=blind_initial, id_table=new_id)
         self.tables.append(nouvelle_table)
         return nouvelle_table

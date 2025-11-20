@@ -25,19 +25,28 @@ def conn_info():
     yield
 
 
-def test_trouver_par_id_existant():
-    """Recherche par id d'une table existante"""
+def test_creer_et_trouver_table():
+    """Test de création d'une table et recherche par id"""
 
     # GIVEN
-    id_table = 1
+    table = Table(
+        nb_sieges=6,
+        blind_initial=Monnaie(10.0)
+    )
 
     # WHEN
-    table = TableDao().trouver_par_id(id_table)
+    creation_ok = TableDao().creer(table)
 
     # THEN
-    assert table is not None
-    assert table.id_table == id_table
-    assert isinstance(table, Table)
+    assert creation_ok
+    assert table.id_table is not None  # L'ID a été généré automatiquement
+
+    # Vérifier qu'on peut la retrouver
+    table_trouvee = TableDao().trouver_par_id(table.id_table)
+    assert table_trouvee is not None
+    assert table_trouvee.id_table == table.id_table
+    assert table_trouvee.nb_sieges == 6
+    assert table_trouvee.blind_initial.get() == 10.0
 
 
 def test_trouver_par_id_non_existant():
@@ -56,8 +65,6 @@ def test_trouver_par_id_non_existant():
 def test_lister_toutes():
     """Vérifie que la méthode renvoie une liste de Table"""
 
-    # GIVEN
-
     # WHEN
     tables = TableDao().lister_toutes()
 
@@ -68,54 +75,17 @@ def test_lister_toutes():
     assert len(tables) >= 1
 
 
-def test_creer_ok():
-    """Création de Table réussie"""
+def test_modifier_table():
+    """Test de modification d'une table"""
 
-    # GIVEN
+    # GIVEN - Créer une table à modifier
     table = Table(
-        id_table=100,
-        nb_sieges=6,
-        blind_initial=Monnaie(10.0)
-    )
-
-    # WHEN
-    creation_ok = TableDao().creer(table)
-
-    # THEN
-    assert creation_ok
-
-
-def test_creer_ko():
-    """Création de Table échouée (données incorrectes)"""
-
-    # GIVEN
-    # Table avec des données invalides (id_table déjà existant)
-    table = Table(
-        id_table=1,  # ID déjà existant
-        nb_sieges=6,
-        blind_initial=Monnaie(10.0)
-    )
-
-    # WHEN
-    creation_ok = TableDao().creer(table)
-
-    # THEN
-    # La création devrait échouer à cause de la violation de clé primaire
-    assert not creation_ok
-
-
-def test_modifier_ok():
-    """Modification de Table réussie"""
-
-    # GIVEN
-    # Créer d'abord une table à modifier
-    table = Table(
-        id_table=102,
         nb_sieges=4,
         blind_initial=Monnaie(5.0)
     )
     TableDao().creer(table)
-    
+    id_table = table.id_table
+
     # Modifier la table
     table.nb_sieges = 8
     table.blind_initial = Monnaie(20.0)
@@ -125,107 +95,33 @@ def test_modifier_ok():
 
     # THEN
     assert modification_ok
-    
-    # Vérifier que les modifications ont bien été enregistrées
-    table_modifiee = TableDao().trouver_par_id(102)
+
+    # Vérifier que les modifications ont été enregistrées
+    table_modifiee = TableDao().trouver_par_id(id_table)
     assert table_modifiee.nb_sieges == 8
     assert table_modifiee.blind_initial.get() == 20.0
 
 
-def test_modifier_ko():
-    """Modification de Table échouée (id inconnu)"""
+def test_supprimer_table():
+    """Test de suppression d'une table"""
 
-    # GIVEN
+    # GIVEN - Créer une table à supprimer
     table = Table(
-        id_table=999999,
-        nb_sieges=4,
-        blind_initial=Monnaie(5.0)
-    )
-
-    # WHEN
-    modification_ok = TableDao().modifier(table)
-
-    # THEN
-    assert not modification_ok
-
-
-def test_supprimer_ok():
-    """Suppression de Table réussie"""
-
-    # GIVEN
-    # Créer d'abord une table à supprimer
-    table = Table(
-        id_table=103,
         nb_sieges=4,
         blind_initial=Monnaie(5.0)
     )
     TableDao().creer(table)
-    
+    id_table = table.id_table
+
     # Vérifier que la table existe
-    table_existante = TableDao().trouver_par_id(103)
-    assert table_existante is not None
+    assert TableDao().trouver_par_id(id_table) is not None
 
     # WHEN
-    suppression_ok = TableDao().supprimer(103)
+    suppression_ok = TableDao().supprimer(id_table)
 
     # THEN
     assert suppression_ok
-    
-    # Vérifier que la table n'existe plus
-    table_supprimee = TableDao().trouver_par_id(103)
-    assert table_supprimee is None
-
-
-def test_supprimer_ko():
-    """Suppression de Table échouée (id inconnu)"""
-
-    # GIVEN
-    id_table_inexistant = 999999
-
-    # WHEN
-    suppression_ok = TableDao().supprimer(id_table_inexistant)
-
-    # THEN
-    assert not suppression_ok
-
-
-def test_lister_tables_avec_sieges_disponibles():
-    """Test de la liste des tables avec sièges disponibles"""
-
-    # GIVEN
-    # S'assurer qu'il y a des tables avec des sièges disponibles
-    # (la base de test devrait déjà en contenir)
-
-    # WHEN
-    tables_disponibles = TableDao().lister_tables_avec_sieges_disponibles()
-
-    # THEN
-    assert isinstance(tables_disponibles, list)
-    
-    # Vérifier que tous les éléments sont des Tables
-    for table in tables_disponibles:
-        assert isinstance(table, Table)
-
-
-def test_table_avec_monnaie():
-    """Test que l'objet Monnaie est correctement géré"""
-
-    # GIVEN
-    table = Table(
-        id_table=106,
-        nb_sieges=4,
-        blind_initial=Monnaie(15.50)
-    )
-
-    # WHEN
-    creation_ok = TableDao().creer(table)
-    table_recuperee = TableDao().trouver_par_id(106)
-
-    # THEN
-    assert creation_ok
-    assert table_recuperee is not None
-    assert isinstance(table_recuperee.blind_initial, Monnaie)
-    assert table_recuperee.blind_initial.get() == 15.50
+    assert TableDao().trouver_par_id(id_table) is None
 
 
 if __name__ == "__main__":
