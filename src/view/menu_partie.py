@@ -503,7 +503,7 @@ class MenuPartie(VueAbstraite):
                 if quitter_partie:
                         break
                 
-            #Gestion de la fin de la main -> code executé dans le script d'un seul joueur pour qu'il s'execute une fois
+            #Gestion de la fin de la main -> partie du code executé dans le script d'un seul joueur pour qu'il s'execute une fois
 
             #recalcul du nombre de joueurs en jeu
                     liste_joueurs_en_jeu = []
@@ -524,43 +524,43 @@ class MenuPartie(VueAbstraite):
                     JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
 
-                # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
+            # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
 
-                #Recuperer les mains des joueurs en jeu
-                dict_id_cartes = {}
-                for id_en_jeu in liste_joueurs_en_jeu:
-                    dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
-                
-                #Comparer les mains
-                dict_id_combinaison = {}
-                # aplatir en UNE LISTE de cartes (et non pas liste de listes)
-                flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
-                            (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
-                            (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
-                            
-                for id, main_obj in dict_id_cartes.items():
-                    main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
-                    main_complete = MainJoueurComplete(main_list + flop_complet)
-                    dict_id_combinaison[id] = main_complete.combinaison()
-                #Trouver la valeur maximale
-                max_val = max(dict_id_combinaison.values())
-                combinaison_max = Combinaison(max_val)
-                id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
-                
-                id_gagnant = id_max[0]
-                if not len(id_max) == 1:
-                    # Creer dico
-                    dict_comb_complete = {}
-                    for id in id_max:
-                        dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
-                    id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
+            #Recuperer les mains des joueurs en jeu
+            dict_id_cartes = {}
+            for id_en_jeu in liste_joueurs_en_jeu:
+                dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
+            
+            #Comparer les mains
+            dict_id_combinaison = {}
+            # aplatir en UNE LISTE de cartes (et non pas liste de listes)
+            flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
+                        (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
+                        (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
+                        
+            for id, main_obj in dict_id_cartes.items():
+                main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
+                main_complete = MainJoueurComplete(main_list + flop_complet)
+                dict_id_combinaison[id] = main_complete.combinaison()
+            #Trouver la valeur maximale
+            max_val = max(dict_id_combinaison.values())
+            combinaison_max = Combinaison(max_val)
+            id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
+            
+            id_gagnant = id_max[0]
+            if not len(id_max) == 1:
+                # Creer dico
+                dict_comb_complete = {}
+                for id in id_max:
+                    dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
+                id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
-
-                #Créditer le gagnant
-                if isinstance(id_gagnant, list):
-                    noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
-                    print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-                    # Cas plusieurs gagnant il faut diviser le pot
+            #Créditer le gagnant
+            if isinstance(id_gagnant, list):
+                noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
+                print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
+                # Cas plusieurs gagnant il faut diviser le pot
+                if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                     pot = int(TableService().get_pot(self.table.id_table))
                     repartition_pot = int(pot/len(id_gagnant))
 
@@ -570,16 +570,18 @@ class MenuPartie(VueAbstraite):
                     
                     TableService().retirer_pot(self.table.id_table, pot)
 
-                else:
-                    print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-                    
-                    pot = TableService().get_pot(self.table.id_table)
-                    print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                    
+            else:
+                print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
+                
+                pot = TableService().get_pot(self.table.id_table)
+                print(f'Fin de la main : le gagnant remporte le pot : {pot}')
+                
+                if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
                     JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
-                
+            
+            if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                 # Remet en jeu les joueurs couchés pour commencer une prochaine main
                 liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
                 for id_j in liste_joueurs_dans_partie:
@@ -605,8 +607,6 @@ class MenuPartie(VueAbstraite):
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if (statut_joueur == "tour de blinde") or (statut_joueur == "tour petite blinde"):
                         joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
-                        
-            # Affichage pour l'ensemble des utilisateurs
                         
             if quitter_partie:
                     break
