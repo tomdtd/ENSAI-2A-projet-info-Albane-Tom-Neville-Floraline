@@ -389,7 +389,106 @@ class MenuPartie(VueAbstraite):
                         statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                         if statut_joueur in statuts_en_jeu:
                             liste_joueurs_en_jeu.append(id_j)
-                
+                    
+                    # gestion des cas de relance
+                    # ---------- Début : gestion stricte de la clôture du tour ----------
+                    # Initialisation des contributions pour ce tour
+                    liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                    statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
+                    joueurs_actifs = [jid for jid in liste_joueurs_dans_partie 
+                                    if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu]
+
+                    contribution_joueur = {jid: 0.0 for jid in joueurs_actifs}
+                    mise_tour_courant = 0.0
+
+                    def tour_clos():
+                        for jid in list(contribution_joueur.keys()):
+                            statut = joueur_partie_service.obtenir_statut(jid, self.table.id_table)
+                            if statut == "s'est couché":
+                                continue
+                            credit = float(JoueurService().recuperer_credit(jid).get())
+                            if credit <= 0:
+                                continue
+                            if contribution_joueur[jid] < mise_tour_courant:
+                                return False
+                        return True
+
+                    # Boucle de clôture
+                    securite = 0
+                    max_securite = 1000
+                    while not tour_clos():
+                        securite += 1
+                        if securite > max_securite:
+                            print("Arrêt sécurité : trop d'itérations dans la phase de clôture.")
+                            break
+
+                        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                        joueurs_actifs = [jid for jid in liste_joueurs_dans_partie
+                                        if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu]
+
+                        joueur_courant = TableService().get_id_joueur_tour(self.table.id_table)
+                        if joueur_courant not in joueurs_actifs:
+                            if joueurs_actifs:
+                                joueur_courant = joueurs_actifs[0]
+                                TableService().set_id_joueur_tour(self.table.id_table, joueur_courant)
+                            else:
+                                break  # plus personne d'actif
+
+                        if joueur_courant == joueur.id_joueur:
+                            montant_a_suivre = mise_tour_courant - contribution_joueur.get(joueur.id_joueur, 0.0)
+                            if montant_a_suivre < 0:
+                                montant_a_suivre = 0.0
+
+                            print(f"Montant à suivre : {montant_a_suivre} | Ton crédit : {joueur.credit}")
+
+                            action = inquirer.select(
+                                message="Phase de clôture : que fais-tu ?",
+                                choices=[
+                                    "Miser (relance)",
+                                    "Suivre",
+                                    "Se coucher",
+                                    "Quitter la partie"
+                                ],
+                            ).execute()
+
+                            if action == "Quitter la partie":
+                                quitter_partie = True
+                                break
+                            elif action == "Se coucher":
+                                joueur_partie_service.mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                                if joueur.id_joueur in contribution_joueur:
+                                    del contribution_joueur[joueur.id_joueur]
+                            elif action == "Suivre":
+                                to_pay = min(float(joueur.credit), montant_a_suivre)
+                                JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit) - to_pay)
+                                TableService().alimenter_pot(self.table.id_table, to_pay)
+                                contribution_joueur[joueur.id_joueur] += to_pay
+                            else:  # Miser / Relance
+                                montant = float(inquirer.text(message="Montant à relancer (additionnel) : ").execute())
+                                to_pay = min(float(joueur.credit), montant)
+                                JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit) - to_pay)
+                                TableService().alimenter_pot(self.table.id_table, to_pay)
+                                contribution_joueur[joueur.id_joueur] += to_pay
+                                if contribution_joueur[joueur.id_joueur] > mise_tour_courant:
+                                    mise_tour_courant = contribution_joueur[joueur.id_joueur]
+                                    print(f"Nouvelle mise à égaler : {mise_tour_courant}")
+
+                            # Passer le tour au prochain joueur actif
+                            if joueurs_actifs:
+                                try:
+                                    idx = joueurs_actifs.index(joueur_courant)
+                                    prochain_idx = (idx + 1) % len(joueurs_actifs)
+                                    prochain_joueur = joueurs_actifs[prochain_idx]
+                                except ValueError:
+                                    prochain_joueur = joueurs_actifs[0]
+                                TableService().set_id_joueur_tour(self.table.id_table, prochain_joueur)
+                        else:
+                            print("En attente du tour des autres joueurs...")
+                            time.sleep(2)
+
+                    # ---------- Fin : gestion stricte de la clôture ----------
+
+        
                 if quitter_partie:
                         break
                 
@@ -406,7 +505,7 @@ class MenuPartie(VueAbstraite):
                 JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
                 TableService().retirer_pot(self.table.id_table, pot)
 
-            #Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
+            # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
 
             #Recuperer les mains des joueurs en jeu
             dict_id_cartes = {}
@@ -440,8 +539,8 @@ class MenuPartie(VueAbstraite):
 
             #Créditer le gagnant
             if isinstance(id_gagnant, list):
-                print(f"Les gagnants sont : {", ".join([JoueurService().trouver_par_id(id).pseudo for id in id_gagnant])} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-
+                noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
+                print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
                 # Cas plusieurs gagnant il faut diviser le pot
                 pot = int(TableService().get_pot(self.table.id_table))
                 repartition_pot = int(pot/len(id_gagnant))
