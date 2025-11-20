@@ -9,7 +9,7 @@
 # Échéances
 
 ---
-Dossier d'Analyse :  :clock1: <iframe src="https://free.timeanddate.com/countdown/i83zdl7u/n1264/cf11/cm0/cu2/ct4/cs0/ca0/co0/cr0/ss0/cac009/cpcf00/pcfff/tcfff/fs100/szw256/szh108/iso2025-10-07T12:00:00" allowtransparency="true" frameborder="0" width="130" height="16"></iframe>
+Dossier d'Analyse : <iframe src="https://free.timeanddate.com/countdown/i83zdl7u/n1264/cf11/cm0/cu2/ct4/cs0/ca0/co0/cr0/ss0/cac009/cpcf00/pcfff/tcfff/fs100/szw256/szh108/iso2025-10-07T12:00:00" allowtransparency="true" frameborder="0" width="200" height="20"></iframe>
 
 ---
 
@@ -35,7 +35,7 @@ gantt
     Rapport + Code               :milestone, 2025-11-22,
     Soutenance                   :milestone, 2025-12-10,
     
-    section Vac
+    section Vacances
     Toussaint                    :crit,    2025-10-25, 2025-11-02
     
     section Analyse
@@ -46,7 +46,8 @@ gantt
     
     section Code
     lister les classes à coder   :done,    2025-09-15, 7d
-    coder une v0 des classes     :done,    2025-09-19, 30d
+    coder les classes (BO, DAO)    :done,    2025-09-19, 60d
+    coder les tests (unitaires, E2E)    :done,    2025-09-19, 62d
 ```
 
 # :calendar: Livrables
