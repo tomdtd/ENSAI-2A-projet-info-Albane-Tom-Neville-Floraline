@@ -385,7 +385,7 @@ def test_donner_cartes_main_joueur_ok(setup_joueur_test, setup_table_test):
     # Créer une main de cartes
     carte1 = Carte(valeur="As", couleur="Coeur")
     carte2 = Carte(valeur="Roi", couleur="Pique")
-    main = ListeCartes()
+    main = ListeCartes([])
     main.ajouter_carte(carte1)
     main.ajouter_carte(carte2)
     
@@ -403,13 +403,13 @@ def test_donner_cartes_main_joueur_ok(setup_joueur_test, setup_table_test):
 
 def test_donner_cartes_main_joueur_ko():
     """Test d'attribution de cartes à un joueur inexistant"""
-    
+
     # GIVEN
     id_joueur_inexistant = 999999
     id_table_inexistant = 999999
-    
+
     carte = Carte(valeur="As", couleur="Coeur")
-    main = ListeCartes()
+    main = ListeCartes([])
     main.ajouter_carte(carte)
     
     # WHEN
@@ -437,7 +437,7 @@ def test_trouver_cartes_main_joueur_avec_cartes(setup_joueur_test, setup_table_t
     # Attribuer des cartes
     carte1 = Carte(valeur="As", couleur="Coeur")
     carte2 = Carte(valeur="Roi", couleur="Pique")
-    main = ListeCartes()
+    main = ListeCartes([])
     main.ajouter_carte(carte1)
     main.ajouter_carte(carte2)
     JoueurPartieDao().donner_cartes_main_joueur(id_table, id_joueur, main)
@@ -617,7 +617,7 @@ def test_cycle_complet_joueur_partie(setup_joueur_test, setup_table_test):
     
     # Attribution de cartes
     carte = Carte(valeur="As", couleur="Coeur")
-    main = ListeCartes()
+    main = ListeCartes([])
     main.ajouter_carte(carte)
     assert JoueurPartieDao().donner_cartes_main_joueur(id_table, id_joueur, main)
     

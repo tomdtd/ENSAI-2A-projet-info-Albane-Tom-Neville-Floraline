@@ -179,11 +179,11 @@ class JoueurPartieDao(metaclass=Singleton):
                     res = cursor.fetchone()
         except Exception as e:
             logging.exception("Erreur lors de la récupération des cartes du joueur")
-            return ListeCartes() 
+            return ListeCartes([])
 
         if res and res["cartes_main"]:
             return ListeCartes.str_to_cartes(res["cartes_main"])
-        return ListeCartes() 
+        return ListeCartes([]) 
     
     @log
     def donner_cartes_main_joueur(self, id_table: int, id_joueur: int, main: ListeCartes) -> bool:

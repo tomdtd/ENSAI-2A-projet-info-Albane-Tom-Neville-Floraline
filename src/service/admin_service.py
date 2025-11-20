@@ -39,14 +39,24 @@ class AdminService:
         return AdminDao().changer_mot_de_passe(admin_id, nouveau_mot_de_passe_hash)
 
     @log
-    def valider_transaction(self, id_transaction: int) -> bool:
+    def valider_transaction(self, id_transaction: int, id_admin: int = None) -> bool:
         """Valider une transaction financière."""
-        return AdminDao().valider_transaction(id_transaction)
+        return AdminDao().valider_transaction(id_transaction, id_admin)
+
+    @log
+    def rejeter_transaction(self, id_transaction: int, id_admin: int = None) -> bool:
+        """Rejeter une transaction financière."""
+        return AdminDao().rejeter_transaction(id_transaction, id_admin)
 
     @log
     def lister_transactions_en_attente(self) -> List[Dict]:
         """Lister toutes les transactions en attente de validation."""
         return AdminDao().lister_transactions_en_attente()
+
+    @log
+    def lister_toutes_transactions(self, statut: Optional[str] = None) -> List[Dict]:
+        """Lister toutes les transactions, optionnellement filtrées par statut."""
+        return AdminDao().lister_toutes_transactions(statut)
 
     @log
     def banir_joueur(self, id_joueur: int, id_admin: int, raison_ban: str) -> bool:

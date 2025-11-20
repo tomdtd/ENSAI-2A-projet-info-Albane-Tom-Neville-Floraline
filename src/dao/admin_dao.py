@@ -658,3 +658,198 @@ class AdminDao(metaclass=Singleton):
         except Exception as e:
             logging.exception("Erreur lors du nettoyage des bannissements expirés")
             return 0
+
+    # =========================================================================
+    # MÉTHODES DE GESTION DES TRANSACTIONS
+    # =========================================================================
+
+    @log
+    def valider_transaction(self, id_transaction: int, id_admin: int = None) -> bool:
+        """Valider une transaction financière
+
+        Parameters
+        ----------
+        id_transaction : int
+            ID de la transaction à valider
+        id_admin : int, optional
+            ID de l'administrateur qui valide (optionnel)
+
+        Returns
+        -------
+        bool
+            True si la validation a réussi
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Vérifier que la transaction existe et est en attente
+                    cursor.execute(
+                        "SELECT id_transaction, statut, id_joueur, solde "
+                        "  FROM transaction                              "
+                        " WHERE id_transaction = %(id_transaction)s;     ",
+                        {"id_transaction": id_transaction}
+                    )
+                    transaction = cursor.fetchone()
+
+                    if not transaction:
+                        logging.warning(f"Transaction {id_transaction} introuvable")
+                        return False
+
+                    if transaction["statut"] != "en_attente":
+                        logging.warning(f"Transaction {id_transaction} n'est pas en attente (statut: {transaction['statut']})")
+                        return False
+
+                    # Mettre à jour le crédit du joueur
+                    cursor.execute(
+                        "UPDATE joueur                          "
+                        "   SET credit = credit + %(solde)s     "
+                        " WHERE id_joueur = %(id_joueur)s;      ",
+                        {
+                            "solde": transaction["solde"],
+                            "id_joueur": transaction["id_joueur"]
+                        }
+                    )
+
+                    # Mettre à jour le statut de la transaction
+                    cursor.execute(
+                        "UPDATE transaction                         "
+                        "   SET statut = 'validee',                 "
+                        "       id_admin = %(id_admin)s,            "
+                        "       date_validation = CURRENT_TIMESTAMP "
+                        " WHERE id_transaction = %(id_transaction)s;",
+                        {
+                            "id_transaction": id_transaction,
+                            "id_admin": id_admin
+                        }
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+                return res == 1
+        except Exception as e:
+            logging.exception("Erreur lors de la validation de la transaction")
+            return False
+
+    @log
+    def rejeter_transaction(self, id_transaction: int, id_admin: int = None) -> bool:
+        """Rejeter une transaction financière
+
+        Parameters
+        ----------
+        id_transaction : int
+            ID de la transaction à rejeter
+        id_admin : int, optional
+            ID de l'administrateur qui rejette (optionnel)
+
+        Returns
+        -------
+        bool
+            True si le rejet a réussi
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    # Vérifier que la transaction existe et est en attente
+                    cursor.execute(
+                        "SELECT id_transaction, statut "
+                        "  FROM transaction            "
+                        " WHERE id_transaction = %(id_transaction)s;",
+                        {"id_transaction": id_transaction}
+                    )
+                    transaction = cursor.fetchone()
+
+                    if not transaction:
+                        logging.warning(f"Transaction {id_transaction} introuvable")
+                        return False
+
+                    if transaction["statut"] != "en_attente":
+                        logging.warning(f"Transaction {id_transaction} n'est pas en attente (statut: {transaction['statut']})")
+                        return False
+
+                    # Mettre à jour le statut de la transaction
+                    cursor.execute(
+                        "UPDATE transaction                         "
+                        "   SET statut = 'rejetee',                 "
+                        "       id_admin = %(id_admin)s,            "
+                        "       date_validation = CURRENT_TIMESTAMP "
+                        " WHERE id_transaction = %(id_transaction)s;",
+                        {
+                            "id_transaction": id_transaction,
+                            "id_admin": id_admin
+                        }
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+                return res == 1
+        except Exception as e:
+            logging.exception("Erreur lors du rejet de la transaction")
+            return False
+
+    @log
+    def lister_transactions_en_attente(self) -> List[dict]:
+        """Lister toutes les transactions en attente de validation
+
+        Returns
+        -------
+        list[dict]
+            Liste des transactions en attente avec leurs informations
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT t.id_transaction, t.id_joueur, t.solde, "
+                        "       t.date, t.statut, j.pseudo as joueur_pseudo, "
+                        "       j.mail as joueur_mail, j.credit as joueur_credit "
+                        "  FROM transaction t                              "
+                        "  JOIN joueur j ON t.id_joueur = j.id_joueur      "
+                        " WHERE t.statut = 'en_attente'                    "
+                        " ORDER BY t.date ASC;"
+                    )
+                    res = cursor.fetchall()
+                    return [dict(row) for row in res]
+        except Exception as e:
+            logging.exception("Erreur lors du listage des transactions en attente")
+            return []
+
+    @log
+    def lister_toutes_transactions(self, statut: Optional[str] = None) -> List[dict]:
+        """Lister toutes les transactions, optionnellement filtrées par statut
+
+        Parameters
+        ----------
+        statut : str, optional
+            Filtrer par statut ('en_attente', 'validee', 'rejetee')
+
+        Returns
+        -------
+        list[dict]
+            Liste des transactions avec leurs informations
+        """
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    if statut:
+                        cursor.execute(
+                            "SELECT t.*, j.pseudo as joueur_pseudo, "
+                            "       a.nom as admin_nom "
+                            "  FROM transaction t                   "
+                            "  JOIN joueur j ON t.id_joueur = j.id_joueur "
+                            "  LEFT JOIN admin a ON t.id_admin = a.admin_id "
+                            " WHERE t.statut = %(statut)s            "
+                            " ORDER BY t.date DESC;",
+                            {"statut": statut}
+                        )
+                    else:
+                        cursor.execute(
+                            "SELECT t.*, j.pseudo as joueur_pseudo, "
+                            "       a.nom as admin_nom "
+                            "  FROM transaction t                   "
+                            "  JOIN joueur j ON t.id_joueur = j.id_joueur "
+                            "  LEFT JOIN admin a ON t.id_admin = a.admin_id "
+                            " ORDER BY t.date DESC;"
+                        )
+                    res = cursor.fetchall()
+                    return [dict(row) for row in res]
+        except Exception as e:
+            logging.exception("Erreur lors du listage des transactions")
+            return []

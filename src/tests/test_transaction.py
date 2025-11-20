@@ -55,7 +55,7 @@ class TestTransaction:
         assert "2025-10-29" in str_output
         assert "Transaction" in repr_output
         assert "id_transaction=2" in repr_output
-        assert "joueur_id=123" in repr_output
+        assert "id_joueur=123" in repr_output
 
     def test_transaction_id_transaction_invalide(self):
         """Vérifie qu'une transaction avec un id_transaction invalide provoque une erreur."""

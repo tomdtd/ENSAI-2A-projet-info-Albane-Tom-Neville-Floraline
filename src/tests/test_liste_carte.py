@@ -20,18 +20,18 @@ def liste_2_cartes(carte_as_pique, carte_roi_coeur):
 class TestListeCartes:
     
     def test_creation_vide_genere_toutes_les_cartes(self):
-        """Vérifie que la création sans argument génère 2 jeux complets de cartes."""
+        """Vérifie que la création sans argument génère 1 jeu complet de cartes."""
         liste = ListeCartes()
         cartes = liste.get_cartes()
 
-        # Un jeu = 52 cartes → *2 = 104 cartes
-        assert len(liste) == 104
+        # Un jeu = 52 cartes
+        assert len(liste) == 52
         assert all(isinstance(c, Carte) for c in cartes)
 
-        # Vérifie que chaque carte apparaît 2 fois
+        # Vérifie que chaque carte apparaît 1 fois
         for valeur in Carte.VALEURS():
             for couleur in Carte.COULEURS():
-                assert cartes.count(Carte(valeur, couleur)) == 2
+                assert cartes.count(Carte(valeur, couleur)) == 1
 
     def test_creation_avec_liste_valide(self, liste_2_cartes):
         liste = ListeCartes(liste_2_cartes)

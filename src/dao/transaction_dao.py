@@ -54,13 +54,14 @@ class TransactionDao(metaclass=Singleton):
     
     @log
     def lister_par_joueur(self, joueur_id: int) -> list[Transaction]:
-        """Retourne toutes les transactions d’un joueur depuis la base"""
+        """Retourne toutes les transactions d'un joueur depuis la base"""
         transactions = []
         try:
             with DBConnection().connection as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "SELECT id_transaction, id_joueur, solde, date "
+                        "SELECT id_transaction, id_joueur, solde, date, "
+                        "       statut, id_admin, date_validation "
                         "FROM transaction WHERE id_joueur = %(id_joueur)s "
                         "ORDER BY date ASC;",
                         {"id_joueur": joueur_id}
@@ -71,8 +72,83 @@ class TransactionDao(metaclass=Singleton):
                             id_transaction=row["id_transaction"],
                             id_joueur=row["id_joueur"],
                             solde=row["solde"],
-                            date=row["date"]
+                            date=row["date"],
+                            statut=row["statut"],
+                            id_admin=row["id_admin"],
+                            date_validation=row["date_validation"]
                         ))
         except Exception as e:
             logging.exception("Erreur lors de la récupération des transactions")
         return transactions
+
+    @log
+    def trouver_par_id(self, id_transaction: int) -> Transaction:
+        """Retourne une transaction par son ID"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_transaction, id_joueur, solde, date, "
+                        "       statut, id_admin, date_validation "
+                        "FROM transaction WHERE id_transaction = %(id_transaction)s;",
+                        {"id_transaction": id_transaction}
+                    )
+                    row = cursor.fetchone()
+                    if row:
+                        return Transaction(
+                            id_transaction=row["id_transaction"],
+                            id_joueur=row["id_joueur"],
+                            solde=row["solde"],
+                            date=row["date"],
+                            statut=row["statut"],
+                            id_admin=row["id_admin"],
+                            date_validation=row["date_validation"]
+                        )
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération de la transaction")
+        return None
+
+    @log
+    def lister_toutes(self) -> list[Transaction]:
+        """Retourne toutes les transactions depuis la base"""
+        transactions = []
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT id_transaction, id_joueur, solde, date, "
+                        "       statut, id_admin, date_validation "
+                        "FROM transaction "
+                        "ORDER BY date DESC;"
+                    )
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        transactions.append(Transaction(
+                            id_transaction=row["id_transaction"],
+                            id_joueur=row["id_joueur"],
+                            solde=row["solde"],
+                            date=row["date"],
+                            statut=row["statut"],
+                            id_admin=row["id_admin"],
+                            date_validation=row["date_validation"]
+                        ))
+        except Exception as e:
+            logging.exception("Erreur lors de la récupération des transactions")
+        return transactions
+
+    @log
+    def supprimer(self, id_transaction: int) -> bool:
+        """Supprime une transaction de la base de données"""
+        try:
+            with DBConnection().connection as connection:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "DELETE FROM transaction WHERE id_transaction = %(id_transaction)s;",
+                        {"id_transaction": id_transaction}
+                    )
+                    res = cursor.rowcount
+                connection.commit()
+                return res > 0
+        except Exception as e:
+            logging.exception("Erreur lors de la suppression de la transaction")
+            return False

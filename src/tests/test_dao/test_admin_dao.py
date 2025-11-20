@@ -493,11 +493,245 @@ class TestAdminDao:
             mock_cursor = MagicMock()
             mock_cursor.rowcount = 3
             mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
-            
+
             dao = AdminDao()
             result = dao.nettoyer_bannissements_expires()
-            
+
             assert result == 3
+
+    # =========================================================================
+    # TESTS MÉTHODES DE GESTION DES TRANSACTIONS
+    # =========================================================================
+
+    def test_valider_transaction_success(self):
+        """Test validation d'une transaction en attente"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+
+            # Simuler la transaction en attente
+            mock_cursor.fetchone.return_value = {
+                "id_transaction": 1,
+                "statut": "en_attente",
+                "id_joueur": 5,
+                "solde": 100
+            }
+            mock_cursor.rowcount = 1
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.valider_transaction(1, id_admin=2)
+
+            assert result is True
+            # Vérifier que execute a été appelé 3 fois (SELECT, UPDATE joueur, UPDATE transaction)
+            assert mock_cursor.execute.call_count == 3
+
+    def test_valider_transaction_introuvable(self):
+        """Test validation d'une transaction inexistante"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchone.return_value = None
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.valider_transaction(999)
+
+            assert result is False
+
+    def test_valider_transaction_deja_validee(self):
+        """Test validation d'une transaction déjà validée"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchone.return_value = {
+                "id_transaction": 1,
+                "statut": "validee",
+                "id_joueur": 5,
+                "solde": 100
+            }
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.valider_transaction(1)
+
+            assert result is False
+
+    def test_valider_transaction_exception(self):
+        """Test validation avec exception"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_conn.__enter__.return_value.cursor.side_effect = Exception("DB Error")
+
+            dao = AdminDao()
+            result = dao.valider_transaction(1)
+
+            assert result is False
+
+    def test_rejeter_transaction_success(self):
+        """Test rejet d'une transaction en attente"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+
+            # Simuler la transaction en attente
+            mock_cursor.fetchone.return_value = {
+                "id_transaction": 1,
+                "statut": "en_attente"
+            }
+            mock_cursor.rowcount = 1
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.rejeter_transaction(1, id_admin=2)
+
+            assert result is True
+            # Vérifier que execute a été appelé 2 fois (SELECT, UPDATE)
+            assert mock_cursor.execute.call_count == 2
+
+    def test_rejeter_transaction_introuvable(self):
+        """Test rejet d'une transaction inexistante"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchone.return_value = None
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.rejeter_transaction(999)
+
+            assert result is False
+
+    def test_rejeter_transaction_deja_rejetee(self):
+        """Test rejet d'une transaction déjà rejetée"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchone.return_value = {
+                "id_transaction": 1,
+                "statut": "rejetee"
+            }
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.rejeter_transaction(1)
+
+            assert result is False
+
+    def test_rejeter_transaction_exception(self):
+        """Test rejet avec exception"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_conn.__enter__.return_value.cursor.side_effect = Exception("DB Error")
+
+            dao = AdminDao()
+            result = dao.rejeter_transaction(1)
+
+            assert result is False
+
+    def test_lister_transactions_en_attente_success(self):
+        """Test listage des transactions en attente"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchall.return_value = [
+                {
+                    "id_transaction": 1,
+                    "id_joueur": 5,
+                    "solde": 100,
+                    "date": datetime.now(),
+                    "statut": "en_attente",
+                    "joueur_pseudo": "joueur1",
+                    "joueur_mail": "joueur1@test.com",
+                    "joueur_credit": 500
+                },
+                {
+                    "id_transaction": 2,
+                    "id_joueur": 6,
+                    "solde": 200,
+                    "date": datetime.now(),
+                    "statut": "en_attente",
+                    "joueur_pseudo": "joueur2",
+                    "joueur_mail": "joueur2@test.com",
+                    "joueur_credit": 300
+                }
+            ]
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.lister_transactions_en_attente()
+
+            assert len(result) == 2
+            assert result[0]["id_transaction"] == 1
+            assert result[1]["joueur_pseudo"] == "joueur2"
+
+    def test_lister_transactions_en_attente_vide(self):
+        """Test listage sans transactions en attente"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchall.return_value = []
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.lister_transactions_en_attente()
+
+            assert result == []
+
+    def test_lister_transactions_en_attente_exception(self):
+        """Test listage avec exception"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_conn.__enter__.return_value.cursor.side_effect = Exception("DB Error")
+
+            dao = AdminDao()
+            result = dao.lister_transactions_en_attente()
+
+            assert result == []
+
+    def test_lister_toutes_transactions_sans_filtre(self):
+        """Test listage de toutes les transactions sans filtre"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchall.return_value = [
+                {
+                    "id_transaction": 1,
+                    "statut": "validee",
+                    "joueur_pseudo": "joueur1",
+                    "admin_nom": "admin1"
+                },
+                {
+                    "id_transaction": 2,
+                    "statut": "en_attente",
+                    "joueur_pseudo": "joueur2",
+                    "admin_nom": None
+                }
+            ]
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.lister_toutes_transactions()
+
+            assert len(result) == 2
+
+    def test_lister_toutes_transactions_avec_filtre(self):
+        """Test listage des transactions avec filtre par statut"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_cursor = MagicMock()
+            mock_cursor.fetchall.return_value = [
+                {
+                    "id_transaction": 1,
+                    "statut": "validee",
+                    "joueur_pseudo": "joueur1",
+                    "admin_nom": "admin1"
+                }
+            ]
+            mock_conn.__enter__.return_value.cursor.return_value.__enter__.return_value = mock_cursor
+
+            dao = AdminDao()
+            result = dao.lister_toutes_transactions(statut="validee")
+
+            assert len(result) == 1
+            assert result[0]["statut"] == "validee"
+
+    def test_lister_toutes_transactions_exception(self):
+        """Test listage avec exception"""
+        with patch.object(DBConnection, 'connection') as mock_conn:
+            mock_conn.__enter__.return_value.cursor.side_effect = Exception("DB Error")
+
+            dao = AdminDao()
+            result = dao.lister_toutes_transactions()
+
+            assert result == []
 
     # =========================================================================
     # TESTS SINGLETON
@@ -507,5 +741,5 @@ class TestAdminDao:
         """Test que AdminDao est bien un singleton"""
         dao1 = AdminDao()
         dao2 = AdminDao()
-        
+
         assert dao1 is dao2

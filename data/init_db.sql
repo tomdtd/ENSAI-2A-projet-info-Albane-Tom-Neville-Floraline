@@ -115,7 +115,7 @@ CREATE TABLE partie_joueur (
     solde_partie DECIMAL(10,2) DEFAULT 0.00,
     statut VARCHAR(50) DEFAULT 'en attente',
     id_siege INT NULL,
-    cartes_main VARCHAR(200) DEFAULT '',
+    cartes_main TEXT DEFAULT '',
     PRIMARY KEY (id_table, id_joueur),
     CONSTRAINT fk_partie_joueur_table
         FOREIGN KEY (id_table)
@@ -129,22 +129,7 @@ CREATE TABLE partie_joueur (
 
 
 -- -----------------------------------------------------
--- Table `transaction` 
--- Gere les transaction.
--- -----------------------------------------------------
-CREATE TABLE transaction (
-  id_transaction SERIAL PRIMARY KEY,
-  id_joueur INT NOT NULL,
-  solde INT DEFAULT 0,
-  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_transaction_joueur
-        FOREIGN KEY (id_joueur)
-        REFERENCES joueur(id_joueur)
-        ON DELETE CASCADE
-);
-
--- -----------------------------------------------------
--- Table `admin` 
+-- Table `admin`
 -- Gere les administrateurs et leurs identifiants.
 -- -----------------------------------------------------
 CREATE TABLE admin (
@@ -156,8 +141,30 @@ CREATE TABLE admin (
 );
 
 -- -----------------------------------------------------
--- Table `admin` 
--- Gere les administrateurs et leurs identifiants.
+-- Table `transaction`
+-- Gere les transaction.
+-- -----------------------------------------------------
+CREATE TABLE transaction (
+  id_transaction SERIAL PRIMARY KEY,
+  id_joueur INT NOT NULL,
+  solde INT DEFAULT 0,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  statut VARCHAR(50) DEFAULT 'en_attente',
+  id_admin INT,
+  date_validation TIMESTAMP,
+  CONSTRAINT fk_transaction_joueur
+        FOREIGN KEY (id_joueur)
+        REFERENCES joueur(id_joueur)
+        ON DELETE CASCADE,
+  CONSTRAINT fk_transaction_admin
+        FOREIGN KEY (id_admin)
+        REFERENCES admin(admin_id)
+        ON DELETE SET NULL
+);
+
+-- -----------------------------------------------------
+-- Table `joueur_bannis`
+-- Gere les bannissements de joueurs.
 -- -----------------------------------------------------
 CREATE TABLE joueur_bannis (
   id_ban INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
