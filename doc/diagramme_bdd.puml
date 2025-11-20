@@ -1,0 +1,128 @@
+@startuml Diagramme Base de Données - Poker Game
+
+!theme plain
+skinparam backgroundColor white
+skinparam defaultFontSize 9
+skinparam linetype ortho
+
+' ========== ENTITÉS PRINCIPALES ==========
+
+entity "JOUEUR" as joueur {
+    * **id_joueur** : INT <<PK>>
+    --
+    * pseudo : VARCHAR(50) <<UK>>
+    * mdp : VARCHAR(255)
+    * mail : VARCHAR(255)
+    * age : INT
+    * credit : DECIMAL(10,2)
+    date_creation : TIMESTAMP
+}
+
+entity "PORTEFEUILLE" as portefeuille {
+    * **id_portefeuille** : INT <<PK>>
+    --
+    * id_joueur : INT <<FK,UK>>
+    solde : DECIMAL(10,2)
+}
+
+entity "TABLE_POKER" as table {
+    * **id_table** : INT <<PK>>
+    --
+    * nb_sieges : INT
+    * blind_initial : DECIMAL(10,2)
+    pot : DECIMAL(10,2)
+    flop : VARCHAR(200)
+    turn : VARCHAR(200)
+    river : VARCHAR(200)
+    val_derniere_mise : DECIMAL(10,2)
+    nb_joueurs : INT
+    id_joueur_tour : INT
+    id_joueur_bouton : INT
+}
+
+entity "TABLE_JOUEUR" as table_joueur {
+    * **id_table** : INT <<PK,FK>>
+    * **id_joueur** : INT <<PK,FK>>
+    --
+    date_arrive : TIMESTAMP
+}
+
+entity "PARTIE" as partie {
+    * **id_partie** : INT <<PK>>
+    --
+    * id_table : INT <<FK>>
+    pot : DECIMAL(12,2)
+    date_debut : TIMESTAMP
+}
+
+entity "PARTIE_JOUEUR" as partie_joueur {
+    * **id_table** : INT <<PK,FK>>
+    * **id_joueur** : INT <<PK,FK>>
+    --
+    mise_tour : INT
+    solde_partie : DECIMAL(10,2)
+    statut : VARCHAR(50)
+    id_siege : INT
+    cartes_main : TEXT
+}
+
+entity "ADMIN" as admin {
+    * **admin_id** : INT <<PK>>
+    --
+    * nom : VARCHAR(100) <<UK>>
+    * mdp : VARCHAR(255)
+    * mail : VARCHAR(255) <<UK>>
+    date_creation : TIMESTAMP
+}
+
+entity "TRANSACTION" as transaction {
+    * **id_transaction** : SERIAL <<PK>>
+    --
+    * id_joueur : INT <<FK>>
+    solde : INT
+    date : TIMESTAMP
+    statut : VARCHAR(50)
+    id_admin : INT <<FK>>
+    date_validation : TIMESTAMP
+}
+
+entity "JOUEUR_BANNIS" as joueur_bannis {
+    * **id_ban** : INT <<PK>>
+    --
+    * id_joueur : INT <<FK>>
+    * id_admin : INT <<FK>>
+    raison_ban : TEXT
+    date_ban : TIMESTAMP
+    date_fin_ban : TIMESTAMP
+    actif : BOOLEAN
+}
+
+' ========== RELATIONS ==========
+
+' Joueur - Portefeuille (1-1)
+joueur ||--|| portefeuille : "possède"
+
+' Joueur - Table_Joueur - Table_Poker (N-N)
+joueur ||--o{ table_joueur : "s'assoit à"
+table ||--o{ table_joueur : "accueille"
+
+' Table_Poker - Partie (1-N)
+table ||--o{ partie : "héberge"
+
+' Partie_Joueur (N-N)
+joueur ||--o{ partie_joueur : "participe à"
+table ||--o{ partie_joueur : "contient"
+
+' Joueur - Transaction (1-N)
+joueur ||--o{ transaction : "effectue"
+
+' Admin - Transaction (1-N)
+admin ||--o{ transaction : "valide"
+
+' Admin - Joueur_Bannis (1-N)
+admin ||--o{ joueur_bannis : "bannit"
+
+' Joueur - Joueur_Bannis (1-N)
+joueur ||--o{ joueur_bannis : "peut être\nbanni"
+
+@enduml

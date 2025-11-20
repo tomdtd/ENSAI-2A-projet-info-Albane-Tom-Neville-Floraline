@@ -1,0 +1,128 @@
+@startuml Diagramme de Packages - Poker Game
+
+!theme plain
+skinparam packageStyle rectangle
+skinparam backgroundColor white
+skinparam defaultFontSize 9
+skinparam padding 2
+skinparam boxPadding 5
+skinparam componentStyle rectangle
+
+' Définition des couleurs
+skinparam package<<presentation>> {
+    BackgroundColor #E8F5E9
+    BorderColor #4CAF50
+}
+
+skinparam package<<service>> {
+    BackgroundColor #E3F2FD
+    BorderColor #2196F3
+}
+
+skinparam package<<business>> {
+    BackgroundColor #FFF3E0
+    BorderColor #FF9800
+}
+
+skinparam package<<dao>> {
+    BackgroundColor #F3E5F5
+    BorderColor #9C27B0
+}
+
+skinparam package<<utils>> {
+    BackgroundColor #ECEFF1
+    BorderColor #607D8B
+}
+
+' ========== COUCHE PRÉSENTATION ==========
+package view <<presentation>> {
+    [AccueilVue]
+    [ConnexionVue]
+    [InscriptionVue]
+    [MenuJoueurVue]
+    [MenuPartie]
+    [RejoindrePartie]
+    [SoldeVue]
+    [VueAbstraite]
+    [Session]
+}
+
+package client <<presentation>> {
+    [PokerClient]
+}
+
+' ========== COUCHE SERVICE ==========
+package service <<service>> {
+    [JoueurService]
+    [TableService]
+    [PartieService]
+    [TransactionService]
+    [AdminService]
+    [JoueurPartieService]
+}
+
+' ========== COUCHE MÉTIER ==========
+package business_object <<business>> {
+    [Joueur]
+    [Admin]
+    [Table]
+    [Partie]
+    [JoueurPartie]
+    [Siege]
+    [AccessPartie]
+    [Carte]
+    [ListeCartes]
+    [Flop]
+    [Combinaison]
+    [MainJoueur]
+    [MainJoueurComplete]
+    [Croupier]
+    [Pot]
+    [Monnaie]
+    [Transaction]
+}
+
+' ========== COUCHE DAO ==========
+package dao <<dao>> {
+    [JoueurDao]
+    [AdminDao]
+    [TableDao]
+    [PartieDao]
+    [JoueurPartieDao]
+    [TransactionDao]
+    [StatistiquesDao]
+    [DBConnection]
+}
+
+' ========== UTILITAIRES ==========
+package utils <<utils>> {
+    [Securite]
+    [Singleton]
+    [LogInit]
+    [LogDecorator]
+    [ResetDatabase]
+}
+
+' ========== RELATIONS ==========
+
+' View -> Service
+view -down-> service
+client -down-> service
+
+' Service -> DAO
+service -down-> dao
+
+' Service -> Business
+service -down-> business_object
+
+' DAO -> Business
+dao -down-> business_object
+
+' DAO -> DB
+dao -right-> DBConnection
+
+' Utils (transversal)
+service ..> utils
+dao ..> utils
+
+@enduml
