@@ -162,7 +162,7 @@ async def creer_table(nb_sieges: int, blind_initial: float):
     if table:
         return {"message": "Table créée avec succès", "table": table}
 
-    raise HTTPException(status_code=400, detail="Échec de la création de la table")
+    raise HTTPException(status_code=400, detail="Échec de la création de la table, une table n'est pas complète")
 
 # Lister les tables disponibles
 @app.get("/tables/")
