@@ -8,6 +8,7 @@ from src.service.partie_service import PartieService
 from src.business_object.joueur import Joueur
 from src.business_object.table import Table
 from src.business_object.monnaie import Monnaie
+from src.service.transaction_service import TransactionService
 
 app = FastAPI(title="pickpoker")
 
@@ -34,13 +35,14 @@ def accueil():
 joueur_service = JoueurService()
 table_service = TableService()
 partie_service = PartieService()
+transaction_service = TransactionService()
 
 @app.get("/", include_in_schema=False)
 async def redirect_to_docs():
     """Redirect to the API documentation"""
     return RedirectResponse(url="/docs")
 
-#Les différents modèles    
+#Les différents modèles : on crée des classes pydantic de sorte   
 # Créer un joueur
 class JoueurCreate(BaseModel):
     pseudo: str
@@ -89,6 +91,15 @@ class PeriodeRequest(BaseModel):
     debut: datetime
     fin: datetime    
 
+#Les classes pour les transactions
+class TransactionRequest(BaseModel):
+    joueur_id: int
+    montant: int
+class TransactionResponse(BaseModel):
+    id_transaction: int
+    id_joueur: int
+    solde: int
+    date: datetime
 @app.post("/joueurs/")
 async def creer_joueur(joueur: JoueurCreate):
     joueur_obj = joueur_service.creer(joueur.pseudo, joueur.mdp, joueur.mail, joueur.age, Monnaie(joueur.credit))
@@ -432,6 +443,26 @@ def lister_parties_par_periode(request: PeriodeRequest):
     try:
         parties = PartieDao().lister_parties_par_periode(request.debut, request.fin)
         return {"parties": parties}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/transactions/", response_model=TransactionResponse)
+def enregistrer_transaction(request: TransactionRequest):
+    try:
+        transaction = transaction_service.enregistrer_transaction(request.joueur_id, request.montant)
+        if transaction:
+            return transaction
+        raise HTTPException(status_code=400, detail="Échec de l'enregistrement de la transaction")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/transactions/joueur/{joueur_id}", response_model=List[TransactionResponse])
+def historique_joueur(joueur_id: int):
+    try:
+        historique = transaction_service.historique_joueur(joueur_id)
+        return historique
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
 
