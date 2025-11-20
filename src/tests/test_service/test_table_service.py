@@ -11,13 +11,13 @@ def mock_table_dao():
     with patch.object(TableDao, 'creer') as mock_creer, \
          patch.object(TableDao, 'trouver_par_id') as mock_trouver_par_id, \
          patch.object(TableDao, 'modifier') as mock_modifier, \
-         patch.object(TableDao, 'lister_tous') as mock_lister_tous:
+         patch.object(TableDao, 'lister_toutes') as mock_lister_toutes:
 
         yield {
             "creer": mock_creer,
             "trouver_par_id": mock_trouver_par_id,
             "modifier": mock_modifier,
-            "lister_tous": mock_lister_tous,
+            "lister_toutes": mock_lister_toutes,
         }
 
 @pytest.fixture
@@ -120,7 +120,7 @@ def test_lister_tables_disponibles(mock_table_dao):
     ]
     mock_tables[0].sieges = [MagicMock(occupe=False) for _ in range(5)]
     mock_tables[1].sieges = [MagicMock(occupe=True) for _ in range(5)]
-    mock_table_dao["lister_tous"].return_value = mock_tables
+    mock_table_dao["lister_toutes"].return_value = mock_tables
 
     # WHEN
     table_service = TableService()
@@ -129,7 +129,7 @@ def test_lister_tables_disponibles(mock_table_dao):
     # THEN
     assert len(tables_disponibles) == 1
     assert tables_disponibles[0].id_table == 1
-    mock_table_dao["lister_tous"].assert_called_once()
+    mock_table_dao["lister_toutes"].assert_called_once()
 
 def test_quitter_table_ok(mock_table_dao):
     # GIVEN

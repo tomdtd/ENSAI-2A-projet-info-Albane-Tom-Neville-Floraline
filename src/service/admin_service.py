@@ -63,12 +63,12 @@ class AdminService:
         """Bannir un joueur en le déplaçant vers la table joueurs_banis."""
         if not raison_ban.strip():
             raise ValueError("La raison du bannissement ne peut pas être vide.")
-        return AdminDao().banir_joueur(id_joueur, id_admin, raison_ban)
+        return AdminDao().bannir_joueur(id_joueur, id_admin, raison_ban)
 
     @log
-    def debannir_joueur(self, pseudo: str) -> bool:
+    def debannir_joueur(self, id_joueur: int) -> bool:
         """Débannir un joueur en le restaurant dans la table joueurs."""
-        return AdminDao().debannir_joueur(pseudo)
+        return AdminDao().debannir_joueur(id_joueur)
 
     @log
     def lister_joueurs_banis(self) -> List[Dict]:

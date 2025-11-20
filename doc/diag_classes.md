@@ -1,4 +1,3 @@
-
 # Diagramme de classes des objets métiers
 
 Ce diagramme est codé avec [mermaid](https://mermaid.js.org/syntax/classDiagram.html) :

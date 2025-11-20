@@ -1,5 +1,3 @@
-from tabulate import tabulate
-
 from src.utils.log_decorator import log
 from src.utils.securite import hash_password
 

@@ -13,9 +13,9 @@ def mock_admin_dao():
          patch.object(AdminDao, 'changer_mot_de_passe') as mock_changer_mot_de_passe, \
          patch.object(AdminDao, 'valider_transaction') as mock_valider_transaction, \
          patch.object(AdminDao, 'lister_transactions_en_attente') as mock_lister_transactions_en_attente, \
-         patch.object(AdminDao, 'banir_joueur') as mock_banir_joueur, \
+         patch.object(AdminDao, 'bannir_joueur') as mock_bannir_joueur, \
          patch.object(AdminDao, 'debannir_joueur') as mock_debannir_joueur, \
-         patch.object(AdminDao, 'lister_joueurs_banis') as mock_lister_joueurs_banis, \
+         patch.object(AdminDao, 'lister_joueurs_bannis') as mock_lister_joueurs_bannis, \
          patch.object(AdminDao, 'obtenir_statistiques_joueur') as mock_obtenir_statistiques_joueur, \
          patch.object(AdminDao, 'obtenir_tables_jouees_par_joueur') as mock_obtenir_tables_jouees_par_joueur, \
          patch.object(AdminDao, 'obtenir_statistiques_globales') as mock_obtenir_statistiques_globales, \
@@ -28,9 +28,9 @@ def mock_admin_dao():
             "changer_mot_de_passe": mock_changer_mot_de_passe,
             "valider_transaction": mock_valider_transaction,
             "lister_transactions_en_attente": mock_lister_transactions_en_attente,
-            "banir_joueur": mock_banir_joueur,
+            "bannir_joueur": mock_bannir_joueur,
             "debannir_joueur": mock_debannir_joueur,
-            "lister_joueurs_banis": mock_lister_joueurs_banis,
+            "lister_joueurs_bannis": mock_lister_joueurs_bannis,
             "obtenir_statistiques_joueur": mock_obtenir_statistiques_joueur,
             "obtenir_tables_jouees_par_joueur": mock_obtenir_tables_jouees_par_joueur,
             "obtenir_statistiques_globales": mock_obtenir_statistiques_globales,
