@@ -38,16 +38,15 @@ gantt
     section Vacances
     Toussaint                    :crit,    2025-10-25, 2025-11-02
     
-    section Analyse
+    section Reporting
     Lancement du projet          :done,      2025-08-29, 7d
     étude préalable              :done,    2025-08-29, 15d
-    rédaction                    :done,    2025-08-29, 30d
-    relecture                    :done,    2025-09-20, 6d
-    
-    section Code
+    rédaction rapport d'analyse                   :done,    2025-08-29, 36d
+    rédaction rapport final                 :done,    2025-09-28, 53d
+    section Développement
     lister les classes à coder   :done,    2025-09-15, 7d
-    coder les classes (BO, DAO)    :done,    2025-09-19, 60d
-    coder les tests (unitaires, E2E)    :done,    2025-09-19, 62d
+    coder les classes (trois couches) et api.py  :done,    2025-09-19, 60d
+    coder les tests (unitaires, injection,E2E)    :done,    2025-09-19, 62d
 ```
 
 # :calendar: Livrables
