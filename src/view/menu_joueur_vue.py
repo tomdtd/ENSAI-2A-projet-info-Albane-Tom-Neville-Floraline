@@ -36,7 +36,6 @@ class MenuJoueurVue(VueAbstraite):
             message="Faites votre choix : ",
             choices=[
                 "Rejoindre une partie",
-                "Consulter ses statistiques",
                 "Gerer son solde",
                 "Se déconnecter",
             ],
@@ -46,14 +45,11 @@ class MenuJoueurVue(VueAbstraite):
             case "Se déconnecter":
                 Session().deconnexion()
                 from view.accueil.accueil_vue import AccueilVue
+
                 return AccueilVue()
 
             case "Rejoindre une partie":
                 return MenuJoueurVue(RejoindrePartie().choisir_menu())
-
-            case "Consulter ses statistiques":
-                joueurs_str = JoueurService().afficher_tous() # a changer
-                return MenuJoueurVue(joueurs_str) # a changer
 
             case "Gerer son solde":
                 from view.solde_vue import SoldeVue

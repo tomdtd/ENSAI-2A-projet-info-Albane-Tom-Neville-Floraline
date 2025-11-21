@@ -6,6 +6,7 @@ from src.business_object.monnaie import Monnaie
 from src.view.menu_partie import MenuPartie
 import traceback
 
+
 class RejoindrePartie(VueAbstraite):
     """Vue pour rejoindre une partie en tant que joueur connecté."""
 
@@ -17,6 +18,7 @@ class RejoindrePartie(VueAbstraite):
             if joueur is None:
                 print("Aucun joueur connecté.")
                 from view.menu_joueur_vue import MenuJoueurVue
+
                 return MenuJoueurVue().choisir_menu()
 
             # Créer le service de table
@@ -45,6 +47,7 @@ class RejoindrePartie(VueAbstraite):
             # Retour au menu
             if choix == "Retour au menu":
                 from view.menu_joueur_vue import MenuJoueurVue
+
                 return MenuJoueurVue().choisir_menu()
 
             # Créer une nouvelle table
@@ -61,11 +64,13 @@ class RejoindrePartie(VueAbstraite):
                     else:
                         print("Erreur lors de la création de la table.")
                         from view.menu_joueur_vue import MenuJoueurVue
+
                         return MenuJoueurVue().choisir_menu()
                 except Exception as e:
                     print("Erreur lors de la création de la table :", e)
                     traceback.print_exc()
                     from view.menu_joueur_vue import MenuJoueurVue
+
                     return MenuJoueurVue().choisir_menu()
 
             # Rejoindre une table existante
@@ -90,4 +95,5 @@ class RejoindrePartie(VueAbstraite):
 
         # Retour au menu joueur
         from view.menu_joueur_vue import MenuJoueurVue
+
         return MenuJoueurVue().choisir_menu()

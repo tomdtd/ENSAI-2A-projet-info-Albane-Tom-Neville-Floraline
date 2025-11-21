@@ -10,14 +10,16 @@ from src.business_object.monnaie import Monnaie
 from src.view.vue_abstraite import VueAbstraite
 
 import requests
+
 API_URL = os.environ.get("API_URL")
+
 
 class InscriptionVue(VueAbstraite):
     def choisir_menu(self):
         # Demande à l'utilisateur de saisir pseudo, mot de passe...
         pseudo = inquirer.text(message="Entrez votre pseudo : ").execute()
 
-        VAULT_TOKEN = os.environ.get("VAULT_TOKEN") # récupère le token depuis le .env
+        VAULT_TOKEN = os.environ.get("VAULT_TOKEN")  # récupère le token depuis le .env
 
         if VAULT_TOKEN:  # cas où la variable existe
             headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
@@ -31,11 +33,11 @@ class InscriptionVue(VueAbstraite):
 
         # response = requests.get(f"{API_URL}/joueurs/", headers=headers)
 
-        # Ensuite tu récupères la liste des joueurs
+        # Ensuite récupères la liste des joueurs
         joueurs = response.json().get("joueurs", [])
-        #joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
-        if pseudo in [j["pseudo"] for j in joueurs]: 
-        #if JoueurService().pseudo_deja_utilise(pseudo): #ne plus utiliser les services et passer par l'api...
+        # joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
+        if pseudo in [j["pseudo"] for j in joueurs]:
+            # if JoueurService().pseudo_deja_utilise(pseudo): #ne plus utiliser les services et passer par l'api...
             from view.accueil.accueil_vue import AccueilVue
 
             return AccueilVue(f"Le pseudo {pseudo} est déjà utilisé.")
@@ -43,19 +45,21 @@ class InscriptionVue(VueAbstraite):
         mdp = inquirer.secret(
             message="Entrez votre mot de passe : ",
             validate=PasswordValidator(
-                length=8, #os.environ["PASSWORD_LENGTH"],
+                length=8,  # os.environ["PASSWORD_LENGTH"],
                 cap=True,
                 number=True,
                 message="Au moins 8 caractères, incluant une majuscule et un chiffre",
             ),
         ).execute()
 
-        age = int(inquirer.number(
-            message="Entrez votre age : ",
-            min_allowed=0,
-            max_allowed=120,
-            validate=EmptyInputValidator(),
-        ).execute())
+        age = int(
+            inquirer.number(
+                message="Entrez votre age : ",
+                min_allowed=0,
+                max_allowed=120,
+                validate=EmptyInputValidator(),
+            ).execute()
+        )
 
         mail = inquirer.text(message="Entrez votre mail : ", validate=MailValidator()).execute()
 
@@ -64,9 +68,7 @@ class InscriptionVue(VueAbstraite):
 
         # Si le joueur a été créé
         if joueur:
-            message = (
-                f"Votre compte {joueur.pseudo} a été créé. Vous pouvez maintenant vous connecter."
-            )
+            message = f"Votre compte {joueur.pseudo} a été créé. Vous pouvez maintenant vous connecter."
         else:
             message = "Erreur de connexion (pseudo ou mot de passe invalide)"
 
@@ -82,6 +84,4 @@ class MailValidator(Validator):
     def validate(self, document) -> None:
         ok = regex.match(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$", document.text)
         if not ok:
-            raise ValidationError(
-                message="Entrez un mail valide", cursor_position=len(document.text)
-            )
+            raise ValidationError(message="Entrez un mail valide", cursor_position=len(document.text))

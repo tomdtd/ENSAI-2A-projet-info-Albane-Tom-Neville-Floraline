@@ -25,12 +25,12 @@ COMBINAISON_LABELS = {
     Combinaison.QuinteRoyale: "Quinte royale",
 }
 
+
 class MenuPartie(VueAbstraite):
 
     def __init__(self, table):
         self.table = table
         self.solde_initial_partie = self.table.blind_initial.get()
-
 
     def choisir_menu(self):
         session = Session()
@@ -39,13 +39,18 @@ class MenuPartie(VueAbstraite):
         if self.table.nb_joueurs >= self.table.nb_sieges:
             print("La table est pleine !")
             from view.rejoindre_partie import RejoindrePartie
+
             return RejoindrePartie().choisir_menu()
-        
-        siege_libre = Siege(self.table.nb_joueurs + 1) # faire en sorte de modifier nb_joueurs avant pour ne pas mettre 0 a tout le monde...
+
+        siege_libre = Siege(
+            self.table.nb_joueurs + 1
+        )  # faire en sorte de modifier nb_joueurs avant pour ne pas mettre 0 a tout le monde...
         siege_libre.est_occupe()
-        
+
         joueur_partie_service = JoueurPartieService()
-        joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(joueur, siege_libre, self.solde_initial_partie, self.table.id_table)
+        joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(
+            joueur, siege_libre, self.solde_initial_partie, self.table.id_table
+        )
 
         if joueur_partie:
             print(f"{joueur.pseudo} a été ajouté à la table {self.table.id_table} sur le siège {siege_libre.id_siege}.")
@@ -55,10 +60,11 @@ class MenuPartie(VueAbstraite):
         else:
             print("Impossible d'ajouter le joueur à la partie.")
             from view.rejoindre_partie import RejoindrePartie
+
             return RejoindrePartie().choisir_menu()
-        
+
         liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-        
+
         joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
         print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
 
@@ -70,23 +76,20 @@ class MenuPartie(VueAbstraite):
             # Système d'attende de d'autres joueurs
             while len(liste_joueurs_dans_partie) < 2:
                 print(f"En attente d'autres joueurs... ({len(liste_joueurs_dans_partie)} joueur(s) présent(s))")
-                
+
                 action_attente = inquirer.select(
                     message="Voulez-vous continuer à attendre ou quitter la partie ?",
-                    choices=[
-                        "Continuer à attendre",
-                        "Quitter la partie"
-                    ],
-                    default="Continuer à attendre"
+                    choices=["Continuer à attendre", "Quitter la partie"],
+                    default="Continuer à attendre",
                 ).execute()
-                
+
                 if action_attente == "Quitter la partie":
                     quitter_partie = True
                     break
-                
+
                 time.sleep(5)  # attente de 5 secondes avant de re-vérifier
                 liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-            
+
             if quitter_partie == True:
                 break
 
@@ -94,7 +97,7 @@ class MenuPartie(VueAbstraite):
             # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> je pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
 
             ### partie de code executée une seule fois
-            if joueur.id_joueur == liste_joueurs_dans_partie[0]: 
+            if joueur.id_joueur == liste_joueurs_dans_partie[0]:
                 # executera le tirage dans le script d'un seul joueur
                 pioche = ListeCartes()
                 croupier = Croupier(pioche)
@@ -103,22 +106,20 @@ class MenuPartie(VueAbstraite):
                 for id_joueur_partie in liste_joueurs_dans_partie:
                     main = mains_distribuees[id_joueur_partie]
                     joueur_partie_service.attribuer_cartes_main_joueur(
-                        id_table=self.table.id_table,
-                        id_joueur=id_joueur_partie,
-                        main=main
+                        id_table=self.table.id_table, id_joueur=id_joueur_partie, main=main
                     )
                 flop = croupier.distribuer_flop()
-                turn = ListeCartes([croupier.distribuer_turn()])      
-                river = ListeCartes([croupier.distribuer_river()]) 
+                turn = ListeCartes([croupier.distribuer_turn()])
+                river = ListeCartes([croupier.distribuer_river()])
 
                 TableService().set_flop(self.table.id_table, flop)
                 TableService().set_turn(self.table.id_table, turn)
                 TableService().set_river(self.table.id_table, river)
 
             id_table = self.table.id_table
-            id_joueur = joueur_partie.joueur.id_joueur 
+            id_joueur = joueur_partie.joueur.id_joueur
             main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
-            print(f'Ta main est : {main_joueur}')
+            print(f"Ta main est : {main_joueur}")
 
             ### Partie de code executée une seule fois
             if joueur.id_joueur == liste_joueurs_dans_partie[0]:
@@ -144,7 +145,7 @@ class MenuPartie(VueAbstraite):
                 joueur_partie_service.mettre_a_jour_statut(id_petite_blinde, self.table.id_table, "tour petite blinde")
                 joueur_partie_service.mettre_a_jour_statut(id_grosse_blinde, self.table.id_table, "tour de blinde")
 
-                #determiner le premier indice a jouer
+                # determiner le premier indice a jouer
                 indice_grosse_blinde = liste_joueurs_dans_partie.index(id_grosse_blinde)
                 indice_premier_a_jouer = (indice_grosse_blinde + 1) % len(liste_joueurs_dans_partie)
                 id_premier_joueur = liste_joueurs_dans_partie[indice_premier_a_jouer]
@@ -154,15 +155,17 @@ class MenuPartie(VueAbstraite):
             if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
                 # Débiter automatiquement les blindes et alimenter le pot
                 credit_pb = JoueurService().recuperer_credit(joueur.id_joueur)
-                montant_a_donner_blinde = float(credit_pb.get()) - float(self.table.blind_initial.get()/2)
+                montant_a_donner_blinde = float(credit_pb.get()) - float(self.table.blind_initial.get() / 2)
                 if montant_a_donner_blinde < 0:
                     print("Solde insufisant pour payer la blinde")
                     quitter_partie = True
                     break
                 else:
-                    JoueurService().modifier_credit(joueur.id_joueur, float(credit_pb.get()) - float(self.table.blind_initial.get()/2))
+                    JoueurService().modifier_credit(
+                        joueur.id_joueur, float(credit_pb.get()) - float(self.table.blind_initial.get() / 2)
+                    )
 
-                TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get()/2)
+                TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get() / 2)
 
             if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour de blinde":
                 credit_gb = JoueurService().recuperer_credit(joueur.id_joueur)
@@ -172,12 +175,13 @@ class MenuPartie(VueAbstraite):
                     quitter_partie = True
                     break
                 else:
-                    JoueurService().modifier_credit(joueur.id_joueur, float(credit_gb.get()) - float(self.table.blind_initial.get()))
+                    JoueurService().modifier_credit(
+                        joueur.id_joueur, float(credit_gb.get()) - float(self.table.blind_initial.get())
+                    )
 
                 TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
 
-
-            tours_de_mise = ['Pré-flop', 'Flop', 'Turn', 'River']
+            tours_de_mise = ["Pré-flop", "Flop", "Turn", "River"]
             for tour in tours_de_mise:
 
                 ### incrémenter le tour du joueur au début
@@ -188,25 +192,21 @@ class MenuPartie(VueAbstraite):
                 #     num_tour_joueur += 1
                 #     TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
 
-
                 liste_joueurs_en_jeu = []
                 statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
                 for id_j in liste_joueurs_dans_partie:
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
-                
-                while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur: 
+
+                while not TableService().get_id_joueur_tour(self.table.id_table) == joueur.id_joueur:
                     print("En attente du tour des autres joueurs...")
-                    time.sleep(2) 
+                    time.sleep(2)
 
                     action_attente = inquirer.select(
                         message="Voulez-vous continuer à attendre ou quitter la partie ?",
-                        choices=[
-                            "Continuer à attendre",
-                            "Quitter la partie"
-                        ],
-                        default="Continuer à attendre"
+                        choices=["Continuer à attendre", "Quitter la partie"],
+                        default="Continuer à attendre",
                     ).execute()
 
                     if action_attente == "Quitter la partie":
@@ -222,12 +222,12 @@ class MenuPartie(VueAbstraite):
                     if len(liste_joueurs_en_jeu) == 1:
                         print("Tous les autres joueurs on quitté la partie")
                         break
-                if len(liste_joueurs_en_jeu) ==1:
+                if len(liste_joueurs_en_jeu) == 1:
                     break
 
                 if quitter_partie:
                     break
-                
+
                 print("C'est ton tour")
 
                 liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
@@ -238,12 +238,14 @@ class MenuPartie(VueAbstraite):
 
                 print(f"Valeur actuelle de la blinde : {self.table.blind_initial}")
 
-                if tour == 'Pré-flop':
-                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour de blinde':
+                if tour == "Pré-flop":
+                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour de blinde":
                         print("C'est ton tour de grosse blinde")
-                    if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == 'tour petite blinde':
+                    if (
+                        joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+                        == "tour petite blinde"
+                    ):
                         print("C'est ton tour de petite blinde")
-
 
                 pot_actuel = TableService().get_pot(id_table)
                 print(f"Pot actuel : {pot_actuel}")
@@ -252,84 +254,122 @@ class MenuPartie(VueAbstraite):
                 flop = cartes_communes["flop"]
                 turn = cartes_communes["turn"]
                 river = cartes_communes["river"]
-                if tour == 'Flop':
-                    print(f'Le flop est : {flop}')
-                elif tour == 'Turn':
-                    print(f'Le flop est : {flop}')
-                    print(f'La turn est : {turn}')
-                elif tour == 'River':
-                    print(f'Le flop est : {flop}')
-                    print(f'La turn est : {turn}')
-                    print(f'La river est : {river}')
-                print(f'Ta main est : {main_joueur}')
-                
-                if not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}:
-                    montant_pour_suivre = float(self.table.blind_initial.valeur) + float(TableService().get_val_derniere_mise(self.table.id_table))
+                if tour == "Flop":
+                    print(f"Le flop est : {flop}")
+                elif tour == "Turn":
+                    print(f"Le flop est : {flop}")
+                    print(f"La turn est : {turn}")
+                elif tour == "River":
+                    print(f"Le flop est : {flop}")
+                    print(f"La turn est : {turn}")
+                    print(f"La river est : {river}")
+                print(f"Ta main est : {main_joueur}")
+
+                if not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {
+                    "tour de blinde",
+                    "tour petite blinde",
+                }:
+                    montant_pour_suivre = float(self.table.blind_initial.valeur) + float(
+                        TableService().get_val_derniere_mise(self.table.id_table)
+                    )
                     print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
-                elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
-                    montant_pour_suivre = float(self.table.blind_initial.valeur)/2 + float(TableService().get_val_derniere_mise(self.table.id_table))
+                elif (
+                    joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde"
+                ):
+                    montant_pour_suivre = float(self.table.blind_initial.valeur) / 2 + float(
+                        TableService().get_val_derniere_mise(self.table.id_table)
+                    )
                     print(f"La valeur a payer pour suivre est : {montant_pour_suivre}")
 
                 action = inquirer.select(
                     message="Que voulez-vous faire ?",
-                    choices=[
-                        "Miser",
-                        "Suivre",
-                        "Se coucher",
-                        "Quitter la partie"
-                    ],
+                    choices=["Miser", "Suivre", "Se coucher", "Quitter la partie"],
                 ).execute()
 
                 if action == "Miser":
                     montant = int(inquirer.text(message="Montant à miser : ").execute())
 
-                    if tour == 'Pré-flop' and (not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}):
-                        valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
+                    if tour == "Pré-flop" and (
+                        not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+                        in {"tour de blinde", "tour petite blinde"}
+                    ):
+                        valeur_totale_paye = (
+                            float(montant)
+                            + float(TableService().get_val_derniere_mise(self.table.id_table))
+                            + float(self.table.blind_initial.valeur)
+                        )
 
-                    elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
-                        valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table) + float(self.table.blind_initial.valeur/2))
+                    elif (
+                        joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+                        == "tour petite blinde"
+                    ):
+                        valeur_totale_paye = float(montant) + float(
+                            TableService().get_val_derniere_mise(self.table.id_table)
+                            + float(self.table.blind_initial.valeur / 2)
+                        )
 
                     else:
-                        valeur_totale_paye = float(montant) + float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
-                        
+                        valeur_totale_paye = (
+                            float(montant)
+                            + float(TableService().get_val_derniere_mise(self.table.id_table))
+                            + float(self.table.blind_initial.valeur)
+                        )
+
                     if joueur.credit.valeur < valeur_totale_paye:
                         print("Votre solde est insufisant")
-                        JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                        JoueurPartieService().mettre_a_jour_statut(
+                            joueur.id_joueur, self.table.id_table, "s'est couché"
+                        )
                         print(f"{joueur.pseudo} s'est couché.")
-                    else :
-                        TableService().set_val_derniere_mise(self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table))
-                    
-                        #retirer le solde du joueur
+                    else:
+                        TableService().set_val_derniere_mise(
+                            self.table.id_table, montant + TableService().get_val_derniere_mise(self.table.id_table)
+                        )
+
+                        # retirer le solde du joueur
                         solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
                         valeur_solde = solde.get()
                         joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
-                        #ajouter au pot
+                        # ajouter au pot
                         TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
-                        
+
                         print(f"{joueur.pseudo} a misé {montant}.")
 
                 elif action == "Suivre":
 
-                    if tour == 'Pré-flop' and (not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {"tour de blinde", "tour petite blinde"}):
-                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
+                    if tour == "Pré-flop" and (
+                        not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+                        in {"tour de blinde", "tour petite blinde"}
+                    ):
+                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(
+                            self.table.blind_initial.valeur
+                        )
 
-                    elif joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
-                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur/2)
+                    elif (
+                        joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
+                        == "tour petite blinde"
+                    ):
+                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(
+                            self.table.blind_initial.valeur / 2
+                        )
 
                     else:
-                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(self.table.blind_initial.valeur)
-                    
+                        valeur_totale_paye = float(TableService().get_val_derniere_mise(self.table.id_table)) + float(
+                            self.table.blind_initial.valeur
+                        )
 
                     if joueur.credit.valeur < valeur_totale_paye:
                         print("Votre solde est insufisant")
-                        JoueurPartieService().mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                        JoueurPartieService().mettre_a_jour_statut(
+                            joueur.id_joueur, self.table.id_table, "s'est couché"
+                        )
                         print(f"{joueur.pseudo} s'est couché.")
-                    else :
-                        #retirer le solde du joueur
+                    else:
+                        # retirer le solde du joueur
                         solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
                         valeur_solde = solde.get()
                         joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
-                        #ajouter au pot
+                        # ajouter au pot
                         TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
 
                         print(f"{joueur.pseudo} a suivi.")
@@ -340,15 +380,12 @@ class MenuPartie(VueAbstraite):
 
                     while JoueurPartieService().obtenir_statut(joueur.id_joueur, self.table.id_table) == "s'est couché":
                         print("En attente de la fin de la main des autres joueurs...")
-                        time.sleep(2) 
+                        time.sleep(2)
 
                         action_attente = inquirer.select(
                             message="Voulez-vous continuer à attendre ou quitter la partie ?",
-                            choices=[
-                                "Continuer à attendre",
-                                "Quitter la partie"
-                            ],
-                            default="Continuer à attendre"
+                            choices=["Continuer à attendre", "Quitter la partie"],
+                            default="Continuer à attendre",
                         ).execute()
 
                         if action_attente == "Quitter la partie":
@@ -356,14 +393,15 @@ class MenuPartie(VueAbstraite):
                             break
                     if quitter_partie:
                         break
-                
-                #mise a jour du joueur dont c'est le tour
+
+                # mise a jour du joueur dont c'est le tour
 
                 # recharger la liste des joueurs et filtrer les joueurs actifs
                 liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
                 statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
                 liste_joueurs_en_jeu = [
-                    jid for jid in liste_joueurs_dans_partie
+                    jid
+                    for jid in liste_joueurs_dans_partie
                     if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
                 ]
 
@@ -378,8 +416,8 @@ class MenuPartie(VueAbstraite):
                     try:
                         idx = liste_joueurs_en_jeu.index(id_courant)
                     except ValueError:
-                    # si l'id courant n'est pas présent (ex : il s'est couché), on prend
-                    # l'indice du premier joueur en jeu (ou le joueur suivant de num_tour_joueur si tu préfères)
+                        # si l'id courant n'est pas présent (ex : il s'est couché), on prend
+                        # l'indice du premier joueur en jeu (ou le joueur suivant de num_tour_joueur si tu préfères)
                         idx = 0
 
                     prochain_idx = (idx + 1) % len(liste_joueurs_en_jeu)
@@ -389,27 +427,28 @@ class MenuPartie(VueAbstraite):
                     TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
 
                     print(f"Tour passé de {id_courant} à {prochain_id}")
-                    
-                    
+
                 if len(liste_joueurs_en_jeu) <= 1:
                     break
 
-                    
-                #recalcul du nombre de joueurs en jeu
+                # recalcul du nombre de joueurs en jeu
                 liste_joueurs_en_jeu = []
                 for id_j in liste_joueurs_dans_partie:
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
-                
-                if joueur.id_joueur == liste_joueurs_en_jeu[-1]: # dernier joueur à avoir joué
+
+                if joueur.id_joueur == liste_joueurs_en_jeu[-1]:  # dernier joueur à avoir joué
                     # gestion des cas de relance
                     # ---------- Début : gestion stricte de la clôture du tour ----------
                     # Initialisation des contributions pour ce tour
                     liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
                     statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
-                    joueurs_actifs = [jid for jid in liste_joueurs_dans_partie 
-                                    if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu]
+                    joueurs_actifs = [
+                        jid
+                        for jid in liste_joueurs_dans_partie
+                        if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
+                    ]
 
                     contribution_joueur = {jid: 0.0 for jid in joueurs_actifs}
                     mise_tour_courant = 0.0
@@ -435,9 +474,14 @@ class MenuPartie(VueAbstraite):
                             print("Arrêt sécurité : trop d'itérations dans la phase de clôture.")
                             break
 
-                        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-                        joueurs_actifs = [jid for jid in liste_joueurs_dans_partie
-                                        if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu]
+                        liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(
+                            self.table.id_table
+                        )
+                        joueurs_actifs = [
+                            jid
+                            for jid in liste_joueurs_dans_partie
+                            if joueur_partie_service.obtenir_statut(jid, self.table.id_table) in statuts_en_jeu
+                        ]
 
                         joueur_courant = TableService().get_id_joueur_tour(self.table.id_table)
                         if joueur_courant not in joueurs_actifs:
@@ -456,19 +500,16 @@ class MenuPartie(VueAbstraite):
 
                             action = inquirer.select(
                                 message="Phase de clôture : que fais-tu ?",
-                                choices=[
-                                    "Miser (relance)",
-                                    "Suivre",
-                                    "Se coucher",
-                                    "Quitter la partie"
-                                ],
+                                choices=["Miser (relance)", "Suivre", "Se coucher", "Quitter la partie"],
                             ).execute()
 
                             if action == "Quitter la partie":
                                 quitter_partie = True
                                 break
                             elif action == "Se coucher":
-                                joueur_partie_service.mettre_a_jour_statut(joueur.id_joueur, self.table.id_table, "s'est couché")
+                                joueur_partie_service.mettre_a_jour_statut(
+                                    joueur.id_joueur, self.table.id_table, "s'est couché"
+                                )
                                 if joueur.id_joueur in contribution_joueur:
                                     del contribution_joueur[joueur.id_joueur]
                             elif action == "Suivre":
@@ -501,54 +542,61 @@ class MenuPartie(VueAbstraite):
 
                     # ---------- Fin : gestion stricte de la clôture ----------
 
-        
                 if quitter_partie:
-                        break
-                
-            #Gestion de la fin de la main -> partie du code executé dans le script d'un seul joueur pour qu'il s'execute une fois
+                    break
 
-            #recalcul du nombre de joueurs en jeu
+                # Gestion de la fin de la main -> partie du code executé dans le script d'un seul joueur pour qu'il s'execute une fois
+
+                # recalcul du nombre de joueurs en jeu
                 liste_joueurs_en_jeu = []
                 for id_j in liste_joueurs_dans_partie:
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if statut_joueur in statuts_en_jeu:
                         liste_joueurs_en_jeu.append(id_j)
 
-            if joueur.id_joueur == liste_joueurs_en_jeu[0]: # premier joueur de la liste pris arbitrairement pour que le code s'execute une seule fois
-                #Cas ou il reste un seul joueur : il remporte le pot
+            if (
+                joueur.id_joueur == liste_joueurs_en_jeu[0]
+            ):  # premier joueur de la liste pris arbitrairement pour que le code s'execute une seule fois
+                # Cas ou il reste un seul joueur : il remporte le pot
                 if len(liste_joueurs_en_jeu) == 1:
                     id_gagnant = liste_joueurs_en_jeu[0]
-                
+
                     pot = TableService().get_pot(self.table.id_table)
-                    print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                    
+                    print(f"Fin de la main : le gagnant remporte le pot : {pot}")
+
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
                     JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
 
             # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
 
-            #Recuperer les mains des joueurs en jeu
+            # Recuperer les mains des joueurs en jeu
             dict_id_cartes = {}
             for id_en_jeu in liste_joueurs_en_jeu:
-                dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_en_jeu)
-            
-            #Comparer les mains
+                dict_id_cartes[id_en_jeu] = JoueurPartieService().recuperer_cartes_main_joueur(
+                    id_table=id_table, id_joueur=id_en_jeu
+                )
+
+            # Comparer les mains
             dict_id_combinaison = {}
             # aplatir en UNE LISTE de cartes (et non pas liste de listes)
-            flop_complet = (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop)) + \
-                        (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn)) + \
-                        (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
-                        
+            flop_complet = (
+                (flop.get_cartes() if hasattr(flop, "get_cartes") else list(flop))
+                + (turn.get_cartes() if hasattr(turn, "get_cartes") else list(turn))
+                + (river.get_cartes() if hasattr(river, "get_cartes") else list(river))
+            )
+
             for id, main_obj in dict_id_cartes.items():
                 main_list = main_obj.get_cartes() if hasattr(main_obj, "get_cartes") else list(main_obj)
                 main_complete = MainJoueurComplete(main_list + flop_complet)
                 dict_id_combinaison[id] = main_complete.combinaison()
-            #Trouver la valeur maximale
+            # Trouver la valeur maximale
             max_val = max(dict_id_combinaison.values())
             combinaison_max = Combinaison(max_val)
-            id_max = [k for k, v in dict_id_combinaison.items() if v == max_val] # recupere les id avec la combinaison la plus haute
-            
+            id_max = [
+                k for k, v in dict_id_combinaison.items() if v == max_val
+            ]  # recupere les id avec la combinaison la plus haute
+
             id_gagnant = id_max[0]
             if not len(id_max) == 1:
                 # Creer dico
@@ -557,32 +605,34 @@ class MenuPartie(VueAbstraite):
                     dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
                 id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
-            #Créditer le gagnant
+            # Créditer le gagnant
             if isinstance(id_gagnant, list):
                 noms = ", ".join([JoueurService().trouver_par_id(i).pseudo for i in id_gagnant])
                 print(f"Les gagnants sont : {noms} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
                 # Cas plusieurs gagnant il faut diviser le pot
                 if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                     pot = int(TableService().get_pot(self.table.id_table))
-                    repartition_pot = int(pot/len(id_gagnant))
+                    repartition_pot = int(pot / len(id_gagnant))
 
                     for id in id_gagnant:
                         nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
                         JoueurService().modifier_credit(id, repartition_pot + int(nouveau_solde_du_gagnant.get()))
-                    
+
                     TableService().retirer_pot(self.table.id_table, pot)
 
             else:
-                print(f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}")
-                
+                print(
+                    f"Le gagnant est : {JoueurService().trouver_par_id(id_gagnant).pseudo} avec une {COMBINAISON_LABELS.get(combinaison_max)}"
+                )
+
                 pot = TableService().get_pot(self.table.id_table)
-                print(f'Fin de la main : le gagnant remporte le pot : {pot}')
-                
+                print(f"Fin de la main : le gagnant remporte le pot : {pot}")
+
                 if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
                     JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
                     TableService().retirer_pot(self.table.id_table, pot)
-            
+
             if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                 # Remet en jeu les joueurs couchés pour commencer une prochaine main
                 liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
@@ -590,7 +640,7 @@ class MenuPartie(VueAbstraite):
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if statut_joueur == "s'est couché":
                         joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
-                
+
                 # Faire tourner la blinde
 
                 # Récupérer l'id du bouton actuel
@@ -609,14 +659,15 @@ class MenuPartie(VueAbstraite):
                     statut_joueur = joueur_partie_service.obtenir_statut(id_j, self.table.id_table)
                     if (statut_joueur == "tour de blinde") or (statut_joueur == "tour petite blinde"):
                         joueur_partie_service.mettre_a_jour_statut(id_j, self.table.id_table, "en jeu")
-                        
-            if quitter_partie:
-                    break
 
-        #faire quitter la partie au joueur
-        TableService().retirer_joueur_table(self.table.id_table) # retirer le nb de joueurs dans la table table_poker
-        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur) # retirer le joueur de la partie à la fin
+            if quitter_partie:
+                break
+
+        # faire quitter la partie au joueur
+        TableService().retirer_joueur_table(self.table.id_table)  # retirer le nb de joueurs dans la table table_poker
+        joueur_partie_service.retirer_joueur_de_partie(joueur.id_joueur)  # retirer le joueur de la partie à la fin
         print(f"{joueur.pseudo} a quitté la partie.")
 
         from view.menu_joueur_vue import MenuJoueurVue
+
         return MenuJoueurVue().choisir_menu()
