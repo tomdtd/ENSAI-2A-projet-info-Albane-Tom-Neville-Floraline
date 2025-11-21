@@ -27,17 +27,11 @@ class InscriptionVue(VueAbstraite):
         else:  # cas où elle n'existe pas
             response = requests.get(f"{API_URL}/joueurs/")
 
-        # VAULT_TOKEN = os.environ.get("VAULT_TOKEN")  # récupère le token depuis ton .env
-
-        # headers = {"Authorization": f"Bearer {VAULT_TOKEN}"}
-
-        # response = requests.get(f"{API_URL}/joueurs/", headers=headers)
-
         # Ensuite récupères la liste des joueurs
         joueurs = response.json().get("joueurs", [])
         # joueurs = requests.get(f"{API_URL}/joueurs/").json()["joueurs"]
         if pseudo in [j["pseudo"] for j in joueurs]:
-            # if JoueurService().pseudo_deja_utilise(pseudo): #ne plus utiliser les services et passer par l'api...
+            
             from view.accueil.accueil_vue import AccueilVue
 
             return AccueilVue(f"Le pseudo {pseudo} est déjà utilisé.")

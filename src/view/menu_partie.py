@@ -53,7 +53,7 @@ class MenuPartie(VueAbstraite):
         )
 
         if joueur_partie:
-            print(f"{joueur.pseudo} a été ajouté à la table {self.table.id_table} sur le siège {siege_libre.id_siege}.")
+            print(f"{joueur.pseudo} a été ajouté à la table {self.table.id_table}.")
             table_service = TableService()
             table_service.ajouter_joueur_table(self.table.id_table)
 
@@ -66,7 +66,8 @@ class MenuPartie(VueAbstraite):
         liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
 
         joueurs_obj = [JoueurService().trouver_par_id(id_joueur) for id_joueur in liste_joueurs_dans_partie]
-        print(f"Joueurs présents : {[j.pseudo for j in joueurs_obj]}")
+        joueurs = ", ".join([j.pseudo for j in joueurs_obj])
+        print(f"Joueurs présents : {joueurs}")
 
         num_tour_joueur = 0
 
@@ -94,32 +95,25 @@ class MenuPartie(VueAbstraite):
                 break
 
             statut = joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table)
-            # trouver un moyen de changer le statut en attente d'un joueur lorsque c'est son tour de blinde -> je pense que c'est bon car quand il entre en jeu il obtient le statut blinde... a vérifier
 
-            ### partie de code executée une seule fois
-            if joueur.id_joueur == liste_joueurs_dans_partie[0]:
-                # executera le tirage dans le script d'un seul joueur
-                pioche = ListeCartes()
-                croupier = Croupier(pioche)
-                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
-                mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie, 2)
-                for id_joueur_partie in liste_joueurs_dans_partie:
-                    main = mains_distribuees[id_joueur_partie]
-                    joueur_partie_service.attribuer_cartes_main_joueur(
-                        id_table=self.table.id_table, id_joueur=id_joueur_partie, main=main
-                    )
-                flop = croupier.distribuer_flop()
-                turn = ListeCartes([croupier.distribuer_turn()])
-                river = ListeCartes([croupier.distribuer_river()])
+            # Sas d'attente pour les joueurs pour la distribution des carte et l'attibution des blindes
+            if not (joueur.id_joueur == liste_joueurs_dans_partie[0]):
+                while joueur_partie_service.recuperer_cartes_main_joueur(self.table.id_table, joueur.id_joueur) == []:
+                    print(f"En attente de la distribution des cartes...")
 
-                TableService().set_flop(self.table.id_table, flop)
-                TableService().set_turn(self.table.id_table, turn)
-                TableService().set_river(self.table.id_table, river)
+                    action_attente = inquirer.select(
+                        message="Voulez-vous continuer à attendre ou quitter la partie ?",
+                        choices=["Continuer à attendre", "Quitter la partie"],
+                        default="Continuer à attendre",
+                    ).execute()
 
-            id_table = self.table.id_table
-            id_joueur = joueur_partie.joueur.id_joueur
-            main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
-            print(f"Ta main est : {main_joueur}")
+                    if action_attente == "Quitter la partie":
+                        quitter_partie = True
+                        break
+
+                    time.sleep(5)  # attente de 5 secondes avant de re-vérifier
+
+
 
             ### Partie de code executée une seule fois
             if joueur.id_joueur == liste_joueurs_dans_partie[0]:
@@ -150,7 +144,7 @@ class MenuPartie(VueAbstraite):
                 indice_premier_a_jouer = (indice_grosse_blinde + 1) % len(liste_joueurs_dans_partie)
                 id_premier_joueur = liste_joueurs_dans_partie[indice_premier_a_jouer]
                 TableService().set_id_joueur_tour(self.table.id_table, id_premier_joueur)
-                print(f"[DEBUG] Premier joueur à parler : {id_premier_joueur} (à gauche de la grosse blinde)")
+                print(f"Premier joueur à parler : {JoueurService().trouver_par_id(id_premier_joueur).pseudo}")
 
             if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
                 # Débiter automatiquement les blindes et alimenter le pot
@@ -180,6 +174,33 @@ class MenuPartie(VueAbstraite):
                     )
 
                 TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
+
+            ### partie de code executée une seule fois
+            if joueur.id_joueur == liste_joueurs_dans_partie[0]:
+                # executera le tirage dans le script d'un seul joueur
+                pioche = ListeCartes()
+                croupier = Croupier(pioche)
+                liste_joueurs_dans_partie = joueur_partie_service.lister_joueurs_selon_table(self.table.id_table)
+                mains_distribuees = croupier.distribuer2(liste_joueurs_dans_partie, 2)
+                for id_joueur_partie in liste_joueurs_dans_partie:
+                    main = mains_distribuees[id_joueur_partie]
+                    joueur_partie_service.attribuer_cartes_main_joueur(
+                        id_table=self.table.id_table, id_joueur=id_joueur_partie, main=main
+                    )
+                flop = croupier.distribuer_flop()
+                turn = ListeCartes([croupier.distribuer_turn()])
+                river = ListeCartes([croupier.distribuer_river()])
+
+                TableService().set_flop(self.table.id_table, flop)
+                TableService().set_turn(self.table.id_table, turn)
+                TableService().set_river(self.table.id_table, river)
+
+            id_table = self.table.id_table
+            id_joueur = joueur_partie.joueur.id_joueur
+            main_joueur = joueur_partie_service.recuperer_cartes_main_joueur(id_table=id_table, id_joueur=id_joueur)
+            cartes = main_joueur.get_cartes()
+            main_joueur_join = ", ".join(str(carte) for carte in cartes)
+            print(f"Ta main est : {main_joueur_join}")
 
             tours_de_mise = ["Pré-flop", "Flop", "Turn", "River"]
             for tour in tours_de_mise:
@@ -263,7 +284,7 @@ class MenuPartie(VueAbstraite):
                     print(f"Le flop est : {flop}")
                     print(f"La turn est : {turn}")
                     print(f"La river est : {river}")
-                print(f"Ta main est : {main_joueur}")
+                print(f"Ta main est : {main_joueur_join}")
 
                 if not joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) in {
                     "tour de blinde",
@@ -426,7 +447,7 @@ class MenuPartie(VueAbstraite):
                     # écrire en base : c'est cette écriture qui permettra aux autres clients de voir le changement
                     TableService().set_id_joueur_tour(self.table.id_table, prochain_id)
 
-                    print(f"Tour passé de {id_courant} à {prochain_id}")
+                    print(f"Tour passé de {JoueurService().trouver_par_id(id_courant).pseudo} à {JoueurService().trouver_par_id(prochain_id).pseudo}")
 
                 if len(liste_joueurs_en_jeu) <= 1:
                     break
