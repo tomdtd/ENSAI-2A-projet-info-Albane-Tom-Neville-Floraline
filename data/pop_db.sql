@@ -3,11 +3,15 @@
 -- =====================================================================
 
 -- -----------------------------------------------------
--- Insertion d'un administrateur de test
+-- Insertion des administrateurs de test
 -- Identifiants: admin / Admin123!
 -- -----------------------------------------------------
 INSERT INTO admin (nom, mdp, mail) VALUES
-('admin', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'admin@pickpoker.com');
+('admin', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'admin@pickpoker.com'),
+('superadmin', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'superadmin@pickpoker.com'),
+('moderateur', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'moderateur@pickpoker.com'),
+('support', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'support@pickpoker.com'),
+('gestionnaire', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'gestionnaire@pickpoker.com');
 
 -- -----------------------------------------------------
 -- Insertion de 100 joueurs avec des noms français
@@ -108,7 +112,17 @@ INSERT INTO joueur (id_joueur, pseudo, mdp, mail, age, credit) VALUES
 (NULL, 'gabin.lucas', 'hash_placeholder', 'gabin.lucas@mail.com', 24, 180.00),
 (NULL, 'celestine.ferreira', 'hash_placeholder', 'celestine.ferreira@mail.com', 30, 1950.00),
 (NULL, 'baptiste.morvan', 'hash_placeholder', 'baptiste.morvan@mail.com', 26, 95.00),
-(NULL, 'anouk.fleury', 'hash_placeholder', 'anouk.fleury@mail.com', 25, 620.00);
+(NULL, 'anouk.fleury', 'hash_placeholder', 'anouk.fleury@mail.com', 25, 620.00),
+(NULL, 'florian.petit', 'hash_placeholder', 'florian.petit@mail.com', 32, 1450.00),
+(NULL, 'anais.dupuis', 'hash_placeholder', 'anais.dupuis@mail.com', 27, 890.00),
+(NULL, 'mathis.lefevre', 'hash_placeholder', 'mathis.lefevre@mail.com', 24, 320.00),
+(NULL, 'charlotte.morin', 'hash_placeholder', 'charlotte.morin@mail.com', 29, 1750.00),
+(NULL, 'alexis.girard', 'hash_placeholder', 'alexis.girard@mail.com', 31, 560.00),
+(NULL, 'oceane.roux', 'hash_placeholder', 'oceane.roux@mail.com', 26, 2200.00),
+(NULL, 'damien.fontaine', 'hash_placeholder', 'damien.fontaine@mail.com', 28, 410.00),
+(NULL, 'pauline.chevalier', 'hash_placeholder', 'pauline.chevalier@mail.com', 25, 980.00),
+(NULL, 'romain.dubois', 'hash_placeholder', 'romain.dubois@mail.com', 30, 1620.00),
+(NULL, 'marine.lambert', 'hash_placeholder', 'marine.lambert@mail.com', 23, 750.00);
 
 -- -----------------------------------------------------
 -- Insertion de 20 tables de poker
