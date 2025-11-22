@@ -150,6 +150,10 @@ Pour lancer l'API, il y a deux possibilités:
 uvicorn api:app --reload --host 0.0.0.0 --port 9876
 - [ ] Soit vous le lancez depuis Onyxia en faisant Ouvrir puis en cliquant sur le *port 9876* qui est en bleu
 
+## Utilisation de l'API
+Lors de l'ouverture de la page HTPPS, vous arriver sur la page correspondant à docs, c'est une page où l'ensemble des endpoints possibles sont disponibles.
+Afin d'éxécuter une requête, il vous suffit de faire dérouler le endpoint souhaité puis de cliquer sur "Try out". Enfin, il est nécessaire pour certains endpoints de remplir les instructions liées au endpoint.
+
 ## :arrow_forward: Tests unitaires
 
 - [ ] Dans Git Bash: `pytest -v` 
