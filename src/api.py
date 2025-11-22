@@ -1,34 +1,22 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 from src.service.joueur_service import JoueurService
 from src.service.table_service import TableService
 from src.service.partie_service import PartieService
+from src.service.joueur_partie_service import JoueurPartieService
 from src.business_object.joueur import Joueur
 from src.business_object.table import Table
 from src.business_object.monnaie import Monnaie
 from src.service.transaction_service import TransactionService
 
-app = FastAPI(title="pickpoker")
 
+# --- Page d'accueil ---
+ROOT_PATH = "/proxy/9876"
 
-# --- ✅ Page d'accueil ---
-@app.get("/")
-def accueil():
-    return {
-        "message": "Bienvenue sur l’API PickPoker 🎲",
-        "endpoints_disponibles": [
-            "/joueurs/ (GET, POST)",
-            "/joueurs/{id_joueur} (GET)",
-            "/joueurs/connexion (POST)",
-            "/tables/ (GET, POST)",
-            "/tables/{id_table}/rejoindre (POST)",
-            "/tables/{id_table}/quitter (POST)",
-            "/docs (Swagger UI)",
-            "et pleins d'autres choses"
-        ]
-    }
+app = FastAPI(root_path=ROOT_PATH, title="PickPoker")
 
 
 # Instancie tes services
@@ -36,13 +24,14 @@ joueur_service = JoueurService()
 table_service = TableService()
 partie_service = PartieService()
 transaction_service = TransactionService()
+joueur_partie_service = JoueurPartieService()
 
 @app.get("/", include_in_schema=False)
 async def redirect_to_docs():
     """Redirect to the API documentation"""
     return RedirectResponse(url="/docs")
 
-#Les différents modèles : on crée des classes pydantic de sorte   
+#Les différents modèles : on crée des classes pydantic de sorte )à utiliser un json correct et plus simple  
 # Créer un joueur
 class JoueurCreate(BaseModel):
     pseudo: str
@@ -105,6 +94,40 @@ class AjouterJoueurPartieRequest(BaseModel):
     id_siege: int
     solde_partie: int
     id_table: int
+
+# Modèles pour JoueurPartieService
+class AjouterJoueurPartieRequest(BaseModel):
+    id_joueur: int
+    id_siege: int
+    solde_partie: int
+    id_table: int
+
+class RetirerJoueurPartieRequest(BaseModel):
+    id_joueur: int
+
+class MiserRequest(BaseModel):
+    id_joueur: int
+    montant: int
+
+class SeCoucherRequest(BaseModel):
+    id_joueur: int
+
+class RecupererCartesMainRequest(BaseModel):
+    id_table: int
+    id_joueur: int
+
+class CartesMainResponse(BaseModel):
+    cartes: List[str]
+
+class AttribuerCartesMainRequest(BaseModel):
+    id_table: int
+    id_joueur: int
+    cartes: List[str]
+
+class MettreAJourStatutRequest(BaseModel):
+    id_joueur: int
+    id_table: int
+    statut: str
 
 @app.post("/joueurs/")
 async def creer_joueur(joueur: JoueurCreate):
@@ -489,11 +512,114 @@ def ajouter_joueur_a_partie(request: AjouterJoueurPartieRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
 
+@app.post("/joueurs-partie/ajouter")
+def ajouter_joueur_a_partie(request: AjouterJoueurPartieRequest):
+    try:
+        joueur = joueur_service.trouver_par_id(request.id_joueur)
+        if not joueur:
+            raise HTTPException(status_code=404, detail=f"Joueur {request.id_joueur} non trouvé")
+
+        siege = Siege(id_siege=request.id_siege)
+        joueur_partie = joueur_partie_service.ajouter_joueur_a_partie(joueur, siege, request.solde_partie, request.id_table)
+        if joueur_partie:
+            return {"message": "Joueur ajouté à la partie avec succès", "joueur_partie": joueur_partie}
+        raise HTTPException(status_code=400, detail="Échec de l'ajout du joueur à la partie")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.delete("/joueurs-partie/retirer")
+def retirer_joueur_de_partie(request: RetirerJoueurPartieRequest):
+    try:
+        success = joueur_partie_service.retirer_joueur_de_partie(request.id_joueur)
+        if success:
+            return {"message": f"Joueur {request.id_joueur} retiré de la partie avec succès"}
+        raise HTTPException(status_code=400, detail=f"Échec du retrait du joueur {request.id_joueur} de la partie")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/joueurs-partie/miser")
+def miser(request: MiserRequest):
+    try:
+        success = joueur_partie_service.miser(request.id_joueur, request.montant)
+        if success:
+            return {"message": f"Mise de {request.montant} effectuée avec succès par le joueur {request.id_joueur}"}
+        raise HTTPException(status_code=400, detail=f"Échec de la mise pour le joueur {request.id_joueur}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/joueurs-partie/se-coucher")
+def se_coucher(request: SeCoucherRequest):
+    try:
+        success = joueur_partie_service.se_coucher(request.id_joueur)
+        if success:
+            return {"message": f"Joueur {request.id_joueur} s'est couché avec succès"}
+        raise HTTPException(status_code=400, detail=f"Échec du coucher pour le joueur {request.id_joueur}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/joueurs-partie/table/{id_table}")
+def lister_joueurs_selon_table(id_table: int):
+    try:
+        joueurs = joueur_partie_service.lister_joueurs_selon_table(id_table)
+        return {"joueurs": joueurs}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/joueurs-partie/cartes-main")
+def recuperer_cartes_main_joueur(id_table: int, id_joueur: int):
+    try:
+        cartes = joueur_partie_service.recuperer_cartes_main_joueur(id_table, id_joueur)
+        return {"cartes": cartes.cartes}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.post("/joueurs-partie/attribuer-cartes-main")
+def attribuer_cartes_main_joueur(request: AttribuerCartesMainRequest):
+    try:
+        cartes = ListeCartes(request.cartes)
+        success = joueur_partie_service.attribuer_cartes_main_joueur(request.id_table, request.id_joueur, cartes)
+        if success:
+            return {"message": f"Cartes attribuées avec succès au joueur {request.id_joueur}"}
+        raise HTTPException(status_code=400, detail=f"Échec de l'attribution des cartes au joueur {request.id_joueur}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.put("/joueurs-partie/statut")
+def mettre_a_jour_statut(request: MettreAJourStatutRequest):
+    try:
+        success = joueur_partie_service.mettre_a_jour_statut(request.id_joueur, request.id_table, request.statut)
+        if success:
+            return {"message": f"Statut du joueur {request.id_joueur} mis à jour avec succès"}
+        raise HTTPException(status_code=400, detail=f"Échec de la mise à jour du statut pour le joueur {request.id_joueur}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
+
+@app.get("/joueurs-partie/statut")
+def obtenir_statut(id_joueur: int, id_table: int):
+    try:
+        statut = joueur_partie_service.obtenir_statut(id_joueur, id_table)
+        return {"statut": statut}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur interne du serveur: {str(e)}")
 
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=9678)
+    uvicorn.run(app, host="0.0.0.0", port=9876)
 
     logging.info("Arret du Webservice")
