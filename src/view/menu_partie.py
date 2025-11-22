@@ -147,6 +147,16 @@ class MenuPartie(VueAbstraite):
                 TableService().set_id_joueur_tour(self.table.id_table, id_premier_joueur)
                 print(f"Premier joueur à parler : {JoueurService().trouver_par_id(id_premier_joueur).pseudo}")
 
+            # Stocker dans l'environnement de tous les joueurs l'id du premier a jouer
+            id_bouton = TableService().get_id_joueur_bouton(self.table.id_table)
+            bouton_index = liste_joueurs_dans_partie.index(id_bouton)
+            nb_joueurs = len(liste_joueurs_dans_partie)
+            indice_grosse_blinde = (bouton_index + 2) % nb_joueurs
+            id_grosse_blinde = liste_joueurs_dans_partie[indice_grosse_blinde]
+            indice_grosse_blinde = liste_joueurs_dans_partie.index(id_grosse_blinde)
+            indice_premier_a_jouer = (indice_grosse_blinde + 1) % len(liste_joueurs_dans_partie)
+            id_premier_joueur = liste_joueurs_dans_partie[indice_premier_a_jouer]
+
             if joueur_partie_service.obtenir_statut(joueur.id_joueur, self.table.id_table) == "tour petite blinde":
                 # Débiter automatiquement les blindes et alimenter le pot
                 credit_pb = JoueurService().recuperer_credit(joueur.id_joueur)
@@ -207,6 +217,10 @@ class MenuPartie(VueAbstraite):
 
             tours_de_mise = ["Pré-flop", "Flop", "Turn", "River"]
             for tour in tours_de_mise:
+
+                # Reinitialiser la derniere mise à 0 pour le premier joueur a joueur le tour -> ne fonctionne pas
+                # if joueur.id_joueur == id_premier_joueur:
+                #     TableService().set_val_derniere_mise(self.table.id_table, 0.0)
 
                 liste_joueurs_en_jeu = []
                 statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
