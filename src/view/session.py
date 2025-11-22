@@ -13,6 +13,7 @@ class Session(metaclass=Singleton):
     def __init__(self):
         """Création de la session"""
         self.joueur = None
+        self.admin = None
         self.debut_connexion = None
 
     def connexion(self, joueur):
@@ -23,6 +24,17 @@ class Session(metaclass=Singleton):
     def deconnexion(self):
         """Suppression des données de la session"""
         self.joueur = None
+        self.admin = None
+        self.debut_connexion = None
+
+    def connexion_admin(self, admin):
+        """Enregistrement de l'admin en session"""
+        self.admin = admin
+        self.debut_connexion = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+    def deconnexion_admin(self):
+        """Suppression de l'admin de la session"""
+        self.admin = None
         self.debut_connexion = None
 
     def afficher(self) -> str:

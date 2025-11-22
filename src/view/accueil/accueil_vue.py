@@ -25,6 +25,7 @@ class AccueilVue(VueAbstraite):
             choices=[
                 "Se connecter",
                 "Créer un compte",
+                "Connexion administrateur",
                 "Quitter",
             ],
         ).execute()
@@ -42,3 +43,8 @@ class AccueilVue(VueAbstraite):
                 from view.accueil.inscription_vue import InscriptionVue
 
                 return InscriptionVue("Création de compte joueur")
+
+            case "Connexion administrateur":
+                from view.accueil.connexion_admin_vue import ConnexionAdminVue
+
+                return ConnexionAdminVue()

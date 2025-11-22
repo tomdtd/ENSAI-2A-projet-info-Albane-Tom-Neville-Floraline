@@ -37,6 +37,7 @@ class MenuJoueurVue(VueAbstraite):
             choices=[
                 "Rejoindre une partie",
                 "Gerer son solde",
+                "Mes statistiques",
                 "Se déconnecter",
             ],
         ).execute()
@@ -55,3 +56,8 @@ class MenuJoueurVue(VueAbstraite):
                 from view.solde_vue import SoldeVue
 
                 return SoldeVue()
+
+            case "Mes statistiques":
+                from view.statistiques_joueur_vue import StatistiquesJoueurVue
+
+                return StatistiquesJoueurVue()

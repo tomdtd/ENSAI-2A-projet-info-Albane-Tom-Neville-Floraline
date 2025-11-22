@@ -3,6 +3,13 @@
 -- =====================================================================
 
 -- -----------------------------------------------------
+-- Insertion d'un administrateur de test
+-- Identifiants: admin / Admin123!
+-- -----------------------------------------------------
+INSERT INTO admin (nom, mdp, mail) VALUES
+('admin', 'ba697a9047a71eb6ec4402b8025535a3f12b8fb67054599078816080dd01d270', 'admin@pickpoker.com');
+
+-- -----------------------------------------------------
 -- Insertion de 100 joueurs avec des noms français
 -- -----------------------------------------------------
 INSERT INTO joueur (id_joueur, pseudo, mdp, mail, age, credit) VALUES
@@ -158,3 +165,14 @@ INSERT INTO partie (id_table, pot) VALUES (9, 22.00);
 SET @last_partie_id = LAST_INSERT_ID();
 INSERT INTO partie_joueur (id_partie, id_joueur) VALUES
 (@last_partie_id, 7), (@last_partie_id, 14);
+
+-- -----------------------------------------------------
+-- Insertion de quelques transactions en attente pour les tests
+-- -----------------------------------------------------
+INSERT INTO transaction (id_joueur, solde, statut) VALUES
+(1, 100, 'en_attente'),
+(2, 250, 'en_attente'),
+(3, -50, 'en_attente'),
+(5, 500, 'validee'),
+(10, -100, 'validee'),
+(15, 75, 'en_attente');
