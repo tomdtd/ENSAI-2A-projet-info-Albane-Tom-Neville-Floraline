@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS partie_joueur CASCADE;;
 DROP TABLE IF EXISTS partie  CASCADE;
 DROP TABLE IF EXISTS table_joueur CASCADE;
 DROP TABLE IF EXISTS table_poker CASCADE;
-DROP TABLE IF EXISTS portefeuille CASCADE;
 DROP TABLE IF EXISTS joueur CASCADE;
 DROP TABLE IF EXISTS transaction CASCADE;
 DROP TABLE IF EXISTS joueur_bannis;
@@ -28,22 +27,6 @@ CREATE TABLE joueur (
   age INT NOT NULL,
   credit DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
   date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- -----------------------------------------------------
--- Table `portefeuille`
--- Gère le solde de chaque joueur. Relation 1-1 avec joueur.
--- -----------------------------------------------------
-CREATE TABLE portefeuille (
-  id_portefeuille INT PRIMARY KEY,
-  -- Clé étrangère vers l'joueur
-  id_joueur INT NOT NULL UNIQUE,
-  solde DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-  -- La contrainte UNIQUE sur id_joueur garantit la relation 1-1
-  CONSTRAINT fk_portefeuille_joueur
-    FOREIGN KEY (id_joueur)
-    REFERENCES joueur(id_joueur)
-    ON DELETE CASCADE -- Si un joueur est supprimé, son portefeuille l'est aussi.
 );
 
 -- -----------------------------------------------------

@@ -18,13 +18,6 @@ entity "JOUEUR" as joueur {
     date_creation : TIMESTAMP
 }
 
-entity "PORTEFEUILLE" as portefeuille {
-    * **id_portefeuille** : INT <<PK>>
-    --
-    * id_joueur : INT <<FK,UK>>
-    solde : DECIMAL(10,2)
-}
-
 entity "TABLE_POKER" as table {
     * **id_table** : INT <<PK>>
     --
@@ -98,9 +91,6 @@ entity "JOUEUR_BANNIS" as joueur_bannis {
 }
 
 ' ========== RELATIONS ==========
-
-' Joueur - Portefeuille (1-1)
-joueur ||--|| portefeuille : "possède"
 
 ' Joueur - Table_Joueur - Table_Poker (N-N)
 joueur ||--o{ table_joueur : "s'assoit à"

@@ -104,13 +104,6 @@ INSERT INTO joueur (id_joueur, pseudo, mdp, mail, age, credit) VALUES
 (NULL, 'anouk.fleury', 'hash_placeholder', 'anouk.fleury@mail.com', 25, 620.00);
 
 -- -----------------------------------------------------
--- Création des portefeuilles pour chaque joueur
--- On copie simplement le crédit initial dans le solde du portefeuille.
--- -----------------------------------------------------
-INSERT INTO portefeuille (id_joueur, solde)
-SELECT id_joueur, credit FROM joueur;
-
--- -----------------------------------------------------
 -- Insertion de 20 tables de poker
 -- -----------------------------------------------------
 INSERT INTO table_poker (nom_table, nb_sieges, blind_initial) VALUES
