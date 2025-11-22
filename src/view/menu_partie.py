@@ -10,6 +10,7 @@ from src.business_object.liste_cartes import ListeCartes
 from src.business_object.monnaie import Monnaie
 from src.business_object.main_joueur_complete import MainJoueurComplete
 from src.business_object.combinaison import Combinaison
+from src.service.transaction_service import TransactionService
 import time
 
 COMBINAISON_LABELS = {
@@ -158,6 +159,7 @@ class MenuPartie(VueAbstraite):
                     JoueurService().modifier_credit(
                         joueur.id_joueur, float(credit_pb.get()) - float(self.table.blind_initial.get() / 2)
                     )
+                    TransactionService().enregistrer_transaction(joueur.id_joueur, - int(float(self.table.blind_initial.get() / 2)))
 
                 TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get() / 2)
 
@@ -172,6 +174,7 @@ class MenuPartie(VueAbstraite):
                     JoueurService().modifier_credit(
                         joueur.id_joueur, float(credit_gb.get()) - float(self.table.blind_initial.get())
                     )
+                    TransactionService().enregistrer_transaction(joueur.id_joueur, - int(float(self.table.blind_initial.get())))
 
                 TableService().alimenter_pot(self.table.id_table, self.table.blind_initial.get())
 
@@ -204,14 +207,6 @@ class MenuPartie(VueAbstraite):
 
             tours_de_mise = ["Pré-flop", "Flop", "Turn", "River"]
             for tour in tours_de_mise:
-
-                ### incrémenter le tour du joueur au début
-                # if joueur.id_joueur == liste_joueurs_dans_partie[0] and tour == 'Pré-flop':
-                #     if num_tour_joueur >= len(liste_joueurs_dans_partie):
-                #         num_tour_joueur = 0
-                #     id_tour_joueur = liste_joueurs_dans_partie[num_tour_joueur]
-                #     num_tour_joueur += 1
-                #     TableService().set_id_joueur_tour(self.table.id_table, id_tour_joueur)
 
                 liste_joueurs_en_jeu = []
                 statuts_en_jeu = {"tour de blinde", "tour petite blinde", "en jeu"}
@@ -361,6 +356,8 @@ class MenuPartie(VueAbstraite):
                         solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
                         valeur_solde = solde.get()
                         joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
+                        JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit.get()))
+                        TransactionService().enregistrer_transaction(joueur.id_joueur, - int(valeur_totale_paye))
                         # ajouter au pot
                         TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
 
@@ -400,6 +397,8 @@ class MenuPartie(VueAbstraite):
                         solde = getattr(joueur, "credit", getattr(joueur, "solde", None))
                         valeur_solde = solde.get()
                         joueur.credit = Monnaie(float(valeur_solde) - float(valeur_totale_paye))
+                        JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit.get()))
+                        TransactionService().enregistrer_transaction(joueur.id_joueur, - int(valeur_totale_paye))
                         # ajouter au pot
                         TableService().alimenter_pot(self.table.id_table, valeur_totale_paye)
 
@@ -546,12 +545,14 @@ class MenuPartie(VueAbstraite):
                             elif action == "Suivre":
                                 to_pay = min(float(joueur.credit), montant_a_suivre)
                                 JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit) - to_pay)
+                                TransactionService().enregistrer_transaction(joueur.id_joueur, - int(to_pay))
                                 TableService().alimenter_pot(self.table.id_table, to_pay)
                                 contribution_joueur[joueur.id_joueur] += to_pay
                             else:  # Miser / Relance
                                 montant = float(inquirer.text(message="Montant à relancer (additionnel) : ").execute())
                                 to_pay = min(float(joueur.credit), montant)
                                 JoueurService().modifier_credit(joueur.id_joueur, float(joueur.credit) - to_pay)
+                                TransactionService().enregistrer_transaction(joueur.id_joueur, - int(to_pay))
                                 TableService().alimenter_pot(self.table.id_table, to_pay)
                                 contribution_joueur[joueur.id_joueur] += to_pay
                                 if contribution_joueur[joueur.id_joueur] > mise_tour_courant:
@@ -597,6 +598,7 @@ class MenuPartie(VueAbstraite):
 
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
                     JoueurService().modifier_credit(id_gagnant, int(nouveau_solde_du_gagnant.get()))
+                    TransactionService().enregistrer_transaction(id_gagnant, int(pot))
                     TableService().retirer_pot(self.table.id_table, pot)
 
             # Cas ou il reste plusieur joueur : le joueur avec la combinaison la plus haute remporte le pot
@@ -633,7 +635,8 @@ class MenuPartie(VueAbstraite):
                 # Creer dico
                 dict_comb_complete = {}
                 for id in id_max:
-                    dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
+                    dict_comb_complete[id] = (dict_id_cartes[id].get_cartes() if hasattr(dict_id_cartes[id], "get_cartes") else list(dict_id_cartes[id])) + flop_complet
+                    #dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
                 id_gagnant = MainJoueurComplete().gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
             # Créditer le gagnant
@@ -647,7 +650,8 @@ class MenuPartie(VueAbstraite):
 
                     for id in id_gagnant:
                         nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id)
-                        JoueurService().modifier_credit(id, repartition_pot + int(nouveau_solde_du_gagnant.get()))
+                        JoueurService().modifier_credit(id, float(repartition_pot + int(nouveau_solde_du_gagnant.get())))
+                        TransactionService().enregistrer_transaction(id, int(repartition_pot))
 
                     TableService().retirer_pot(self.table.id_table, pot)
 
@@ -661,7 +665,8 @@ class MenuPartie(VueAbstraite):
 
                 if joueur.id_joueur == liste_joueurs_en_jeu[0]:
                     nouveau_solde_du_gagnant = JoueurService().recuperer_credit(id_gagnant)
-                    JoueurService().modifier_credit(id_gagnant, pot + int(nouveau_solde_du_gagnant.get()))
+                    JoueurService().modifier_credit(id_gagnant, float(pot + int(nouveau_solde_du_gagnant.get())))
+                    TransactionService().enregistrer_transaction(id_gagnant, int(pot))
                     TableService().retirer_pot(self.table.id_table, pot)
 
             # Mettre le statut couché a tous les joueurs pour eviter qu'il passent a l'étape suivante de la boucle
