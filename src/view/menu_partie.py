@@ -651,7 +651,7 @@ class MenuPartie(VueAbstraite):
                 for id in id_max:
                     dict_comb_complete[id] = (dict_id_cartes[id].get_cartes() if hasattr(dict_id_cartes[id], "get_cartes") else list(dict_id_cartes[id])) + flop_complet
                     #dict_comb_complete[id] = dict_id_cartes[id] + ListeCartes(flop_complet)
-                id_gagnant = MainJoueurComplete([]).gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
+                id_gagnant = MainJoueurComplete.gagnants_avec_meme_combinaison(dict_comb_complete, combinaison_max)
 
             # Créditer le gagnant
             if isinstance(id_gagnant, list):

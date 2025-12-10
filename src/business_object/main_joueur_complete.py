@@ -21,8 +21,8 @@ class MainJoueurComplete(ListeCartes):
     Les cartes de la main complete du joueur.
     """
     def __init__(self, cartes):
-        if len(cartes) < 2 or len(cartes) > 7 :
-                raise ValueError(f"La main complète doit contenir entre 2 et 7 cartes.")
+        # if len(cartes) < 2 or len(cartes) > 7 :
+        #         raise ValueError(f"La main complète doit contenir entre 2 et 7 cartes.")
         super().__init__(cartes)
 
     @classmethod #permet de créer a partir des classes main et flop
@@ -85,7 +85,8 @@ class MainJoueurComplete(ListeCartes):
 
         return Combinaison.CarteHaute
     
-    def gagnants_avec_meme_combinaison(self, dict_joueurs_main, combinaison):
+    @staticmethod
+    def gagnants_avec_meme_combinaison(dict_joueurs_main, combinaison):
         """
         Renvoie une liste de gagnant a partir d'un dictionnaire de joueurs qui on la meme combinaison.
         
@@ -107,7 +108,7 @@ class MainJoueurComplete(ListeCartes):
             max_valeur = -1
             for id_joueur, cartes in dict_joueurs_main.items():
                 valeur_max_main = max(carte.valeur for carte in cartes)
-                if valeur_max_main > max_valeur:
+                if int(valeur_max_main) > int(max_valeur):
                     max_valeur = valeur_max_main
                     lst_gagnant = [id_joueur]
                 elif valeur_max_main == max_valeur:
@@ -173,7 +174,7 @@ class MainJoueurComplete(ListeCartes):
             max_valeur = -1
             for id_joueur, cartes in dict_joueurs_main.items():
                 valeur_max_main = max(c.valeur for c in cartes)
-                if valeur_max_main > max_valeur:
+                if int(valeur_max_main) > int(max_valeur):
                     max_valeur = valeur_max_main
                     lst_gagnant = [id_joueur]
                 elif valeur_max_main == max_valeur:
